@@ -33,7 +33,10 @@
               <option value="basic_speaking">Basic Speaking</option>
               <option value="LevelOnePartA">Level One A</option>
               <option value="LevelOnePartB">Level One B</option>
+              <option value="LevelOnePartC">Level One C</option>
+              <option value="LevelOneReading">Level One Reading</option>
               <option value="Kdrama">K - Drama</option>
+              <option value="NumberAndTime">Number And Time</option>
               <option value="TipsAndSlang">Tip & Slangs</option>
               <option value="WordsOnTopics">Word On Topics</option>
               <option value="Phrase">Phrase</option>
@@ -83,7 +86,10 @@
                 <th scope="col">Basic Speaking</th>
                 <th scope="col">Level One A</th>
                 <th scope="col">Level One B</th>
+                <th scope="col">Level One C</th>
+                <th scope="col">Level One Reading</th>
                 <th scope="col">K - Drama</th>
+                <th scope="col">Number And Time</th>
                 <th scope="col">Tip & Slangs</th>
                 <th scope="col">Word On Topics</th>
                 <th scope="col">Phrase</th>
@@ -123,7 +129,10 @@
                     <td>{{$easykorean->basic_speaking}}</td>
                     <td>{{$easykorean->LevelOnePartA}}</td>
                     <td>{{$easykorean->LevelOnePartB}}</td>
+                    <td>{{$easykorean->LevelOnePartC}}</td>
+                    <td>{{$easykorean->LevelOneReading}}</td>
                     <td>{{$easykorean->Kdrama}}</td>
+                    <td>{{$easykorean->NumberAndTime}}</td>
                     <td>{{$easykorean->TipsAndSlang}}</td>
                     <td>{{$easykorean->WordsOnTopics}}</td>
                     <td>{{$easykorean->Phrase}}</td>

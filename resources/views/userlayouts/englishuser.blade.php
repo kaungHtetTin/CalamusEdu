@@ -22,6 +22,7 @@
            <label for="">Category:</label>
             <select id="inputForm" name="sqlrow" style="flex-wrap: wrap;">
               <option value="login_time">Login Time</option>
+              <option value="level_test">Level Test</option>
               <option value="game_score">Game Score</option>
               <option value="0">Exam Mark</option>
               <option value="song">Song</option>
@@ -79,6 +80,7 @@
                 <th scope="col">Phone</th>
                 <th scope="col">VIP User</th>
                 <th scope="col">Login Time</th>
+                <th scope="col">Level Test</th>
                 <th scope="col">Game Score</th>
                 <th scope="col">Exam Mark</th>
                 <th scope="col">Join On</th>
@@ -126,6 +128,7 @@
                         @endif
                     </td>
                     <td>{{$easyenglish->login_time}}</td>
+                    <td>{{$easyenglish->level_test}}</td>
                     <td>{{$easyenglish->game_score}}</td>
                     <td>0</td>     
                     <td>{{$easyenglish->first_join}}</td>
