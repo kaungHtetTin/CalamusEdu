@@ -9,6 +9,7 @@ use App\Http\Controllers\SongController;
 use App\Http\Controllers\CloudMessageController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProjectOverviewController;
+use App\Http\Controllers\SpeakingTrainerController;
 use Illuminate\Http\Request;
 /*
 |--------------------------------------------------------------------------
@@ -89,6 +90,8 @@ Route::get('/lessons/add/{course}',[LessonController::class,'showAddLesson'])->n
 Route::post('/lessons/add/{course}',[LessonController::class,'addLesson'])->name('addLesson');
 Route::post('/lessons/video/add',[LessonController::class,'uploadVideoForLessonDownload'])->name('uploadVideoForLessonDownload');
 
+Route::post('/lessons/add-studyplan',[LessonController::class,'addLessonToStudyPlan'])->name('addLessonToStudyPlan');
+Route::post('/lessons/add-vimeo',[PostController::class,'uploadVimeo'])->name('uploadVimeo');
 
 //game controlling routes
 Route::get('/gameword',[GameWordController::class,'showGameWordMain'])->name('showGameWordMain');
@@ -97,7 +100,7 @@ Route::get('/gameword/add/{major}',[GameWordController::class,'showGameWordAddin
 Route::post('/gameword/add/{major}',[GameWordController::class,'addGameWord'])->name('addGameWord');
 
 Route::get('/gameword/edit/{id}',[GameWordController::class,'editGameWord'])->name('editGameWord');
-
+Route::post('/gameword/delete',[GameWordController::class,'deleteGameWord'])->name('deleteGameWord');
 // song controlling routes
 Route::get('/song',[SongController::class,'showSongMain'])->name('showSongMain');
 Route::get('/song/list/{major}',[SongController::class,'showSongs'])->name('showSongs');
@@ -126,6 +129,10 @@ Route::get('/cloudmessage',[CloudMessageController::class,'showCloudMessage'])->
 Route::post('/cloudmessage/send',[CloudMessageController::class,'sendCloudMessage'])->name('sendCloudMessage');
 });
 
+//speaking trainning
+Route::get('/addspeakingdialogue',[SpeakingTrainerController::class,'index'])->name('showDialogueAdder');
+Route::post('/addnewsaturation',[SpeakingTrainerController::class,'addNewSaturation'])->name('addNewSaturation');
+Route::post('/adddialogue',[SpeakingTrainerController::class,'addDialogue'])->name('addDialogue');
 
 //Project Overview
 Route::get('/projectoverview',[ProjectOverviewController::class,'index'])->name('overviewIndex');

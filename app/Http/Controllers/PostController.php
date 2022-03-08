@@ -43,6 +43,16 @@ class PostController extends Controller
         ]);
     }
 
+    public function uploadVimeo(Request $req){
+          $req->validate([
+            'post_id'=>'required'
+            ]);
+        $post_id=$req->post_id;
+        $vimeo=$req->vimeo;
+        
+        post::where('post_id', $post_id)->update(['vimeo'=>$vimeo]);
+        return back()->with('msg','Vimeo embedded');
+    }
     
     public function addPost(Request $req,$major){
      
@@ -73,6 +83,7 @@ class PostController extends Controller
        $post->post_like=0;
        $post->comments=0;
        $post->video_url="";
+       $post->vimeo="";
        $post->view_count=0;
        $post->save();
         

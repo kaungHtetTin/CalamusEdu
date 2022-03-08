@@ -34,6 +34,8 @@
               
               <option value="basic_grammar">Basic Grammar</option>
               <option value="basic_speaking">Basic Speaking</option>
+              <option value="basic_listening">Basic Listening</option>
+              <option value="basic_reading">Basic Reading</option>
               
               
               <option value="voa_b_level1">VOA Level 1</option>
@@ -94,6 +96,8 @@
                 
                 <th scope="col">Basic Grammar</th>
                 <th scope="col">Basic Speaking</th>
+                <th scope="col">Basic Listening</th>
+                <th scope="col">Basic Reading</th>
                 
                 <th scope="col">VOA Level 1</th>
                 <th scope="col">VOA Level 2</th>
@@ -142,6 +146,8 @@
                     
                     <td>{{$easyenglish->basic_grammar}}</td>
                     <td>{{$easyenglish->basic_speaking}}</td>
+                    <td>{{$easyenglish->basic_listening}}</td>
+                    <td>{{$easyenglish->basic_reading}}</td>
                     
                     <td>{{$easyenglish->voa_b_level1}}</td>
                     <td>{{$easyenglish->voa_b_level2}}</td>

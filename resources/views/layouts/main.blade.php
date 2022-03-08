@@ -49,6 +49,9 @@
             
           <a href="{{route('showCloudMessage')}}" class="list-group-item list-group-item-action py-2 ripple">
             <i class="material-icons me-3">send</i><span>Cloud Messaging</span></a>
+            
+          <a href="{{route('showDialogueAdder')}}" class="list-group-item list-group-item-action py-2 ripple">
+            <i class="material-icons me-3">forum</i><span>Speaking Training</span></a>
          
         </div>
       </div>

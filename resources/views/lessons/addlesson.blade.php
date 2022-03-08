@@ -24,12 +24,16 @@
               <div class="row">
                 <div class="col-xl-12 col-sm-12 col-12 mb-2 rounded" style="padding: 20px;">
                 
-                  <form action="{{route('addLesson',$course)}}" method="POST">
+                  <form action="{{route('addLesson',$course)}}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <input type="text" placeholder="Enter Title Of Lesson" id="inputForm" name="title" style="width: 80%; margin-bottom:20px"/>
                     <p class="text-danger" style="font-size: 12px;">{{$errors->first('title')}}</p>
                     <input type="text" placeholder="Enter youtube Id or Blog Link" id="inputForm" name="link" style="width: 80%; margin-bottom:20px"/>
                     <p class="text-danger" style="font-size: 12px;">{{$errors->first('link')}}</p>
+                    
+                    <input type="text" placeholder="Enter vimeo Link" id="inputForm" name="vimeo" style="width: 80%; margin-bottom:20px"/>
+                    <p class="text-danger" style="font-size: 12px;">{{$errors->first('vimeo')}}</p>
+                    
                     <input type="text" placeholder="Enter post" id="inputForm" name="post" style="width: 80%; margin-bottom:20px"/>
                     <p class="text-danger" style="font-size: 12px;">{{$errors->first('post')}}</p>
                     <input type="hidden" name="major" value="{{session('major')}}"/>
@@ -38,19 +42,20 @@
                       <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                         @foreach ($lessonArr as $arr)
                         @php
-                            if(isset($arr->code)){
-                              $category=$arr->code;
-                            }else{
-                              $category=$arr->cate;
-                            }
+                            $category=$arr->category;
+                            $category_id=$arr->category_id;
+                           
                         @endphp
 
                           <div class="form-check"  style="margin-bottom:5px">
-                            <input class="form-check-input" type="radio" name="cate" id="{{$category}}" value="{{$category}}"/>
-                            <label class="form-check-label" for="{{$category}}">{{$category}}</label>
+                            <input class="form-check-input" type="radio" name="cate" id="{{$category_id}}" value="{{$category_id}}"/>
+                            <label class="form-check-label" for="{{$category_id}}">{{$category}}</label>
                           </div>
                         @endforeach
                         <p class="text-danger" style="font-size: 12px;">{{$errors->first('cate')}}</p>
+                        
+                        <p>Video Thumbnail</p>
+                         <input type="file" name="myfile"/> 
                       </div>
 
                       <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">

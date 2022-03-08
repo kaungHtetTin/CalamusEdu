@@ -3,20 +3,22 @@
 @php
 
     //Easy English
-    $basic_english=in_array( "Basic English Course", $coursesEnglish)?true:false;
-    $voa=in_array( "Let's Learn English (VOA)", $coursesEnglish)?true:false;
+    $basic_english=in_array( "11", $coursesEnglish)?true:false;
+    $voa=in_array( "Let", $coursesEnglish)?true:false;
+    $elementary_english=in_array( "13", $coursesEnglish)?true:false;
     
     //Easy Korean
-    $basic_korea=in_array( "Basic course", $coursesKorea)?true:false;
-    $lv_one_korea=in_array( "Level One Course", $coursesKorea)?true:false;
-    $lv_two_korea=in_array( "Level Two Course", $coursesKorea)?true:false;
-    $lv_three_korea=in_array( "Level Three Course", $coursesKorea)?true:false;
-    $lv_four_korea=in_array( "Level Four Course", $coursesKorea)?true:false;
-    $kdrama=in_array( "Lesson With K-Drama", $coursesKorea)?true:false;
-    $kTranslation=in_array("Translation", $coursesKorea)?true:false;
-    $DramaLyrics=in_array("DramaLyrics", $coursesKorea)?true:false;
-    $KidSong=in_array("KidSong", $coursesKorea)?true:false;
-    $kGeneral=in_array("kGeneral", $coursesKorea)?true:false;
+    $basic_korea=in_array( "1", $coursesKorea)?true:false;
+    $lv_one_korea=in_array( "2", $coursesKorea)?true:false;
+    $lv_two_korea=in_array( "3", $coursesKorea)?true:false;
+    $lv_three_korea=in_array( "4", $coursesKorea)?true:false;
+    $lv_four_korea=in_array( "7", $coursesKorea)?true:false;
+    $vocab=in_array( "15", $coursesKorea)?true:false;
+    $kdrama=in_array( "8", $coursesKorea)?true:false;
+    $kTranslation=in_array("10", $coursesKorea)?true:false;
+    $DramaLyrics=in_array("19", $coursesKorea)?true:false;
+    $KidSong=in_array("12", $coursesKorea)?true:false;
+    $kGeneral=in_array("8", $coursesKorea)?true:false;
 
 @endphp
 
@@ -95,6 +97,14 @@
                               <label class="form-check-label" for="basic_english">Basic Course</label>
                             </div>
                             
+                            <!--elementary course-->
+                            <div class="form-check"  style="margin-bottom:5px">
+                              <input class="form-check-input" type="checkbox" name="elementary_english" id="elementary_english"
+                                @if($elementary_english) checked   @endif
+                              />
+                              <label class="form-check-label" for="elementary_english">Elementary Course</label>
+                            </div>
+                            
                             <!--voa course-->
                             <div class="form-check"  style="margin-bottom:5px">
                               <input class="form-check-input" type="checkbox" name="voa" id="voa"
@@ -171,6 +181,14 @@
                              @if($lv_four_korea) checked   @endif
                           />
                           <label class="form-check-label" for="lv_four_korea">Level Four Course</label>
+                        </div>
+                        
+                        <!--Vocabulary Course-->
+                        <div class="form-check"  style="margin-bottom:5px">
+                          <input class="form-check-input" type="checkbox" name="vocab" id="vocab"
+                             @if($vocab) checked   @endif
+                          />
+                          <label class="form-check-label" for="vocab">Vocabulary Course</label>
                         </div>
                         
                           <!--lesson with k drama -->

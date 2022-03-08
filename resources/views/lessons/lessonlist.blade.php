@@ -35,8 +35,17 @@
                   <div style="color: rgb(85, 85, 85); margin-left:5px;" class="align-self-center">
                     <h6 class="h6">{{$lesson->title}}</h6>
                   </div>
+                
                 </div>
               </div> </a>
+              <div class="float-right">
+                      <form style="float:right" enctype="multipart/form-data" action="{{route('addLessonToStudyPlan')}}" method="post">
+                     @csrf
+                     <Input type="text" name="day" placeholder="Enter the day"/>
+                     <input type="hidden" name="id" value="{{$lesson->id}}"/>
+                     <input type="submit" class="btn-primary rounded" value="Add"/>
+                    </form>
+                  </div>    
             </div>
            
             @endforeach

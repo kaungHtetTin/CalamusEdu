@@ -15,18 +15,22 @@ class GameWordController extends Controller
 
     public function showGameWord($major){
         if($major=="korea"){
-            $word=GameWordKorea::simplepaginate(10);
+            $word=GameWordKorea::orderBy('id','desc')->simplepaginate(10);
+            $count=GameWordKorea::get()->count();
             return view('gamewords.gameword',[
                 'words'=>$word,
-                'major'=>$major
+                'major'=>$major,
+                'count'=>$count
             ]);
         }
 
         if($major=="english"){
-            $word=GameWordEnglish::simplepaginate(10);
+            $word=GameWordEnglish::orderBy('id','desc')->simplepaginate(10);
+            $count=GameWordEnglish::get()->count();
             return view('gamewords.gameword',[
                 'words'=>$word,
-                'major'=>$major
+                'major'=>$major,
+                'count'=>$count
             ]);
         }
          
@@ -55,6 +59,10 @@ class GameWordController extends Controller
                 'major'=>$major
             ]);
         }
+    }
+    
+    public function updateWord(Request $req){
+        
     }
     
     
@@ -103,6 +111,36 @@ class GameWordController extends Controller
             
         }
         
+        if($major=='korea'){
+            $gameword=new GameWordKorea();
+            $gameword->display_word=$displayword;
+            $gameword->display_audio=$displayaudio;
+            $gameword->display_image=$displayimage;
+            $gameword->category=$req->category;
+            $gameword->a=$req->ansA;
+            $gameword->b=$req->ansB;
+            $gameword->c=$req->ansC;
+            $gameword->ans=$req->ans;
+            $gameword->save();
+        }
+        
          return back()->with('msg','Successfully Added');
+    }
+    
+    public function deleteGameWord(Request $req){
+        
+         
+        $id=$req->id;
+        $major=$req->major;
+        
+        if($major=="korea"){
+            GameWordKorea::where("id",$id)->delete();
+        }
+        
+        if($major=="english"){
+            GameWordEnglish::where("id",$id)->delete();
+        }
+        
+        return back()->with('msg','Successfully deleted');
     }
 }

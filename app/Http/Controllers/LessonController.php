@@ -6,7 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\lesson;
 use App\Models\post;
 use App\Models\mylike;
+use App\Models\Studyplan;
 use App\Models\Notification;
+use App\Models\LessonCategory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -21,24 +23,24 @@ class LessonController extends Controller
 
     public function showLessonCategory($form){
         $major=$form;
-        $form= file_get_contents("https://www.calamuseducation.com/calamus/api/form/".$form);
+        $form= file_get_contents("https://www.calamuseducation.com/calamus-v2/api/{$major}/form/");
         return view('lessons.lessons',[
             'form'=>$form,
             'major'=>$major
         ]);
     }
 
-    public function showLessonList(Request $req,$code){
+    public function showLessonList(Request $req,$category_id){
 
-        $lessons=lesson::where('cate',$code)
-        ->where('major',$req->major)
+        $lessons=lesson::where('category_id',$category_id)
         ->orderBy('isVideo','desc')
+        ->orderBy('id')
         ->get();
         return view('lessons.lessonlist',[
             'lessons'=>$lessons,
-            'code'=>$code,
+            'category_id'=>$category_id,
             'cate'=>$req->cate,
-            'icon'=>session($code)
+            'icon'=>session($category_id)
         ]);
     }
 
@@ -53,7 +55,8 @@ class LessonController extends Controller
         	    posts.post_id,
         	    posts.comments,
         	    posts.view_count,
-        	    posts.video_url
+        	    posts.video_url,
+        	    posts.vimeo
         	    
             ")
         ->where('posts.post_id',$lesson->date)
@@ -119,18 +122,57 @@ class LessonController extends Controller
             'cate'=>'required'
         ]);
         
+       
         $title=$req->title;
         $link=$req->link;
         $body=$req->post;
-        $cate=$req->cate;
+        $categoryId=$req->cate;
         $isVideo=(isset($req->isVideo))?1:0;
         $isChannel=(isset($req->isChannel))?1:0;
         $isVip=(isset($req->isVip))?1:0;
         $date = round(microtime(true) * 1000);
         $major=$req->major;
-    
+        
+        if($isChannel==1){
+            LessonCategory::where('id', $categoryId)->update(['sort_order'=>$date]);
+        }
+ 
+        
+        $course_id=DB::table('courses')
+            ->selectRaw("courses.course_id")
+            ->join("lessons_categories","courses.course_id","=","lessons_categories.course_id")
+            ->join("lessons","lessons_categories.id","=","lessons.category_id")
+            ->where("lessons.category_id",$categoryId)->limit(1)->get();
+            
+        if(count($course_id)==1){
+            $course_id= $course_id[0]->course_id;
+            
+            DB::table('courses')->where('course_id',$course_id)->update([
+                'lessons_count'=>DB::raw("lessons_count+1")
+            ]);
+                   
+        } 
+            
+            
+        $imagePath="";
+        $vimeo="";
+        $isVideoLesson=0;
+        
         if(isset($req->isVideo)){
-            $imagePath="https://img.youtube.com/vi/".$link."/0.jpg";
+            $vimeo=$req->vimeo;
+            $myPath="https://www.calamuseducation.com/uploads/";
+            $file=$req->file('myfile');
+            if(!empty($req->myfile)){
+                $result=Storage::disk('calamusPost')->put('posts',$file);
+                $imagePath=$myPath.$result;
+            }
+            
+            if($isVip==1){
+                $isVideo=0; // for post
+            }
+            
+             $isVideoLesson=1; // for lesson
+            
         }else{
             $imagePath="";
             $templink=$req->link;
@@ -140,7 +182,8 @@ class LessonController extends Controller
             $link="https://www.blogger.com/feeds/".$blogId."/posts/default/".$blogPostId."?alt=json";
             
         }
-       
+  
+         
     
         if($major=='korea'){
             $noti_owner="1001";
@@ -148,16 +191,19 @@ class LessonController extends Controller
             $noti_owner="1002";
         }
     
+        
     
         $lesson=new lesson;
-        $lesson->cate=$cate;
+        $lesson->cate="";
+        $lesson->category_id=$categoryId;
         $lesson->date=$date;
-        $lesson->isVideo=$isVideo;
+        $lesson->isVideo=$isVideoLesson;
         $lesson->isVip=$isVip;
         $lesson->isChannel=$isChannel;
         $lesson->link=$link;
         $lesson->title=$title;
         $lesson->major=$major;
+        $lesson->thumbnail=$imagePath;
         $lesson->save();
         
         $post=new post;
@@ -169,9 +215,12 @@ class LessonController extends Controller
         $post->image=$imagePath;
         $post->video_url="";
         $post->has_video=$isVideo;
+        $post->vimeo=$vimeo;
         $post->view_count=0;
         $post->major=$major;
         $post->save();
+        
+        
     
         $notification=new Notification;
         $notification->post_id=$date;
@@ -208,4 +257,30 @@ class LessonController extends Controller
         post::where('post_id', $post_id)->update(['video_url'=>$url]);
         return back()->with('msg','Video was successfully added');
     }
+    
+    public function addLessonToStudyPlan(Request $req){
+        
+        $req->validate([
+            'day'=>'required'
+            ]);
+        $lesson_id=$req->id;
+        $day=$req->day;
+        
+        $course_id=DB::table('courses')
+            ->selectRaw("courses.course_id")
+            ->join("lessons_categories","courses.course_id","=","lessons_categories.course_id")
+            ->join("lessons","lessons_categories.id","=","lessons.category_id")
+            ->where("lessons.id",$lesson_id)->limit(1)->get();
+         $course_id= $course_id[0]->course_id;
+        
+        $studyplan=new Studyplan();
+        $studyplan->course_id=$course_id;
+        $studyplan->lesson_id=$lesson_id;
+        $studyplan->day=$day;
+        $studyplan->save();
+        
+        //return $course_id;
+        return back()->with('msg','The lesson was successfully added to study plan');
+    }
+ 
 }

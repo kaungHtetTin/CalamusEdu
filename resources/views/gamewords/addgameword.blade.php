@@ -70,7 +70,7 @@
                   </div>
 
                   <div class="col-xl-6 col-sm-12 col-md-6 mb-2 rounded" style="padding: 20px;">
-                    <h5>Display Audio</h5>
+                    <h5>Display Image</h5>
                     <form action="{{route('addGameWord',$major)}}" method="POST" enctype="multipart/form-data">
                       @csrf
                       <input type="text" placeholder="Ans - A" id="inputForm" name="ansA" style="width: 80%;" required/>

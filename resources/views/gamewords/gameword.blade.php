@@ -3,8 +3,14 @@
 
 @section('content')
 
+@if (session('msg'))
+<div class="card bg-success" id="customMessageBox">
+    {{session('msg')}}
+</div>
+@endif
+
 <div>
-<span class="h4 align-self-center">Game Words ( {{ucwords($major)}} )</span>
+<span class="h4 align-self-center">Game Words ( {{ucwords($major)}}  )</span> <span class="h6 align-self-center text-primary">Total - {{$count}}</span>
 <a href="{{route('showGameWordAdding',$major)}}" style="float: right; margin-right:15px;">
     <span style="background-color: rgb(195, 216, 255) ;padding:7px;border-radius:50%;border:solid thin gray">
       <i class='fas fa-plus' style='font-size:24px;color:rgb(26, 60, 250);'></i>
@@ -35,7 +41,6 @@
                           </thead>
                         @foreach ($words as $word)
                         <tbody>
-                           <form>
                             <td>{{$word->id}}</td>
                             <td>{{$word->display_word}}</td>
                             <td>
@@ -54,11 +59,37 @@
                             <td>{{$word->c}}</td>
                             <td>{{$word->ans}}</td>
                             <td>
-                                <a href="{{route('editGameWord',$word->id)}}?major={{$major}}">
-                                <i class='fas fa-edit' style='font-size:18px;color:rgb(26, 60, 250)'></i>
-                                </a>
+                                <button
+                                    type="button" data-toggle="modal" data-target="#d{{$word->id}}" id="" class="btn">
+                                    <i class="fa fa-trash" style="color:rgb(255, 53, 53)" aria-hidden="true"></i>
+                                </button>
+                                
+                                 <!-- <--modal__> -->
+                                <div class="modal fade" id="d{{$word->id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" >
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">Do you really want to delete?</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        
+                                        <div class="modal-body">
+                                            <form method="POST" action="{{route('deleteGameWord')}}">
+                                                @csrf
+                                                <input type="hidden" value="{{$word->id}}" name="id"/>
+                                                <input type="hidden" value="{{$major}}" name="major"/>
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal" >Close</button>
+                                                <button type="submit" id="{{$word->id}}" class="btn btn-danger">Delete</button>
+                                                
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- <--modal__> -->
+                                
                             </td>
-                           </form>
                            
                         </tbody>
                        
@@ -74,3 +105,14 @@
 
 {{$words->links()}}
 @endsection
+
+<script
+src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+crossorigin="anonymous"
+></script>
+<script
+src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"
+integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns"
+crossorigin="anonymous"
+></script>

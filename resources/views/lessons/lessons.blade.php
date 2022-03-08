@@ -23,7 +23,7 @@
 @foreach ($firstForm as $courses)
 @php
     $mainLesson=json_encode($courses->sub);
-    session()->put($courses->level,$mainLesson);
+    session()->put($courses->title,$mainLesson);
 
 @endphp
 
@@ -32,8 +32,8 @@
       <div class="card">
           <div class="card-body">
               <div>
-                <span class="h4 align-self-center">{{$courses->level}}</span>
-                <a href="{{route('showAddLesson',$courses->level)}}" style="float: right; margin-right:15px;">
+                <span class="h4 align-self-center">{{$courses->title}}</span>
+                <a href="{{route('showAddLesson',$courses->title)}}" style="float: right; margin-right:15px;">
                   <span style="background-color: rgb(195, 216, 255) ;padding:7px;border-radius:50%;border:solid thin gray">
                     <i class='fas fa-plus' style='font-size:24px;color:rgb(26, 60, 250);'></i>
                   </span>
@@ -43,17 +43,17 @@
               <div class="row">
                 @foreach ($courses->sub as $sub)
                 @php
-                session()->put($sub->code,$sub->pic)
+                session()->put($sub->category_id,$sub->pic)
                 @endphp
                 <div class="col-xl-3 col-sm-6 col-12 mb-2 rounded">
-                  <a href="{{route('showLessonList',$sub->code)}}?cate={{$sub->cate}}&major={{$major}}" >
+                  <a href="{{route('showLessonList',$sub->category_id)}}?cate={{$sub->category}}&major={{$major}}" >
                   <div class="rounded" style="border:solid thin gray; padding:10px;margin:4px;">
                     <div class="d-flex justify-content-between px-md-1">
                       <div class="align-self-center" style="">
                         <img src="{{$sub->pic}}" style="width: 40px; height:40px;"/>
                       </div>
                       <div>
-                        <h5 class="">{{$sub->cate}}</h5>
+                        <h5 class="">{{$sub->category}}</h5>
                       </div>
                     </div>
                   </div></a>
@@ -88,10 +88,10 @@
               <div class="row">
                 @foreach ($secondForm as $sub)
                 @php
-                session()->put($sub->cate,$sub->pic)
+                session()->put($sub->category_id,$sub->pic)
                 @endphp
                 <div class="col-xl-3 col-sm-6 col-12 mb-2 rounded">
-                  <a href="{{route('showLessonList',$sub->cate)}}?cate={{$sub->cate}}&major={{$major}}" >
+                  <a href="{{route('showLessonList',$sub->category_id)}}?cate={{$sub->category}}&major={{$major}}" >
                   
                   <div class="rounded" style="border:solid thin gray; padding:10px;margin:4px;">
                     <div class="d-flex justify-content-between px-md-1">
@@ -99,8 +99,11 @@
                         <img src="{{$sub->pic}}" style="width: 40px; height:40px;"/>
                       </div>
                       <div>
-                        <h5 class="">{{$sub->cate}}</h5>
+                        <h5 class="">{{$sub->category}}</h5>
                       </div>
+                      
+                      
+                      
                     </div>
                   </div> </a>
                 </div>
@@ -133,7 +136,7 @@
               <div class="row">
                 @foreach ($videoForm as $video)
                 <div class="col-xl-3 col-sm-6 col-12 mb-2 rounded">
-                  <a href="{{route('showLessonList',$video->cate)}}?cate={{$video->cate}}&major={{$major}}" >
+                  <a href="{{route('showLessonList',$video->category_id)}}?cate={{$video->category}}&major={{$major}}" >
 
                   <div class="rounded" style="border:solid thin gray; padding:10px;margin:4px;">
                     <div class="d-flex justify-content-between px-md-1">
@@ -141,7 +144,7 @@
                         <img src="{{asset('public/img/video.png')}}" style="width: 40px; height:40px;"/>
                       </div>
                       <div>
-                        <h5 class="">{{$video->cate}}</h5>
+                        <h5 class="">{{$video->category}}</h5>
                       </div>
                     </div>
                   </div> </a>

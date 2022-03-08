@@ -238,10 +238,10 @@ class UserController extends Controller
         $englishData=EasyEnglishUserData::where('phone',$phone)->first();
         
         $vipCoursesKorea=VipUser::where('phone',$phone)->where('major','korea')->get();
-        $coursesKorea=array_column(json_decode($vipCoursesKorea),'course');
+        $coursesKorea=array_column(json_decode($vipCoursesKorea),'course_id');
         
         $vipCoursesEnglish=VipUser::where('phone',$phone)->where('major','english')->get();
-        $coursesEnglish=array_column(json_decode($vipCoursesEnglish),'course');
+        $coursesEnglish=array_column(json_decode($vipCoursesEnglish),'course_id');
         
 
         return view('userlayouts.vipadding',[
@@ -272,26 +272,38 @@ class UserController extends Controller
             if($req->basic_english=="on"){
                 DB::table('VipUsers')
                 ->updateOrInsert(
-                    ['phone' => $phone, 'course' => 'Basic English Course'],
-                    ['major' => 'english']
+                    ['phone' => $phone, 'course_id' => '11'],
+                    ['major' => 'english','course'=>'English Basic Course']
                 );
-                $english_basic=true;
+               
             }else{
-                VipUser::where('phone',$phone)->where('course','Basic English Course')->delete();
-                $english_basic=false;
+                VipUser::where('phone',$phone)->where('course_id','11')->where('major','english')->delete();
+               
             }
-           
-           if($req->voa=="on"){
+            
+            if($req->elementary_english=="on"){
                 DB::table('VipUsers')
                 ->updateOrInsert(
-                    ['phone' => $phone, 'course' => "Let's Learn English (VOA)"],
-                    ['major' => 'english']
+                    ['phone' => $phone, 'course_id' => '13'],
+                    ['major' => 'english','course'=>'Elementary Course']
                 );
-                $voa=true;
+               
             }else{
-                VipUser::where('phone',$phone)->where('course',"Let's Learn English (VOA)")->delete();
-                $voa=false;
+                VipUser::where('phone',$phone)->where('course_id','13')->where('major','english')->delete();
+              
             }
+           
+        //   if($req->voa=="on"){
+        //         DB::table('VipUsers')
+        //         ->updateOrInsert(
+        //             ['phone' => $phone, 'course' => "Let's Learn English (VOA)"],
+        //             ['major' => 'english']
+        //         );
+              
+        //     }else{
+        //         VipUser::where('phone',$phone)->where('course',"Let's Learn English (VOA)")->delete();
+              
+        //     }
             
        }
         
@@ -309,11 +321,11 @@ class UserController extends Controller
             if($req->basic_korea=="on"){
                 DB::table('VipUsers')
                 ->updateOrInsert(
-                    ['phone' => $phone, 'course' => "Basic course"],
-                    ['major' => 'korea']
+                    ['phone' => $phone, 'course_id' => "1"],
+                    ['major' => 'korea','course'=>'Basic Course']
                 );
             }else{
-                VipUser::where('phone',$phone)->where('course',"Basic course")->where('major','korea')->delete();
+                VipUser::where('phone',$phone)->where('course_id','1')->where('major','korea')->delete();
                 
             }
             
@@ -321,22 +333,22 @@ class UserController extends Controller
             if($req->lv_one_korea=="on"){
                 DB::table('VipUsers')
                 ->updateOrInsert(
-                    ['phone' => $phone, 'course' => "Level One Course"],
-                    ['major' => 'korea']
+                    ['phone' => $phone, 'course_id' =>'2'],
+                    ['major' => 'korea','course'=>'Level One Course']
                 );
             }else{
-                VipUser::where('phone',$phone)->where('course',"Level One Course")->where('major','korea')->delete();
+                VipUser::where('phone',$phone)->where('course_id','2')->where('major','korea')->delete();
             }
             
             
             if($req->lv_two_korea=="on"){
                 DB::table('VipUsers')
                 ->updateOrInsert(
-                    ['phone' => $phone, 'course' => "Level Two Course"],
-                    ['major' => 'korea']
+                    ['phone' => $phone, 'course_id' => '3'],
+                    ['major' => 'korea','course'=>'Level Two Course']
                 );
             }else{
-                VipUser::where('phone',$phone)->where('course',"Level Two Course")->where('major','korea')->delete();
+                VipUser::where('phone',$phone)->where('course_id','3')->where('major','korea')->delete();
             }
             
             
@@ -344,11 +356,11 @@ class UserController extends Controller
             if($req->lv_three_korea=="on"){
                 DB::table('VipUsers')
                 ->updateOrInsert(
-                    ['phone' => $phone, 'course' => "Level Three Course"],
-                    ['major' => 'korea']
+                    ['phone' => $phone, 'course_id' =>'4'],
+                    ['major' => 'korea','course' => "Level Three Course"]
                 );
             }else{
-                VipUser::where('phone',$phone)->where('course',"Level Three Course")->where('major','korea')->delete();
+                VipUser::where('phone',$phone)->where('course_id','4')->where('major','korea')->delete();
             }
             
             
@@ -356,59 +368,70 @@ class UserController extends Controller
             if($req->lv_four_korea=="on"){
                 DB::table('VipUsers')
                 ->updateOrInsert(
-                    ['phone' => $phone, 'course' => "Level Four Course"],
-                    ['major' => 'korea']
+                    ['phone' => $phone, 'course_id' => '7'],
+                    ['major' => 'korea','course' => "Level Four Course"]
                 );
             }else{
-                VipUser::where('phone',$phone)->where('course',"Level Four Course")->where('major','korea')->delete();
+                VipUser::where('phone',$phone)->where('course_id','7')->where('major','korea')->delete();
+            }
+            
+            
+            if($req->vocab=="on"){
+                DB::table('VipUsers')
+                ->updateOrInsert(
+                    ['phone' => $phone, 'course_id' => '15'],
+                    ['major' => 'korea','course' => "Vocabulary Course"]
+                );
+            }else{
+                VipUser::where('phone',$phone)->where('course_id','15')->where('major','korea')->delete();
             }
             
             
             if($req->kdrama=="on"){
                 DB::table('VipUsers')
                 ->updateOrInsert(
-                    ['phone' => $phone, 'course' => "Lesson With K-Drama"],
-                    ['major' => 'korea']
+                    ['phone' => $phone, 'course_id' => '8'],
+                    ['major' => 'korea','course' => "Lesson With K-Drama"]
                 );
             }else{
-                VipUser::where('phone',$phone)->where('course',"Lesson With K-Drama")->where('major','korea')->delete();
+                VipUser::where('phone',$phone)->where('course',"Lesson With K-Drama")->where('course_id','8')->where('major','korea')->delete();
             }
             
             if($req->kTranslation=="on"){
                 DB::table('VipUsers')
                 ->updateOrInsert(
-                    ['phone' => $phone, 'course' => "Translation"],
-                    ['major' => 'korea']
+                    ['phone' => $phone, 'course_id' => '10'],
+                    ['major' => 'korea','course' => "Translation"]
                 );
             }else{
-                VipUser::where('phone',$phone)->where('course',"Translation")->where('major','korea')->delete();
+                VipUser::where('phone',$phone)->where('course_id','10')->where('major','korea')->delete();
             }
             
             if($req->DramaLyrics=="on"){
                 DB::table('VipUsers')
                 ->updateOrInsert(
-                    ['phone' => $phone, 'course' => "DramaLyrics"],
-                    ['major' => 'korea']
+                    ['phone' => $phone, 'course_id' => '19'],
+                    ['major' => 'korea','course' => "DramaLyrics"]
                 );
             }else{
-                VipUser::where('phone',$phone)->where('course',"DramaLyrics")->where('major','korea')->delete();
+                VipUser::where('phone',$phone)->where('course_id','19')->where('major','korea')->delete();
             }
             
             if($req->KidSong=="on"){
                 DB::table('VipUsers')
                 ->updateOrInsert(
-                    ['phone' => $phone, 'course' => "KidSong"],
-                    ['major' => 'korea']
+                    ['phone' => $phone, 'course_id' => '12'],
+                    ['major' => 'korea', 'course' => "KidSong"]
                 );
             }else{
-                VipUser::where('phone',$phone)->where('course',"KidSong")->where('major','korea')->delete();
+                VipUser::where('phone',$phone)->where('course_id','12')->where('major','korea')->delete();
             }
             
             if($req->kGeneral=="on"){
                 DB::table('VipUsers')
                 ->updateOrInsert(
-                    ['phone' => $phone, 'course' => "General"],
-                    ['major' => 'korea']
+                    ['phone' => $phone, 'course_id' => '8'],
+                    ['major' => 'korea','course' => "General"]
                 );
             }else{
                 VipUser::where('phone',$phone)->where('course',"General")->where('major','korea')->delete();
