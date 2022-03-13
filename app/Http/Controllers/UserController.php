@@ -7,6 +7,7 @@ use App\Models\learner;
 use App\Models\EasyKoreanUserData;
 use App\Models\EasyEnglishUserData;
 use App\Models\VipUser;
+use App\Models\course;
 use Illuminate\Support\Facades\DB;
 use Hash;
 use Validator;
@@ -262,7 +263,7 @@ class UserController extends Controller
         $learner=learner::find($id);
         $phone=$learner->learner_phone;
 
-        $mainCourses=DB::table('courses')->selectRaw("*")->get();
+        $mainCourses=course::get();
         
         
        // easy english courses
