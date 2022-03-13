@@ -100,30 +100,12 @@
                                       @endif
                                   @endforeach
                                 />
-                                <label class="form-check-label" for="basic_english">{{$mainCourse->title}}</label>
+                                <label class="form-check-label" for="{{$mainCourse->course_id}}">{{$mainCourse->title}}</label>
                               </div>
 
                               @endif
                             
                             @endforeach
-                            
-                            {{-- <!--basic course-->
-                            <div class="form-check"  style="margin-bottom:5px">
-                              <input class="form-check-input" type="checkbox" name="basic_english" id="basic_english"
-                                @if($basic_english) checked   @endif
-                              />
-                              <label class="form-check-label" for="basic_english">Basic Course</label>
-                            </div>
-                            
-                            <!--elementary course-->
-                            <div class="form-check"  style="margin-bottom:5px">
-                              <input class="form-check-input" type="checkbox" name="elementary_english" id="elementary_english"
-                                @if($elementary_english) checked   @endif
-                              />
-                              <label class="form-check-label" for="elementary_english">Elementary Course</label>
-                            </div>
-                             --}}
-                            
                             
                             <input type="submit" class="btn btn-primary" value="Add to Vip" style="width:100%">
                          </form>
@@ -153,9 +135,27 @@
                           />
                           <label class="form-check-label" for="vip_korea">VIP access</label>
                         </div>
+
+                        @foreach ($mainCourses as $mainCourse)
+                            @if ($mainCourse->major=='korea')
+
+                            <div class="form-check"  style="margin-bottom:5px">
+                              <input class="form-check-input" type="checkbox" name="{{$mainCourse->course_id}}" id="{{$mainCourse->course_id}}"
+                                @foreach ($coursesKorea as $vipCourse)
+                                    @if ($vipCourse==$mainCourse->course_id)
+                                          checked 
+                                    @endif
+                                @endforeach
+                              />
+                              <label class="form-check-label" for="{{$mainCourse->course_id}}">{{$mainCourse->title}}</label>
+                            </div>
+
+                            @endif
+                          
+                          @endforeach
                         
                         
-                        <!--basic course-->
+                        {{-- <!--basic course-->
                         <div class="form-check"  style="margin-bottom:5px">
                           <input class="form-check-input" type="checkbox" name="basic_korea" id="basic_korea"
                           @if($basic_korea) checked   @endif
@@ -245,7 +245,7 @@
                              @if($kGeneral) checked   @endif
                           />
                           <label class="form-check-label" for="kGeneral">General</label>
-                        </div>
+                        </div> --}}
                         
                         <input type="submit" class="btn btn-primary" value="Add to Vip" style="width:100%">
                      </form>
