@@ -278,7 +278,8 @@ class UserController extends Controller
 
             foreach($mainCourses as $mainCourse){
                 if($mainCourse->major=='english'){
-                    if($req->$mainCourse->course_id=="on"){
+                    $id=$mainCourse->course_id;
+                    if($req->$id=="on"){
                         DB::table('VipUsers')
                         ->updateOrInsert(
                             ['phone' => $phone, 'course_id' => $mainCourse->course_id],
