@@ -280,19 +280,19 @@ class UserController extends Controller
 
        foreach($mainCourses as $mainCourse){
             $id=$mainCourse->course_id;
-            if(isset($req->$id)){
-                if($req->$id=="on"){
-                DB::table('VipUsers')
-                ->updateOrInsert(
-                    ['phone' => $phone, 'course_id' => $mainCourse->course_id],
-                    ['major' => "$mainCourse->major",'course'=>"$mainCourse->title"]
-                );
+          
+            if($req->$id=="on"){
+            DB::table('VipUsers')
+            ->updateOrInsert(
+                ['phone' => $phone, 'course_id' => $mainCourse->course_id],
+                ['major' => "$mainCourse->major",'course'=>"$mainCourse->title"]
+            );
+        
+            }else{
+                VipUser::where('phone',$phone)->where('course_id',$mainCourse->course_id)->where('major',$mainCourse->major)->delete();
             
-                }else{
-                    VipUser::where('phone',$phone)->where('course_id',$mainCourse->course_id)->delete();
-                
-                }
             }
+            
         }
         
         
