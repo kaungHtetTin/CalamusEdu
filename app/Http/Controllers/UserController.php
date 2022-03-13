@@ -261,40 +261,47 @@ class UserController extends Controller
 
         $learner=learner::find($id);
         $phone=$learner->learner_phone;
+
+        $mainCourses=DB::table('courses')->selectRaw("*")->get();
         
         
        // easy english courses
        if($req->major=="english"){
-            
+
             if($req->vip_english=="on"){
                 EasyEnglishUserData::where('phone',$phone)->update(['is_vip'=>1]); 
             }else{
                 EasyEnglishUserData::where('phone',$phone)->update(['is_vip'=>0]);
             }
-            
-            if($req->basic_english=="on"){
-                DB::table('VipUsers')
-                ->updateOrInsert(
-                    ['phone' => $phone, 'course_id' => '11'],
-                    ['major' => 'english','course'=>'English Basic Course']
-                );
-               
-            }else{
-                VipUser::where('phone',$phone)->where('course_id','11')->where('major','english')->delete();
-               
+
+
+            foreach($mainCourses as $mainCourse){
+                if($mainCourse->major=='english'){
+                    if($req->$mainCourse->course_id=="on"){
+                        DB::table('VipUsers')
+                        ->updateOrInsert(
+                            ['phone' => $phone, 'course_id' => $mainCourse->course_id],
+                            ['major' => 'english','course'=>"$mainCourse->title"]
+                        );
+                    
+                    }else{
+                        VipUser::where('phone',$phone)->where('course_id',$mainCourse->course_id)->where('major','english')->delete();
+                    
+                    }
+                }
             }
-            
-            if($req->elementary_english=="on"){
-                DB::table('VipUsers')
-                ->updateOrInsert(
-                    ['phone' => $phone, 'course_id' => '13'],
-                    ['major' => 'english','course'=>'Elementary Course']
-                );
+        
+            // if($req->elementary_english=="on"){
+            //     DB::table('VipUsers')
+            //     ->updateOrInsert(
+            //         ['phone' => $phone, 'course_id' => '13'],
+            //         ['major' => 'english','course'=>'Elementary Course']
+            //     );
                
-            }else{
-                VipUser::where('phone',$phone)->where('course_id','13')->where('major','english')->delete();
+            // }else{
+            //     VipUser::where('phone',$phone)->where('course_id','13')->where('major','english')->delete();
               
-            }
+            // }
             
        }
         
