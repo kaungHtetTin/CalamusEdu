@@ -100,7 +100,7 @@
                                       @endif
                                   @endforeach
                                 />
-                                <label class="form-check-label" for="basic_english">Basic Course</label>
+                                <label class="form-check-label" for="basic_english">{{$mainCourse->title}}</label>
                               </div>
 
                               @endif
