@@ -4,7 +4,6 @@
 
     //Easy English
     $basic_english=in_array( "11", $coursesEnglish)?true:false;
-    $voa=in_array( "Let", $coursesEnglish)?true:false;
     $elementary_english=in_array( "13", $coursesEnglish)?true:false;
     
     //Easy Korean
@@ -77,6 +76,7 @@
                          <h5 class="h5" style="text-align:center;">Easy English</h5>
                         
                          <p>Select course and add</p>
+
                          <form style="padding:5px;" action="{{route('addVip',$learner->id)}}" method="POST">
                              @csrf;
                             <input type="hidden" value="english" name="major">
@@ -88,8 +88,26 @@
                               />
                               <label class="form-check-label" for="vip_english">VIP access</label>
                             </div>
+
+                            @foreach ($mainCourses as $mainCourse)
+                              @if ($mainCourse->major=='english')
+
+                              <div class="form-check"  style="margin-bottom:5px">
+                                <input class="form-check-input" type="checkbox" name="{{$mainCourse->course_id}}" id="{{$mainCourse->course_id}}"
+                                  @foreach ($coursesEnglish as $vipCourse)
+                                      @if ($vipCourse==$mainCourse->course_id)
+                                            checked 
+                                      @endif
+                                  @endforeach
+                                />
+                                <label class="form-check-label" for="basic_english">Basic Course</label>
+                              </div>
+
+                              @endif
                             
-                            <!--basic course-->
+                            @endforeach
+                            
+                            {{-- <!--basic course-->
                             <div class="form-check"  style="margin-bottom:5px">
                               <input class="form-check-input" type="checkbox" name="basic_english" id="basic_english"
                                 @if($basic_english) checked   @endif
@@ -104,17 +122,13 @@
                               />
                               <label class="form-check-label" for="elementary_english">Elementary Course</label>
                             </div>
+                             --}}
                             
-                            <!--voa course-->
-                            <div class="form-check"  style="margin-bottom:5px">
-                              <input class="form-check-input" type="checkbox" name="voa" id="voa"
-                                @if($voa) checked   @endif
-                              />
-                              <label class="form-check-label" for="voa">Let's Learn English (VOA)</label>
-                            </div>
                             
                             <input type="submit" class="btn btn-primary" value="Add to Vip" style="width:100%">
                          </form>
+
+
                     </div>
                   
                 </div>

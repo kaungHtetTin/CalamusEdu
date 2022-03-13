@@ -243,13 +243,16 @@ class UserController extends Controller
         $vipCoursesEnglish=VipUser::where('phone',$phone)->where('major','english')->get();
         $coursesEnglish=array_column(json_decode($vipCoursesEnglish),'course_id');
         
+        $mainCourses=DB::table('Courses')
+        ->selectRaw("*")->get();
 
         return view('userlayouts.vipadding',[
             'learner'=>$learner,
             'koreaData'=>$koreaData,
             'englishData'=>$englishData,
             'coursesEnglish'=>$coursesEnglish,
-            'coursesKorea'=>$coursesKorea
+            'coursesKorea'=>$coursesKorea,
+            'mainCourses'=>$mainCourses
         ]);
     }
     
@@ -292,18 +295,6 @@ class UserController extends Controller
                 VipUser::where('phone',$phone)->where('course_id','13')->where('major','english')->delete();
               
             }
-           
-        //   if($req->voa=="on"){
-        //         DB::table('VipUsers')
-        //         ->updateOrInsert(
-        //             ['phone' => $phone, 'course' => "Let's Learn English (VOA)"],
-        //             ['major' => 'english']
-        //         );
-              
-        //     }else{
-        //         VipUser::where('phone',$phone)->where('course',"Let's Learn English (VOA)")->delete();
-              
-        //     }
             
        }
         

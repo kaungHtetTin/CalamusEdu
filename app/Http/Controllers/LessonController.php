@@ -19,7 +19,6 @@ class LessonController extends Controller
         return view('lessons.lessonmain');
     }
 
-    // testing git 
 
     public function showLessonCategory($form){
         $major=$form;
