@@ -243,7 +243,7 @@ class UserController extends Controller
         $vipCoursesEnglish=VipUser::where('phone',$phone)->where('major','english')->get();
         $coursesEnglish=array_column(json_decode($vipCoursesEnglish),'course_id');
         
-        $mainCourses=DB::table('Courses')
+        $mainCourses=DB::table('courses')
         ->selectRaw("*")->get();
 
         return view('userlayouts.vipadding',[
