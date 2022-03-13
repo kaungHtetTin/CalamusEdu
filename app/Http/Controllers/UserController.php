@@ -276,26 +276,22 @@ class UserController extends Controller
             }else{
                 EasyEnglishUserData::where('phone',$phone)->update(['is_vip'=>0]);
             }
-
-            //add specific course
-            foreach($mainCourses as $mainCourse){
-                if($mainCourse->major=='english'){
-                    $id=$mainCourse->course_id;
-                    if($req->$id=="on"){
-                        DB::table('VipUsers')
-                        ->updateOrInsert(
-                            ['phone' => $phone, 'course_id' => $mainCourse->course_id],
-                            ['major' => 'english','course'=>"$mainCourse->title"]
-                        );
-                    
-                    }else{
-                        VipUser::where('phone',$phone)->where('course_id',$mainCourse->course_id)->where('major','english')->delete();
-                    
-                    }
-                }
-            }
-            
        }
+
+       foreach($mainCourses as $mainCourse){
+            $id=$mainCourse->course_id;
+            if($req->$id=="on"){
+                DB::table('VipUsers')
+                ->updateOrInsert(
+                    ['phone' => $phone, 'course_id' => $mainCourse->course_id],
+                    ['major' => "$mainCourse->major",'course'=>"$mainCourse->title"]
+                );
+            
+            }else{
+                VipUser::where('phone',$phone)->where('course_id',$mainCourse->course_id)->delete();
+            
+            }
+        }
         
         
         //Easy Korean Courses
@@ -310,22 +306,22 @@ class UserController extends Controller
 
 
              //add specific course
-            foreach($mainCourses as $mainCourse){
-                if($mainCourse->major=='korea'){
-                    $id=$mainCourse->course_id;
-                    if($req->$id=="on"){
-                        DB::table('VipUsers')
-                        ->updateOrInsert(
-                            ['phone' => $phone, 'course_id' => $mainCourse->course_id],
-                            ['major' => 'english','course'=>"$mainCourse->title"]
-                        );
+            // foreach($mainCourses as $mainCourse){
+            //     if($mainCourse->major=='korea'){
+            //         $id=$mainCourse->course_id;
+            //         if($req->$id=="on"){
+            //             DB::table('VipUsers')
+            //             ->updateOrInsert(
+            //                 ['phone' => $phone, 'course_id' => $mainCourse->course_id],
+            //                 ['major' => 'korea','course'=>"$mainCourse->title"]
+            //             );
                     
-                    }else{
-                        VipUser::where('phone',$phone)->where('course_id',$mainCourse->course_id)->where('major','english')->delete();
+            //         }else{
+            //             VipUser::where('phone',$phone)->where('course_id',$mainCourse->course_id)->where('major','korea')->delete();
                     
-                    }
-                }
-            }
+            //         }
+            //     }
+            // }
           
         }
         
