@@ -262,9 +262,7 @@ class UserController extends Controller
 
         $learner=learner::find($id);
         $phone=$learner->learner_phone;
-
         $mainCourses=course::get();
-        
         
        // easy english courses
        if($req->major=="english"){
@@ -278,6 +276,22 @@ class UserController extends Controller
             }
        }
 
+        //Easy Korean Courses
+        
+        if($req->major=="korea"){
+
+               //add blue mark
+            
+            if($req->vip_korea=="on"){
+                  EasyKoreanUserData::where('phone',$phone)->update(['is_vip'=>1]);
+            }else{
+                   EasyKoreanUserData::where('phone',$phone)->update(['is_vip'=>0]);
+            }
+          
+        }
+
+
+        // add specific course
        foreach($mainCourses as $mainCourse){
             $id=$mainCourse->course_id;
             if($mainCourse->major==$req->major){
@@ -294,38 +308,6 @@ class UserController extends Controller
                 }
             }
             
-        }
-        
-        
-        //Easy Korean Courses
-        
-        if($req->major=="korea"){
-            
-            if($req->vip_korea=="on"){
-                  EasyKoreanUserData::where('phone',$phone)->update(['is_vip'=>1]);
-            }else{
-                   EasyKoreanUserData::where('phone',$phone)->update(['is_vip'=>0]);
-            }
-
-
-             //add specific course
-            // foreach($mainCourses as $mainCourse){
-            //     if($mainCourse->major=='korea'){
-            //         $id=$mainCourse->course_id;
-            //         if($req->$id=="on"){
-            //             DB::table('VipUsers')
-            //             ->updateOrInsert(
-            //                 ['phone' => $phone, 'course_id' => $mainCourse->course_id],
-            //                 ['major' => 'korea','course'=>"$mainCourse->title"]
-            //             );
-                    
-            //         }else{
-            //             VipUser::where('phone',$phone)->where('course_id',$mainCourse->course_id)->where('major','korea')->delete();
-                    
-            //         }
-            //     }
-            // }
-          
         }
         
        return back()->with('msg','Successfully Updated.');

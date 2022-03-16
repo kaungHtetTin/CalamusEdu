@@ -3,7 +3,7 @@
 @section('content')
 
 @php
-    $lessonArr=json_decode(session($course));
+    $lessonArr=session($course);
     $isChannel=($course=='Video Channel')?1 : 0;
  
 @endphp
@@ -42,8 +42,8 @@
                       <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                         @foreach ($lessonArr as $arr)
                         @php
-                            $category=$arr->category;
-                            $category_id=$arr->category_id;
+                            $category=$arr->category_title;
+                            $category_id=$arr->id;
                            
                         @endphp
 

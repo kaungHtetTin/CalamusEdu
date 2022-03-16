@@ -22,10 +22,26 @@ class LessonController extends Controller
 
     public function showLessonCategory($form){
         $major=$form;
-        $form= file_get_contents("https://www.calamuseducation.com/calamus-v2/api/{$major}/form/");
+     //   $form= file_get_contents("https://www.calamuseducation.com/calamus-v2/api/{$major}/form/");
+
+        $courses=DB::table('courses')
+        ->selectRaw('*')
+        ->join('lessons_categories','lessons_categories.course_id','=','courses.course_id')
+        ->where('lessons_categories.major',$major)
+        ->get();
+
+        $i=0;
+        foreach($courses as $course){
+            $arr[$course->course_id]['title']=$course->title;
+            $arr[$course->course_id]['data'][]=$course;
+
+             
+        }
+        
         return view('lessons.lessons',[
             'form'=>$form,
-            'major'=>$major
+            'major'=>$major,
+            'myCourses'=>$arr
         ]);
     }
 
