@@ -62,6 +62,10 @@
                 <th scope="col">Join On</th>
                 <th scope="col">Last Active</th>
                 <th scope="col">Song</th>
+<<<<<<< HEAD
+               
+=======
+>>>>>>> e6fb7302bff0ecfa209d5e71a86574e9c8d4e928
                        
               </tr>
             </thead>
@@ -79,7 +83,12 @@
                 <td>{{$easyenglish->first_join}}</td>
                 <td>{{$easyenglish->last_active}}</td>
                 <td>{{$easyenglish->song}}</td>
+<<<<<<< HEAD
+                
+    
+=======
               
+>>>>>>> e6fb7302bff0ecfa209d5e71a86574e9c8d4e928
             </tbody>
           </table>
         </div>
@@ -110,24 +119,8 @@
                 <th scope="col">Join On</th>
                 <th scope="col">Last Active</th>
                 <th scope="col">Song</th>
-                <th scope="col">Basic Word Construction</th>
-                <th scope="col">Basic Writing</th>
-                <th scope="col">Basic Grammar</th>
-                <th scope="col">Basic Listening</th>
-                <th scope="col">Basic Reading</th>
-                <th scope="col">Basic Speaking</th>
-                <th scope="col">Level One A</th>
-                <th scope="col">Level One B</th>
-                <th scope="col">K - Drama</th>
-                <th scope="col">Conversation</th>
-                <th scope="col">Tip & Slangs</th>
-                <th scope="col">Word On Topics</th>
-                <th scope="col">Phrase</th>
-                <th scope="col">Useful Verbs</th>
-                <th scope="col">Translation</th>
-                <th scope="col">Drama Lyrics</th>
-                <th scope="col">Kid Song</th>
-                <th scope="col">General</th>
+                
+        
 
               </tr>
             </thead>
@@ -146,24 +139,7 @@
                 <td>{{$easykorean->first_join}}</td>
                 <td>{{$easykorean->last_active}}</td>
                 <td>{{$easykorean->song}}</td>
-                <td>{{$easykorean->basic_word_construction}}</td>
-                <td>{{$easykorean->basic_writing}}</td>
-                <td>{{$easykorean->basic_grammar}}</td>
-                <td>{{$easykorean->basic_listening}}</td>
-                <td>{{$easykorean->basic_reading}}</td>
-                <td>{{$easykorean->basic_speaking}}</td>
-                <td>{{$easykorean->LevelOnePartA}}</td>
-                <td>{{$easykorean->LevelOnePartB}}</td>
-                <td>{{$easykorean->Kdrama}}</td>
-                <td>{{$easykorean->Conversation}}</td>
-                <td>{{$easykorean->TipsAndSlang}}</td>
-                <td>{{$easykorean->WordsOnTopics}}</td>
-                <td>{{$easykorean->Phrase}}</td>
-                <td>{{$easykorean->UsefulVerbs}}</td>
-                <td>{{$easykorean->Translation}}</td>
-                <td>{{$easykorean->DramaLyrics}}</td>
-                <td>{{$easykorean->KidSong}}</td>
-                <td>{{$easykorean->General}}</td>
+            
               </tr>
             </tbody>
           </table>
