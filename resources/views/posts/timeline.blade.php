@@ -119,15 +119,6 @@
                          <hr>
                          
                     @endforeach
-                    
-
-
-                    <a href="{{route('showTimeline',$major)}}?mCode={{$mCode}}&page={{$page+1}}" id="nextPage">
-                        <div style="background-color:rgb(240, 240, 240);padding:5px; text-align:center; width:100% " class="rounded ripple">
-                            Loading More
-                        </div>
-    
-                    </a>
                  
                 </div>                
             </div>
