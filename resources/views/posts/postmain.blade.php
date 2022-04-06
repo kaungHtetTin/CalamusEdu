@@ -6,7 +6,7 @@
 <hr>
 <div class="row">
   <div class="col-xl-6 col-md-6 mb-4">
-    <a href="{{route('showTimeline','english')}}">
+    <a href="{{route('showTimeline','english')}}?mCode=ee&page=1">
     <div class="card">
       <div class="card-body">
         <div class="" style="text-align: center;">
@@ -17,7 +17,7 @@
     </div></a>
   </div>
   <div class="col-xl-6 col-md-6 mb-4">
-    <a href="{{route('showTimeline','korea')}}">
+    <a href="{{route('showTimeline','korea')}}?mCode=ko&page=1">
     <div class="card">
       <div class="card-body">
         <div class="" style="text-align: center;">

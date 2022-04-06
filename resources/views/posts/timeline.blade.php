@@ -27,12 +27,6 @@
             return  $count." ".$unit."s";
         }
     }
-
-    function getYoutubVideId($link){
-        $id=substr($link,27);
-        $id=substr($id,0,strpos($id,'/'));
-        return $id;
-    }
 @endphp
 
 <div class="row">
@@ -91,8 +85,9 @@
                             <br>
                         @elseif($post->has_video=="1")
                             
-                            <iframe class="rounded" src="https://www.youtube.com/embed/{{getYoutubVideId($post->postImage)}}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen
-                                style="width:100% ; height:200px"></iframe> 
+                            <div style="padding:53.13% 0 0 0;position:relative;"><iframe src="{{$post->vimeo}}" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;" 
+                                 title=""></iframe>
+                            </div>
                             @endif
                         <br>
                         <div style="display: flex;background-color:rgb(240, 240, 240);padding:5px;" class="rounded">
@@ -104,7 +99,7 @@
                                 @endif
                                 <span id="tvLikes{{$post->postId}}">{{countFormat($post->postLikes,'like')}}</span>
                             </span>
-                            <span style=" flex:1;text-align:center" class="ripple" onclick="showCommentDialog();"><i class="material-icons">speaker_notes</i> {{countFormat($post->comments,'cmt')}}</span>
+                            <span style=" flex:1;text-align:center" class="ripple" data-toggle="modal" data-target="#commentDialog" onclick="fetchComment({{$post->postId}},'{{$major}}');"><i class="material-icons">speaker_notes</i> {{countFormat($post->comments,'cmt')}}</span>
                            
                            
                             @if ($post->has_video==1)
@@ -125,7 +120,9 @@
                          
                     @endforeach
                     
-                    <a href="{{route('showTimeline',$major)}}?page={{$page+1}}">
+
+
+                    <a href="{{route('showTimeline',$major)}}?mCode={{$mCode}}&page={{$page+1}}" id="nextPage">
                         <div style="background-color:rgb(240, 240, 240);padding:5px; text-align:center; width:100% " class="rounded ripple">
                             Loading More
                         </div>
@@ -189,11 +186,173 @@
 <script>
 
     var clickPostId=0;
+    var currentPage="{{$page}}";
 
     function clickMore(post_id){
         clickPostId=post_id
         
     }
+
+    var loading=true;
+
+    $(window).on("scroll", function() {
+        var scrollHeight = $(document).height();
+        var scrollPos =$(window).scrollTop();
+        var halfWindowPos=$(window).height()/5;
+        halfWindowPos=halfWindowPos-(currentPage*1.5);
+      
+        
+        if(scrollPos+halfWindowPos >scrollHeight && loading){
+             currentPage++;
+             var url="{{route('fetchMorePost',$major)}}?mCode={{$mCode}}&page="+currentPage;
+             console.log(scrollHeight+ " "+scrollPos);
+             console.log(url);
+             loading=false;
+             loadMorePost(url)
+
+            // document.getElementById('nextPage').click();
+        }
+
+    }); 
+
+
+    function loadMorePost(url){
+
+
+        var ajax=new XMLHttpRequest();
+        ajax.onload =function(){
+        if(ajax.status==200 || ajax.readyState==4){
+
+            setPostOnScreen(JSON.parse(ajax.responseText))
+
+        }
+        }
+        ajax.open("GET",url,true);
+        ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        ajax.send('');
+  
+  }
+
+
+   function setPostOnScreen(posts){
+        for(var i=0;i<posts.length;i++){
+            
+            var d = new Date(posts[i].postId);
+            console.log(posts[i].userName);
+          
+
+             $('#postContainer').append(
+               
+                "<div class='dropdown' style='float: right;cursor: pointer;'>"+
+                    "<i class='material-icons'   id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false' onclick='clickMore(123);'>more_horiz</i>"+
+                    
+                    "<div class='dropdown-menu' aria-labelledby='dropdownMenuButton'>"+
+                        "<a class='dropdown-item' href='#'>"+
+                            "<i class='material-icons me-3'>build</i>Edit Post"+
+                        "</a>"+
+
+                    "</div>"+
+                "</div>"+
+
+                "<br>"+
+                
+                "<img style='width: 40px; height:40px; border-radius:50%; margin-right:10px'; src='"+posts[i].userImage+"' onclick=storedId();>"+
+                
+                "<span><b>"+posts[i].userName+"</b></span> <i style='float: right; font-size:13px;'>"+d.toLocaleString()+"</i>"+
+                "<br><br>"+
+                "<p style=''>"+posts[i].body+"</p>" +
+                checkPostMedia(posts[i].postImage,posts[i].has_video,posts[i].vimeo)+"<br>"+
+          
+                "<div style='display: flex;background-color:rgb(240, 240, 240);padding:5px;' class='rounded'>"+
+                    "<span id='react"+posts[i].postId+"' onclick='likePost("+posts[i].postId+","+posts[i].is_liked+");' style='cursor: pointer; flex:1;text-align:center' class='ripple'>"+
+                     checkLike(posts[i].is_liked,posts[i].postId)+
+                     "<span id='tvLikes"+posts[i].postId+"'>"+countFormat(posts[i].postLikes,'like')+"</span>"+
+                    "</span>"+
+                    "<span style='flex:1;text-align:center' class='ripple' data-toggle='modal' data-target='#commentDialog' onclick='fetchComment("+posts[i].postId+",\"{{$major}}\");'><i class='material-icons'>speaker_notes</i> "+countFormat(posts[i].comments,'comment')+"</span>"+
+                    isVideo(posts[i].has_video,posts[i].viewCount)+
+                "</div>"+
+
+                "<div style='margin-top: 10px; width:100% ; padding:10px;' class='ripple' data-toggle='modal data-target='#commentDialog' onclick='fetchComment("+posts[i].postId+",\"{{$major}}\");'>"+
+                            
+                checkMajor()+
+                "Write a comment."+ 
+                "</div>"+
+                "<hr>"
+
+                  
+             );
+        }
+
+        loading=true;
+   }
+
+   function checkMajor(){
+       var major="{{$major}}";
+
+        if(major=='english'){
+            return "<img style='width: 20px; height:20px; border-radius:50% ;margin-right:10px;' src='{{asset('public/img/easyenglish.png')}}'>";
+        }else{
+            return "<img style='width: 20px; height:20px; border-radius:50% ;margin-right:10px;' src='{{asset('public/img/easykorean.png')}}'>";
+        }
+   }
+
+    function isVideo(has_video,viewCount){
+         if (has_video==1){
+             return "<span style='flex:1;text-align:center' class='ripple'>"+countFormat(viewCount,'view')+"</span>";
+         }else{
+             return "";
+         }
+    }
+
+    function countFormat(count ,unit){
+      
+        if(count==0){
+            return "No "+unit;
+        }else if(count==1){
+            return "1 "+unit;
+        }
+         else if(count>=1000&&count<1000000){
+            count=count/1000;
+            count=count.toFixed(1);
+            return count+"k "+unit+"s";
+        }
+        else if(count>=1000000){
+            count=count/1000000;
+            count=count.toFixed(1);
+            return count+"k "+unit+"s";
+        }
+        
+        else{
+            return  count+" "+unit+"s";
+        }
+    }
+  
+   
+
+   function checkLike(is_liked,postId){
+        if (is_liked==0){
+            return "<i class='material-icons' id='noneReactIcon"+postId+"'>favorite_border</i>";
+        }else{
+            return "<i class='material-icons' id='noneReactIcon"+postId+"' style='color:red'>favorite</i>";
+        }
+
+   }
+
+   function checkPostMedia(postImage,has_video,vimeo){
+
+        var str="";
+     
+        if(postImage!="" && has_video=="0"){
+            str="<img style='min-width:150px;width:100%; height:auto; margin:auto' src='"+postImage+"'> <br>";
+        }else if(has_video=="1"){
+            str="<div style='padding:53.13% 0 0 0;position:relative;'>"+
+                "<iframe src="+vimeo+"frameborder='0' allow=autoplay; fullscreen; picture-in-picture' allowfullscreen style='position:absolute;top:0;left:0;width:100%;height:100%;' title=''></iframe>"+
+                "</div>";
+
+        }
+       return str;
+   }
+
 
     function fetchComment(postId,major){
         if(major=="korea"){
@@ -202,6 +361,7 @@
         var ajax=new XMLHttpRequest();
         ajax.onload =function(){
             if(ajax.status==200 || ajax.readyState==4){
+             
                 var datas=JSON.parse(ajax.responseText);
                 var comments=datas.comments;
                 var postId =datas.post[0].postId;
@@ -363,3 +523,4 @@ src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.j
 integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns"
 crossorigin="anonymous"
 ></script>
+<script src="https://player.vimeo.com/api/player.js"></script>

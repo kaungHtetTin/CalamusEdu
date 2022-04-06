@@ -27,32 +27,6 @@
               <option value="0">Exam Mark</option>
               <option value="song">Song</option>
               
-              <!--main lessons-->
-              <option value="b_grammar">Grammar Note</option>
-              <option value="b_sentence_construction">Sentence Construction Note</option>
-              <option value="b_translation">Translation Note</option>
-              
-              <option value="basic_grammar">Basic Grammar</option>
-              <option value="basic_speaking">Basic Speaking</option>
-              <option value="basic_listening">Basic Listening</option>
-              <option value="basic_reading">Basic Reading</option>
-              
-              
-              <option value="voa_b_level1">VOA Level 1</option>
-              <option value="voa_b_level2">VOA Level 2</option>
-              <option value="HowToPronounce">How To Pronounce</option>
-              
-              <!--additional lesson-->
-              <option value="TipsAndSlang">Tips and Slang</option>
-              <option value="WordsOnTopics">Words On Topics</option>
-              <option value="Proverbs">Proverbs</option>
-              <option value="Proverbs">Phrase</option>
-              <option value="GeneralNotes">GeneralNotes</option>
-              
-              <!--video channel-->
-              <option value="Idioms">Idioms</option>
-              <option value="Translation">Translation</option>
-              <option value="General">General</option>
         
             </select>
            <input name="count" type="text"class="" placeholder="count" style="width: 100px;" id="inputForm">
@@ -89,32 +63,7 @@
                 <th scope="col">Last Active</th>
                 <th scope="col">Song</th>
                 
-                <!--main Lesson-->
-                <th scope="col">Grammar Note</th>
-                <th scope="col">Sentence Construction Note</th>
-                <th scope="col">Translation Note</th>
-                
-                <th scope="col">Basic Grammar</th>
-                <th scope="col">Basic Speaking</th>
-                <th scope="col">Basic Listening</th>
-                <th scope="col">Basic Reading</th>
-                
-                <th scope="col">VOA Level 1</th>
-                <th scope="col">VOA Level 2</th>
-                <th scope="col">VOA Pronounce</th>
-                
-                <!--additional Lessons-->
-                <th scope="col">TipsAndSlangs</th> 
-                <th scope="col">WordsOnTopics</th> 
-                <th scope="col">Proverbs</th>
-                <th scope="col">Phrase</th>
-                <th scope="col">GeneralNotes</th>
-                
-                <!--video channel-->
-                <th scope="col">Idioms</th>
-                <th scope="col">Translations</th>
-                <th scope="col">General</th>
-
+           
               </tr>
             </thead>
 
@@ -138,32 +87,7 @@
                     <td>{{$easyenglish->first_join}}</td>
                     <td>{{$easyenglish->last_active}}</td>
                     <td>{{$easyenglish->song}}</td>
-                    
-                     <!--Main Lesson-->
-                    <td>{{$easyenglish->b_grammar}}</td>
-                    <td>{{$easyenglish->b_sentence_construction}}</td>
-                    <td>{{$easyenglish->b_translation}}</td>
-                    
-                    <td>{{$easyenglish->basic_grammar}}</td>
-                    <td>{{$easyenglish->basic_speaking}}</td>
-                    <td>{{$easyenglish->basic_listening}}</td>
-                    <td>{{$easyenglish->basic_reading}}</td>
-                    
-                    <td>{{$easyenglish->voa_b_level1}}</td>
-                    <td>{{$easyenglish->voa_b_level2}}</td>
-                    <td>{{$easyenglish->HowToPronounce}}</td>
-                    
-                    <!--Additional Lesson-->
-                    <td>{{$easyenglish->TipsAndSlang}}</td>
-                    <td>{{$easyenglish->WordsOnTopics}}</td>
-                    <td>{{$easyenglish->Proverbs}}</td>
-                    <td>{{$easyenglish->Phrase}}</td>
-                    <td>{{$easyenglish->GeneralNotes}}</td>
-                    
-                    <!--Video Channel-->
-                    <td>{{$easyenglish->Idioms}}</td>
-                    <td>{{$easyenglish->Translation}}</td>
-                    <td>{{$easyenglish->General}}</td>
+                  
                   </tr>
     
                 @endforeach

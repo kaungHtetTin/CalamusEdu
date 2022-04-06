@@ -118,6 +118,8 @@ Route::get('/posts/create/{major}',[PostController::class,'showCreatePost'])->na
 Route::post('/posts/create/{major}',[PostController::class,'addPost'])->name('addPost');
 Route::post('/posts/delete/{postId}',[PostController::class,'deletePost'])->name('deletePost');
 
+Route::get('/posts/loadmore/{major}',[PostController::class,'fetchMorePost'])->name('fetchMorePost');
+
 
 //requested songs
 Route::get('/requestedsong/list/{major}',[SongController::class,'showRequestedSong'])->name('showRequestedSong');

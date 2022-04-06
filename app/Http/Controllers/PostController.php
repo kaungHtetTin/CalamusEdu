@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\post;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 use App\Models\Comment;
 use App\Models\Notification;
 use App\Models\Report;
@@ -17,23 +18,73 @@ class PostController extends Controller
     }
 
     public function showTimeline(Request $req,$major){
-        $realMaj=$major;
-        if($major=="korea"){
-            $major="korean";
-        }
-        $count=($req->page)-1;
-        $count=$count*10;
-        $posts= file_get_contents("https://www.calamuseducation.com/calamus/api/posts/".$major."/?userId=10000&count=".$count);
-         if($posts){
-            $posts=json_decode($posts);
+
+        $dataStore=$req->mCode;
+        $page=$req->page;
+        
+        $limit=10;
+        $count=($page-1)*$limit;
+        
+        $dataStore=$dataStore."_user_datas";
+
+        $posts=DB::table('posts')
+            ->selectRaw("
+                    learners.learner_name as userName,
+            	    learners.learner_phone as userId,
+            	    $dataStore.token as userToken,
+            	    learners.learner_image as userImage,
+            	    $dataStore.is_vip as vip,
+            	    posts.post_id as postId,
+            	    posts.body as body,
+            	    posts.post_like as postLikes,
+            	    posts.comments,
+            	    posts.image as postImage,
+            	    posts.view_count as viewCount,
+                    posts.vimeo,
+            	    posts.has_video
+            	    
+                ")
+            ->where('posts.major',$major)
+            ->join('learners','learners.learner_phone','=','posts.learner_id')
+            ->join($dataStore,"$dataStore.phone",'=','posts.learner_id')
+            ->orderBy('posts.id','desc')
+            ->offset($count)
+            ->limit($limit)
+            ->get();
+        
+        if(!sizeof($posts)==0){
+            
+            foreach($posts as $post){
+                
+                $post->is_liked=0;
+                $likeRows=mylike::where('content_id',$post->postId)->get();
+                
+                foreach ($likeRows as $row){
+                
+                        $likesArr=json_decode($row->likes,true);
+                
+                        $user_ids=array_column($likesArr,"user_id");
+                        
+                    if(in_array( 10000, $user_ids)){
+                        $post->is_liked=1;
+                        
+                    }
+                }
+                    $arr[]=$post;
+            
+            }
+           
+           
+                
         }else{
-            $posts=[];
+             $arr=null;
         }
         
         return view('posts.timeline',[
-            'posts'=>$posts,
+            'posts'=>$arr,
+            'mCode'=>$req->mCode,
             'page'=>$req->page,
-            'major'=>$realMaj
+            'major'=>$req->major
         ]);
     }
     
@@ -118,5 +169,78 @@ class PostController extends Controller
         $post=post::where('post_id',$postId)->delete();
        
         return back()->with('msg','Successfully deleted');
+    }
+
+
+
+    //api function
+
+
+    public function fetchMorePost(Request $req,$major){
+
+        $dataStore=$req->mCode;
+        $page=$req->page;
+        
+        $limit=10;
+        $count=($page-1)*$limit;
+        
+        $dataStore=$dataStore."_user_datas";
+
+        $posts=DB::table('posts')
+            ->selectRaw("
+                    learners.learner_name as userName,
+            	    learners.learner_phone as userId,
+            	    $dataStore.token as userToken,
+            	    learners.learner_image as userImage,
+            	    $dataStore.is_vip as vip,
+            	    posts.post_id as postId,
+            	    posts.body as body,
+            	    posts.post_like as postLikes,
+            	    posts.comments,
+            	    posts.image as postImage,
+            	    posts.view_count as viewCount,
+                    posts.vimeo,
+            	    posts.has_video
+            	    
+                ")
+            ->where('posts.major',$major)
+            ->join('learners','learners.learner_phone','=','posts.learner_id')
+            ->join($dataStore,"$dataStore.phone",'=','posts.learner_id')
+            ->orderBy('posts.id','desc')
+            ->offset($count)
+            ->limit($limit)
+            ->get();
+        
+        if(!sizeof($posts)==0){
+            
+            foreach($posts as $post){
+                
+                $post->is_liked=0;
+                $likeRows=mylike::where('content_id',$post->postId)->get();
+                
+                foreach ($likeRows as $row){
+                
+                        $likesArr=json_decode($row->likes,true);
+                
+                        $user_ids=array_column($likesArr,"user_id");
+                        
+                    if(in_array( 10000, $user_ids)){
+                        $post->is_liked=1;
+                        
+                    }
+                }
+                    $arr[]=$post;
+            
+            }
+           
+           
+                
+        }else{
+             $arr=null;
+        }
+
+        
+        return $arr;
+        
     }
 }

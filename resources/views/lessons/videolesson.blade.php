@@ -46,7 +46,7 @@
             <!--<iframe class="rounded" src="https://www.youtube.com/embed/{{$lesson->link}}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen-->
             <!--  style="width:100% ; height:300px"></iframe> -->
               
-                 <div style="padding:53.13% 0 0 0;position:relative;"><iframe src="{{$post->vimeo}}" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;" 
+              <div style="padding:53.13% 0 0 0;position:relative;"><iframe src="{{$post->vimeo}}" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;" 
                   title="{{$lesson->title}}"></iframe>
               </div>
               <script src="https://player.vimeo.com/api/player.js"></script>
@@ -82,24 +82,6 @@
              The DownloadUrl >>> <br>
              {{$post->video_url}}
              @endif
-             <hr>
-             
-           
-              <p>Upload vimeo link</p>
-             <form enctype="multipart/form-data" action="{{route('uploadVimeo')}}" method="POST">
-             @csrf
-                 <!--<input type="file" name="myfile">-->
-                   <Input type="text" name="vimeo" placeholder="Enter embedded link"/>
-                 <input type="submit" class="btn-primary rounded" value="upload"/>
-                 <input type="hidden" name="post_id" value="{{$post->post_id}}"/>
-             </form>
-             
-             @if($post->vimeo=="")
-             No Vimeo embedded
-             @else
-             vimeo >>> {{$post->vimeo}}
-             @endif
-             
              <hr>
              <p>Add To Lesson Plan </p>
              <form enctype="multipart/form-data" action="{{route('addLessonToStudyPlan')}}" method="post">
