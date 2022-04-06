@@ -39,8 +39,7 @@
     </div>
 </section>
 
-  
-        
+
  
  <!--Section: Easy English-->
  @if ($easyenglish!=null)
@@ -63,7 +62,10 @@
                 <th scope="col">Join On</th>
                 <th scope="col">Last Active</th>
                 <th scope="col">Song</th>
+<<<<<<< HEAD
                
+=======
+>>>>>>> e6fb7302bff0ecfa209d5e71a86574e9c8d4e928
                        
               </tr>
             </thead>
@@ -81,8 +83,12 @@
                 <td>{{$easyenglish->first_join}}</td>
                 <td>{{$easyenglish->last_active}}</td>
                 <td>{{$easyenglish->song}}</td>
+<<<<<<< HEAD
                 
     
+=======
+              
+>>>>>>> e6fb7302bff0ecfa209d5e71a86574e9c8d4e928
             </tbody>
           </table>
         </div>

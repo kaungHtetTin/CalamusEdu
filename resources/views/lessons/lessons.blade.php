@@ -41,12 +41,19 @@
                 <div class="col-xl-3 col-sm-6 col-12 mb-2 rounded">
                   <a href="{{route('showLessonList',$sub->id)}}?cate={{$sub->category}}&major={{$major}}" >
                   <div class="rounded" style="border:solid thin gray; padding:10px;margin:4px;">
-                    <div class="d-flex justify-content-between px-md-1">
-                      <div class="align-self-center" style="">
-                        <img src="{{$sub->image_url}}" style="width: 40px; height:40px;"/>
+                    <div class="d-flex">
+                      <div class="align-self-center">
+                        @if ($sub->course_id==9)
+                          
+                          <img src="https://www.calamuseducation.com/uploads/icons/videoplaylist.png" style="width: 40px; height:40px;"/>
+                            
+                        @else
+                              <img src="{{$sub->image_url}}" style="width: 40px; height:40px;"/>
+                        @endif
+                          
                       </div>
-                      <div>
-                        <h5 class="">{{$sub->category}}</h5>
+                      <div class="align-self-center" style="margin-left:5px;">
+                        <h5>{{$sub->category_title}}</h5>
                       </div>
                     </div>
                   </div></a>

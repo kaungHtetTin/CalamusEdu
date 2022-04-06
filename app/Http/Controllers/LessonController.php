@@ -22,7 +22,6 @@ class LessonController extends Controller
 
     public function showLessonCategory($form){
         $major=$form;
-     //   $form= file_get_contents("https://www.calamuseducation.com/calamus-v2/api/{$major}/form/");
 
         $courses=DB::table('courses')
         ->selectRaw('*')
@@ -51,11 +50,13 @@ class LessonController extends Controller
         ->orderBy('isVideo','desc')
         ->orderBy('id')
         ->get();
+
+        $category=LessonCategory::where('id',$category_id)->first();
         return view('lessons.lessonlist',[
             'lessons'=>$lessons,
             'category_id'=>$category_id,
             'cate'=>$req->cate,
-            'icon'=>session($category_id)
+            'icon'=>$category->image_url
         ]);
     }
 
@@ -65,7 +66,6 @@ class LessonController extends Controller
     
         $post=DB::table('posts')
         ->selectRaw("
-               
         	    posts.post_like as postLikes,
         	    posts.post_id,
         	    posts.comments,
@@ -103,7 +103,6 @@ class LessonController extends Controller
 	        ')
 	    ->where('comment.post_id',$lesson->date)
 	    ->join('learners','learners.learner_phone','=','comment.writer_id')
-	    ->join('ko_user_datas','ko_user_datas.phone','=','comment.writer_id')
 	    ->orderBy('comment.time')
 	    ->get();
         
