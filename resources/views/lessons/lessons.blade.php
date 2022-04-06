@@ -16,6 +16,7 @@
 @php
     
     session()->put($myCourse['title'],$myCourse['data']);
+    session()->put('major',$major);
 
 @endphp
      

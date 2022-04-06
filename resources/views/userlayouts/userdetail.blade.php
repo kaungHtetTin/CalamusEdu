@@ -63,29 +63,7 @@
                 <th scope="col">Join On</th>
                 <th scope="col">Last Active</th>
                 <th scope="col">Song</th>
-                <!--main Lesson-->
-                <th scope="col">Grammar Note</th>
-                <th scope="col">Sentence Construction Note</th>
-                <th scope="col">Translation Note</th>
-                
-                <th scope="col">Basic Grammar</th>
-                <th scope="col">Basic Speaking</th>
-                
-                <th scope="col">VOA Level 1</th>
-                <th scope="col">VOA Level 2</th>
-                <th scope="col">VOA Pronounce</th>
-                
-                <!--additional Lessons-->
-                <th scope="col">TipsAndSlangs</th> 
-                <th scope="col">WordsOnTopics</th> 
-                <th scope="col">Proverbs</th>
-                <th scope="col">Phrase</th>
-                <th scope="col">GeneralNotes</th>
-                
-                <!--video channel-->
-                <th scope="col">Idioms</th>
-                <th scope="col">Translations</th>
-                <th scope="col">General</th>
+               
                        
               </tr>
             </thead>
@@ -104,29 +82,7 @@
                 <td>{{$easyenglish->last_active}}</td>
                 <td>{{$easyenglish->song}}</td>
                 
-                <!--Main Lesson-->
-                <td>{{$easyenglish->b_grammar}}</td>
-                <td>{{$easyenglish->b_sentence_construction}}</td>
-                <td>{{$easyenglish->b_translation}}</td>
-                
-                <td>{{$easyenglish->basic_grammar}}</td>
-                <td>{{$easyenglish->basic_speaking}}</td>
-                
-                <td>{{$easyenglish->voa_b_level1}}</td>
-                <td>{{$easyenglish->voa_b_level2}}</td>
-                <td>{{$easyenglish->HowToPronounce}}</td>
-                
-                <!--Additional Lesson-->
-                <td>{{$easyenglish->TipsAndSlang}}</td>
-                <td>{{$easyenglish->WordsOnTopics}}</td>
-                <td>{{$easyenglish->Proverbs}}</td>
-                <td>{{$easyenglish->Phrase}}</td>
-                <td>{{$easyenglish->GenearalNotes}}</td>
-                
-                <!--Video Channel-->
-                <td>{{$easyenglish->Idioms}}</td>
-                <td>{{$easyenglish->Translation}}</td>
-                <td>{{$easyenglish->General}}</td>
+    
             </tbody>
           </table>
         </div>
@@ -157,24 +113,8 @@
                 <th scope="col">Join On</th>
                 <th scope="col">Last Active</th>
                 <th scope="col">Song</th>
-                <th scope="col">Basic Word Construction</th>
-                <th scope="col">Basic Writing</th>
-                <th scope="col">Basic Grammar</th>
-                <th scope="col">Basic Listening</th>
-                <th scope="col">Basic Reading</th>
-                <th scope="col">Basic Speaking</th>
-                <th scope="col">Level One A</th>
-                <th scope="col">Level One B</th>
-                <th scope="col">K - Drama</th>
-                <th scope="col">Conversation</th>
-                <th scope="col">Tip & Slangs</th>
-                <th scope="col">Word On Topics</th>
-                <th scope="col">Phrase</th>
-                <th scope="col">Useful Verbs</th>
-                <th scope="col">Translation</th>
-                <th scope="col">Drama Lyrics</th>
-                <th scope="col">Kid Song</th>
-                <th scope="col">General</th>
+                
+        
 
               </tr>
             </thead>
@@ -193,24 +133,7 @@
                 <td>{{$easykorean->first_join}}</td>
                 <td>{{$easykorean->last_active}}</td>
                 <td>{{$easykorean->song}}</td>
-                <td>{{$easykorean->basic_word_construction}}</td>
-                <td>{{$easykorean->basic_writing}}</td>
-                <td>{{$easykorean->basic_grammar}}</td>
-                <td>{{$easykorean->basic_listening}}</td>
-                <td>{{$easykorean->basic_reading}}</td>
-                <td>{{$easykorean->basic_speaking}}</td>
-                <td>{{$easykorean->LevelOnePartA}}</td>
-                <td>{{$easykorean->LevelOnePartB}}</td>
-                <td>{{$easykorean->Kdrama}}</td>
-                <td>{{$easykorean->Conversation}}</td>
-                <td>{{$easykorean->TipsAndSlang}}</td>
-                <td>{{$easykorean->WordsOnTopics}}</td>
-                <td>{{$easykorean->Phrase}}</td>
-                <td>{{$easykorean->UsefulVerbs}}</td>
-                <td>{{$easykorean->Translation}}</td>
-                <td>{{$easykorean->DramaLyrics}}</td>
-                <td>{{$easykorean->KidSong}}</td>
-                <td>{{$easykorean->General}}</td>
+            
               </tr>
             </tbody>
           </table>
