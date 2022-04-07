@@ -1,26 +1,6 @@
 @extends('layouts.navbar')
 
-@php
-
-    //Easy English
-    $basic_english=in_array( "11", $coursesEnglish)?true:false;
-    $elementary_english=in_array( "13", $coursesEnglish)?true:false;
-    
-    //Easy Korean
-    $basic_korea=in_array( "1", $coursesKorea)?true:false;
-    $lv_one_korea=in_array( "2", $coursesKorea)?true:false;
-    $lv_two_korea=in_array( "3", $coursesKorea)?true:false;
-    $lv_three_korea=in_array( "4", $coursesKorea)?true:false;
-    $lv_four_korea=in_array( "7", $coursesKorea)?true:false;
-    $vocab=in_array( "15", $coursesKorea)?true:false;
-    $kdrama=in_array( "8", $coursesKorea)?true:false;
-    $kTranslation=in_array("10", $coursesKorea)?true:false;
-    $DramaLyrics=in_array("19", $coursesKorea)?true:false;
-    $KidSong=in_array("12", $coursesKorea)?true:false;
-    $kGeneral=in_array("8", $coursesKorea)?true:false;
-
-@endphp
-
+ 
 
 
 
