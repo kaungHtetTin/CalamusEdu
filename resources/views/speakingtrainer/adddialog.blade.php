@@ -37,7 +37,7 @@
                           @foreach($saturations as $saturation)
                          <option value="{{$saturation->saturation_id}}">{{$saturation->title}}</option>
                           @endforeach
-                     </selector>
+                     </select>
                        
         
                     <input type="submit"  class="btn-primary rounded" value="Add" style="width: 150px; margin:auto"/>

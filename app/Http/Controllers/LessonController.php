@@ -296,5 +296,12 @@ class LessonController extends Controller
         //return $course_id;
         return back()->with('msg','The lesson was successfully added to study plan');
     }
+
+    public function updateVideoDuration(Request $req){
+        $date=$req->date;
+        $duration=$req->duration;
+        lesson::where('date', $date)->update(['video_duration'=>$duration]);
+
+    }
  
 }

@@ -46,10 +46,42 @@
             <!--<iframe class="rounded" src="https://www.youtube.com/embed/{{$lesson->link}}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen-->
             <!--  style="width:100% ; height:300px"></iframe> -->
               
-              <div style="padding:53.13% 0 0 0;position:relative;"><iframe src="{{$post->vimeo}}" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;" 
+              <div style="padding:53.13% 0 0 0;position:relative;"><iframe id="myVimeoPlayer" src="{{$post->vimeo}}" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;" 
                   title="{{$lesson->title}}"></iframe>
               </div>
               <script src="https://player.vimeo.com/api/player.js"></script>
+              <script>
+                var iframe = document.querySelector('iframe');
+                var player = new Vimeo.Player(iframe);
+
+                player.on('play', function() {
+                  console.log('Played the video');
+                });
+
+                player.getVideoTitle().then(function(title) {
+                  console.log('title:', title);
+                });
+
+                player.getDuration().then(function(duration) {
+                    console.log('duration: ',duration)
+                    updateVideoDuration(duration);
+                });
+
+                function updateVideoDuration(duration){
+                  var ajax=new XMLHttpRequest();
+                  ajax.onload =function(){
+                    if(ajax.status==200 || ajax.readyState==4){
+                      console.log('duration updated');
+                      console.log('<?php echo $post->post_id?>');
+                    }
+                  }
+                  ajax.open("POST","https://www.calamuseducation.com/calamin/api/lessons/updatevideoduration",true);
+                  ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                  ajax.send("user_id=10000&date=<?php echo $post->post_id?>&duration="+duration);
+                }
+              </script>
+             
+              
               
             <div style="border:solid thin black;margin-top:3px;padding:5px;" class="rounded">
             
@@ -178,6 +210,11 @@
     ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     ajax.send("user_id=10000&post_id=<?php echo $post->post_id?>&time=<?php echo time()?>");
   }
+
+
+
   
 </script>
+
+ 
 
