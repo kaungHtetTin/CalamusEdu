@@ -47,6 +47,9 @@
                         <select id="inputForm" name="app">                   
                             <option value="englishUsers">Easy English</option>
                             <option value="koreaUsers">Easy Korean</option>
+                            <option value="chineseUsers">Easy Chinese</option>
+                            <option value="japaneseUsers">Easy Japanese</option>
+                            <option value="russianUsers">Easy Russian</option>
                         </select>
                         
                     </div>

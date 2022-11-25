@@ -26,8 +26,13 @@
                 
                   <form action="{{route('addLesson',$course)}}" method="POST" enctype="multipart/form-data">
                     @csrf
+                    <input type="text" placeholder="Enter Title Mini" id="inputForm" name="title_mini" style="width: 80%; margin-bottom:20px"/>
+                    <p class="text-danger" style="font-size: 12px;">{{$errors->first('title_mini')}}</p>
+                    
                     <input type="text" placeholder="Enter Title Of Lesson" id="inputForm" name="title" style="width: 80%; margin-bottom:20px"/>
                     <p class="text-danger" style="font-size: 12px;">{{$errors->first('title')}}</p>
+                    
+                    
                     <input type="text" placeholder="Enter youtube Id or Blog Link" id="inputForm" name="link" style="width: 80%; margin-bottom:20px"/>
                     <p class="text-danger" style="font-size: 12px;">{{$errors->first('link')}}</p>
                     

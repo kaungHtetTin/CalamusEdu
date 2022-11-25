@@ -143,6 +143,110 @@
 @endif
 <!--Section: Easy Korean-->
 
+ <!--Section: Easy Chinese-->
+ @if ($easychinese!=null)
+ <section class="mb-4">
+    <div class="card">
+      <div class="card-header text-center py-3">
+        <h6 class="mb-0 text-center">
+          <strong>Easy Chinese</strong>
+        </h6>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover text-nowrap">
+            <thead>
+              <tr>
+                <th scope="col">VIP User</th>
+                <th scope="col">Login Time</th>
+                <th scope="col">Game Score</th>
+                <th scope="col">Exam Mark</th>
+                <th scope="col">Join On</th>
+                <th scope="col">Last Active</th>
+                <th scope="col">Song</th>
+                
+        
+
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                    @if ($easychinese->is_vip==0)
+                        <span class="text-danger">No</span>
+                    @else
+                        <span class="text-success">Yes</span>
+                    @endif
+                </td>
+                <td>{{$easychinese->login_time}}</td>
+                <td>{{$easychinese->game_score}}</td>
+                <td>0</td>
+                <td>{{$easychinese->first_join}}</td>
+                <td>{{$easychinese->last_active}}</td>
+                <td>{{$easychinese->song}}</td>
+            
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+@endif
+<!--Section: Easy Chinese-->
+
+<!--Section: Easy Japanese-->
+ @if ($easyjapanese!=null)
+ <section class="mb-4">
+    <div class="card">
+      <div class="card-header text-center py-3">
+        <h6 class="mb-0 text-center">
+          <strong>Easy Japanese</strong>
+        </h6>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover text-nowrap">
+            <thead>
+              <tr>
+                <th scope="col">VIP User</th>
+                <th scope="col">Login Time</th>
+                <th scope="col">Game Score</th>
+                <th scope="col">Exam Mark</th>
+                <th scope="col">Join On</th>
+                <th scope="col">Last Active</th>
+                <th scope="col">Song</th>
+                
+        
+
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                    @if ($easyjapanese->is_vip==0)
+                        <span class="text-danger">No</span>
+                    @else
+                        <span class="text-success">Yes</span>
+                    @endif
+                </td>
+                <td>{{$easyjapanese->login_time}}</td>
+                <td>{{$easyjapanese->game_score}}</td>
+                <td>0</td>
+                <td>{{$easyjapanese->first_join}}</td>
+                <td>{{$easyjapanese->last_active}}</td>
+                <td>{{$easyjapanese->song}}</td>
+            
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+@endif
+<!--Section: Easy Korean-->
+
 @endsection
 
 

@@ -63,7 +63,71 @@
           </div>
         </a>
       </div>
-    </div>
+    
+     <div class="col-xl-6 col-md-6 mb-4">
+        <a href="{{route('easyChineseUserDatas')}}" style="text-decoration: none">
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between p-md-1">
+                <div class="d-flex flex-row">
+                  <div class="align-self-center">
+                  <img src="{{asset('public/img/easychinese.png')}}" style="width: 50px;height:50px"/>
+                    <h5>Easy Chinese</h5>
+                  </div>
+                </div>
+                <div class="align-self-center">
+                  <h2 class="h3 mb-0">{{$chinese_user_count}}</h2>
+                </div>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+  
+      
+      <div class="col-xl-6 col-md-6 mb-4">
+        <a href="{{route('easyJapaneseUserDatas')}}" style="text-decoration: none">
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between p-md-1">
+                <div class="d-flex flex-row">
+                  <div class="align-self-center">
+                  <img src="{{asset('public/img/easyjapanese.png')}}" style="width: 50px;height:50px"/>
+                    <h5>Easy Japanese</h5>
+                  </div>
+                </div>
+                <div class="align-self-center">
+                  <h2 class="h3 mb-0">{{$japanese_user_count}}</h2>
+                </div>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+      
+      
+      <div class="col-xl-6 col-md-6 mb-4">
+        <a href="{{route('easyRussianUserDatas')}}" style="text-decoration: none">
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between p-md-1">
+                <div class="d-flex flex-row">
+                  <div class="align-self-center">
+                  <img src="{{asset('public/img/easyrussian.png')}}" style="width: 50px;height:50px"/>
+                    <h5>Easy Russian</h5>
+                  </div>
+                </div>
+                <div class="align-self-center">
+                  <h2 class="h3 mb-0">{{$russian_user_count}}</h2>
+                </div>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+  
+        
+ </div>
 
 
   @endsection

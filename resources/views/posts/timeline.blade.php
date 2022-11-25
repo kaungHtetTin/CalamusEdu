@@ -37,8 +37,10 @@
 
                     @if ($major=='english')
                         <img style="width: 90px; height:90px; border-radius:50% ;margin-right:10px;" src="{{asset('public/img/easyenglish.png')}}">
-                    @else
+                    @elseif($major=='korea')
                         <img style="width: 90px; height:90px; border-radius:50% ;margin-right:10px;" src="{{asset('public/img/easykorean.png')}}">
+                    @elseif($major=='chinese')
+                        <img style="width: 90px; height:90px; border-radius:50% ;margin-right:10px;" src="{{asset('public/img/easychineselogo.webp')}}">
                     @endif
                     
                     <br><br>
@@ -53,6 +55,7 @@
                 <br>
                 
                 <div id="postContainer">
+                    @if($posts)
                     @foreach ($posts as $post)
                         <div class="dropdown" style="float: right;cursor: pointer;">
                             <i class="material-icons "   id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" onclick="clickMore({{$post->postId}});">more_horiz</i>
@@ -88,7 +91,7 @@
                             <div style="padding:53.13% 0 0 0;position:relative;"><iframe src="{{$post->vimeo}}" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;" 
                                  title=""></iframe>
                             </div>
-                            @endif
+                        @endif
                         <br>
                         <div style="display: flex;background-color:rgb(240, 240, 240);padding:5px;" class="rounded">
                             <span id="react{{$post->postId}}" onclick="likePost({{$post->postId}},{{$post->is_liked}});" style="cursor: pointer; flex:1;text-align:center" class="ripple"> 
@@ -111,14 +114,17 @@
                             
                             @if ($major=='english')
                                 <img style="width: 20px; height:20px; border-radius:50% ;margin-right:10px;" src="{{asset('public/img/easyenglish.png')}}">
-                            @else
+                            @elseif ($major=='korea')
                                 <img style="width: 20px; height:20px; border-radius:50% ;margin-right:10px;" src="{{asset('public/img/easykorean.png')}}">
+                            @elseif ($major=='chinese')
+                                <img style="width: 20px; height:20px; border-radius:50% ;margin-right:10px;" src="{{asset('public/img/easychineselogo.webp')}}">
                             @endif
                             Write a comment. 
                         </div>
                          <hr>
                          
                     @endforeach
+                    @endif
                  
                 </div>                
             </div>
@@ -192,8 +198,8 @@
         var halfWindowPos=$(window).height()/5;
         halfWindowPos=halfWindowPos-(currentPage*1.5);
       
-        
-        if(scrollPos+halfWindowPos >scrollHeight && loading){
+      
+        if(scrollPos+halfWindowPos+1000 >scrollHeight && loading){
              currentPage++;
              var url="{{route('fetchMorePost',$major)}}?mCode={{$mCode}}&page="+currentPage;
              console.log(scrollHeight+ " "+scrollPos);
@@ -282,8 +288,10 @@
 
         if(major=='english'){
             return "<img style='width: 20px; height:20px; border-radius:50% ;margin-right:10px;' src='{{asset('public/img/easyenglish.png')}}'>";
-        }else{
+        }else if(major=='korea'){
             return "<img style='width: 20px; height:20px; border-radius:50% ;margin-right:10px;' src='{{asset('public/img/easykorean.png')}}'>";
+        }else if(major=='chinese'){
+            return "<img style='width: 20px; height:20px; border-radius:50% ;margin-right:10px;' src='{{asset('public/img/easychineselogo.webp')}}'>";
         }
    }
 

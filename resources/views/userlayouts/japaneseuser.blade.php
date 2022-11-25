@@ -18,7 +18,7 @@
     
       <div class="card-header py-3">
         <h6> Filter</h6>
-         <form method="GET" action="{{route('filterKoreaUser')}}"> 
+         <form method="GET" action="{{route('filterChineseUser')}}"> 
            <label for="">Category:</label>
             <select id="inputForm" name="sqlrow" style="flex-wrap: wrap;">
               <option value="login_time">Login Time</option>
@@ -38,7 +38,7 @@
 
       <div class="card-header text-center py-3">
         <h5 class="mb-0 text-center">
-          <strong>Easy Korean User</strong>
+          <strong>Easy Japanese User</strong>
         </h5>
       </div>
       <div class="card bg-success" id="customMessageBox">
@@ -59,36 +59,31 @@
                 <th scope="col">Last Active</th>
                 <th scope="col">Study Time</th>
                 <th scope="col">Song</th>
-                <th scope="col">VIP Register Date</th>
             
               </tr>
             </thead>
 
             <tbody>
 
-                @foreach ($users as $easykorean)
+                @foreach ($users as $user)
                 <tr>
-                     <td> <a href="{{route('searchUser')}}?phone={{$easykorean->learner_phone}}" style="text-decoration: none"><h6>{{$easykorean->learner_name}}</h6> </a></td>
-                    <td>{{$easykorean->learner_phone}}</td>
+                     <td> <a href="{{route('searchUser')}}?phone={{$user->learner_phone}}" style="text-decoration: none"><h6>{{$user->learner_name}}</h6> </a></td>
+                    <td>{{$user->learner_phone}}</td>
                     <td>
-                        @if ($easykorean->is_vip==0)
+                        @if ($user->is_vip==0)
                             <span class="text-danger">No</span>
                         @else
                             <span class="text-success">Yes</span>
                         @endif
                     </td>
-                    <td>{{$easykorean->login_time}}</td>
-                    <td>{{$easykorean->game_score}}</td>
-                    <td>{{$easykorean->basic_exam}}</td>     
-                    <td>{{$easykorean->first_join}}</td>
-                    <td>{{$easykorean->last_active}}</td>
-                    <td>{{$easykorean->study_time}}</td>
-                    <td>{{$easykorean->song}}</td>
-                    @if (isset($easykorean->date))
-                    <td>{{$easykorean->date}}</td>
-                    @else
-                    <td>Cannot Define</td>
-                    @endif
+                    <td>{{$user->login_time}}</td>
+                    <td>{{$user->game_score}}</td>
+                    <td>{{$user->basic_exam}}</td>     
+                    <td>{{$user->first_join}}</td>
+                    <td>{{$user->last_active}}</td>
+                    <td>{{$user->study_time}}</td>
+                    <td>{{$user->song}}</td>
+                
                   </tr>
     
                 @endforeach

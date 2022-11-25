@@ -29,28 +29,28 @@ class PostController extends Controller
 
         $posts=DB::table('posts')
             ->selectRaw("
-                    learners.learner_name as userName,
-            	    learners.learner_phone as userId,
-            	    $dataStore.token as userToken,
-            	    learners.learner_image as userImage,
-            	    $dataStore.is_vip as vip,
-            	    posts.post_id as postId,
-            	    posts.body as body,
-            	    posts.post_like as postLikes,
-            	    posts.comments,
-            	    posts.image as postImage,
-            	    posts.view_count as viewCount,
-                    posts.vimeo,
-            	    posts.has_video
-            	    
+                learners.learner_name as userName,
+        	    learners.learner_phone as userId,
+        	    $dataStore.token as userToken,
+        	    learners.learner_image as userImage,
+        	    $dataStore.is_vip as vip,
+        	    posts.post_id as postId,
+        	    posts.body as body,
+        	    posts.post_like as postLikes,
+        	    posts.comments,
+        	    posts.image as postImage,
+        	    posts.view_count as viewCount,
+                posts.vimeo,
+        	    posts.has_video
                 ")
-            ->where('posts.major',$major)
-            ->join('learners','learners.learner_phone','=','posts.learner_id')
-            ->join($dataStore,"$dataStore.phone",'=','posts.learner_id')
-            ->orderBy('posts.id','desc')
-            ->offset($count)
-            ->limit($limit)
-            ->get();
+        ->where('posts.major',$major)
+        ->join('learners','learners.learner_phone','=','posts.learner_id')
+        ->join($dataStore,"$dataStore.phone",'=','posts.learner_id')
+        ->orderBy('posts.id','desc')
+        ->offset($count)
+        ->limit($limit)
+        ->get();
+        
         
         if(!sizeof($posts)==0){
             
@@ -60,22 +60,17 @@ class PostController extends Controller
                 $likeRows=mylike::where('content_id',$post->postId)->get();
                 
                 foreach ($likeRows as $row){
-                
+                    
                         $likesArr=json_decode($row->likes,true);
-                
                         $user_ids=array_column($likesArr,"user_id");
                         
                     if(in_array( 10000, $user_ids)){
                         $post->is_liked=1;
-                        
                     }
                 }
                     $arr[]=$post;
-            
             }
            
-           
-                
         }else{
              $arr=null;
         }
@@ -95,7 +90,7 @@ class PostController extends Controller
     }
 
     public function uploadVimeo(Request $req){
-          $req->validate([
+        $req->validate([
             'post_id'=>'required'
             ]);
         $post_id=$req->post_id;
@@ -140,8 +135,14 @@ class PostController extends Controller
         
         if($major=="korea"){
             $topic="koreaUsers";
-        }else{
+        }else if($major=="english"){
             $topic="englishUsers";
+        }else if($major=="chinese"){
+            $topic="chineseUsers";
+        }else if($major=="japanese"){
+            $topic="japaneseUsers";
+        }else if($major=="russian"){
+            $topic="russianUsers";
         }
 
         FirebaseNotiPushController::pushNotificationToTopic($topic,"New Calamus Post",$body);
@@ -230,15 +231,11 @@ class PostController extends Controller
                     }
                 }
                     $arr[]=$post;
-            
             }
            
-           
-                
         }else{
              $arr=null;
         }
-
         
         return $arr;
         

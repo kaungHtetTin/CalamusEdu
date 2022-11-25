@@ -27,7 +27,7 @@
                 <div class="d-flex">
                   <span class="align-self-center" style="">
                       @if ($lesson->isVideo==1)
-                      <img src="https://img.youtube.com/vi/{{$lesson->link}}/0.jpg" style="width: 50px; height:40px;"/>
+                      <img src="{{$lesson->thumbnail}}" style="width: 50px; height:40px;"/>
                       @else
                       <img src="{{$icon}}" style="width: 40px; height:40px;"/>
                       @endif
@@ -38,14 +38,16 @@
                 
                 </div>
               </div> </a>
-              <div class="float-right">
+                <div class="">
                       <form style="float:right" enctype="multipart/form-data" action="{{route('addLessonToStudyPlan')}}" method="post">
                      @csrf
                      <Input type="text" name="day" placeholder="Enter the day"/>
+                     <Input type="text" name="duration" placeholder="Enter Duration"/>
                      <input type="hidden" name="id" value="{{$lesson->id}}"/>
                      <input type="submit" class="btn-primary rounded" value="Add"/>
                     </form>
                   </div>    
+         
             </div>
            
             @endforeach

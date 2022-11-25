@@ -10,6 +10,7 @@ use App\Http\Controllers\CloudMessageController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProjectOverviewController;
 use App\Http\Controllers\SpeakingTrainerController;
+use App\Http\Controllers\PaymentController;
 use Illuminate\Http\Request;
 /*
 |--------------------------------------------------------------------------
@@ -62,10 +63,16 @@ Route::get('/users/passwordreset/{phone}',[UserController::class,'showPasswordRe
 Route::post('/users/passwordreset',[UserController::class,'resetPassword'])->name('resetPassword');
 Route::get('/users/easykorean',[UserController::class,'easyKoreanUserDatas'])->name('easyKoreanUserDatas');
 Route::get('/users/easyenglish',[UserController::class,'easyEnglishUserDatas'])->name('easyEnglishUserDatas');
+Route::get('/users/easychinese',[UserController::class,'easyChineseUserDatas'])->name('easyChineseUserDatas');
+Route::get('/users/easyjapanese',[UserController::class,'easyJapaneseUserDatas'])->name('easyJapaneseUserDatas');
+Route::get('/users/easyrussian',[UserController::class,'easyRussianUserDatas'])->name('easyRussianUserDatas');
 Route::get('/users/email/{id}',[UserController::class,'showSendEmail'])->name('showSendEmail');
 Route::post('/users/email/send',[UserController::class,'sendEmail'])->name('sendEmail');
 Route::get('/users/easykorean/filter',[UserController::class,'filterKoreaUser'])->name('filterKoreaUser');
 Route::get('/users/easyenglish/filter',[UserController::class,'filterEnglishUser'])->name('filterEnglishUser');
+Route::get('/users/easychinese/filter',[UserController::class,'filterChineseUser'])->name('filterChineseUser');
+Route::get('/users/easyjapanese/filter',[UserController::class,'filterJapaneseUser'])->name('filterJapaneseUser');
+Route::get('/users/easyrussian/filter',[UserController::class,'filterRussianUser'])->name('filterRussianUser');
 Route::get('/users/pushnotification/{id}',[UserController::class,'showPushNotification'])->name('showPushNotification');
 Route::post('/users/pushnotification/send',[UserController::class,'pushNotification'])->name('pushNotification');
 Route::get('/users/vipadding/{id}',[UserController::class,'showVipsetting'])->name('showVipsetting');
@@ -138,3 +145,6 @@ Route::post('/adddialogue',[SpeakingTrainerController::class,'addDialogue'])->na
 
 //Project Overview
 Route::get('/projectoverview',[ProjectOverviewController::class,'index'])->name('overviewIndex');
+
+//payment
+Route::get('/payments/{major}',[PaymentController::class,'index']);

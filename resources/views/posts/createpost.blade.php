@@ -37,9 +37,14 @@
                     @if ($major=='english')
                         <img style="width: 90px; height:90px; border-radius:50% ;margin-right:10px;" src="{{asset('public/img/easyenglish.png')}}">
                         <h6 class="h6">Easy English</h6>
-                    @else
+                    @elseif($major=='korea')
                         <img style="width: 90px; height:90px; border-radius:50% ;margin-right:10px;" src="{{asset('public/img/easykorean.png')}}">
                         <h6 class="h6">Easy Korean</h6>
+                        
+                    @elseif($major=='chinese')
+                        <img style="width: 90px; height:90px; border-radius:50% ;margin-right:10px;" src="{{asset('public/img/easychineselogo.webp')}}">
+                        <h6 class="h6">Easy Chinese</h6>
+                        
                     @endif
 
                 </div>

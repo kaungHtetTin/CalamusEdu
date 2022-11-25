@@ -77,6 +77,14 @@
                       @if ($koreaData!=null)
                         <option value="{{$koreaData->token}}">Easy Korean</option>
                       @endif
+                      
+                      @if ($chineseData!=null)
+                        <option value="{{$chineseData->token}}">Easy Chinese</option>
+                      @endif
+                      
+                      @if ($japaneseData!=null)
+                        <option value="{{$japaneseData->token}}">Easy Japanese</option>
+                      @endif
                   </select>
                   </div>
                   <br><br>

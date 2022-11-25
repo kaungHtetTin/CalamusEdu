@@ -36,11 +36,8 @@
         </h5>
       </div>
       <div class="card-body">
-     
-        @if ($learner!=null)
-          <div class="row">
-        
-            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+          
+            <div class="">
                 <span class="align-self-center" style="">
                     <img src="{{$learner->learner_image}}" style="width: 100px; height:100px; border-radius:50% ; border: solid thin black"/>
                 </span>
@@ -48,7 +45,11 @@
                 <h3 class="h3 mb-0">{{$learner->learner_name}}</h2><br>
               
             </div>
-            
+          
+     
+        @if ($learner!=null)
+          <div class="row">
+    
            <!--Easy English VIP input form-->
             @if($englishData!=null)
                 <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12">
@@ -87,6 +88,19 @@
                             
                             @endforeach
                             
+                            <!--Gold Plan-->
+                            
+                            <div class="form-check"  style="margin-bottom:5px">
+                              <input class="form-check-input" type="checkbox" name="gold_plan" id="gold_plan"
+                              @if($englishData->gold_plan==1) checked   @endif
+                              />
+                              <label class="form-check-label" for="gold_plan">Gold Plan</label>
+                            </div>
+                          
+                            <input id="inputForm" type="text" name="amount" placeholder="Enter Amount"/>
+                         
+                         
+                            
                             <input type="submit" class="btn btn-primary" value="Add to Vip" style="width:100%">
                          </form>
 
@@ -115,6 +129,8 @@
                           />
                           <label class="form-check-label" for="vip_korea">VIP access</label>
                         </div>
+                        
+                        
 
                         @foreach ($mainCourses as $mainCourse)
                             @if ($mainCourse->major=='korea')
@@ -133,7 +149,107 @@
                             @endif
                           
                           @endforeach
+                          
+                          
+                          <!--Gold Plan-->
+                        
+                        <div class="form-check"  style="margin-bottom:5px">
+                          <input class="form-check-input" type="checkbox" name="gold_plan" id="gold_plan"
+                          @if($koreaData->gold_plan==1) checked   @endif
+                          />
+                          <label class="form-check-label" for="gold_plan">Gold Plan</label>
+                        </div>
+                          
+                        <input id="inputForm" type="text" name="amount" placeholder="Enter Amount"/>
+                        <input type="submit" class="btn btn-primary" value="Add to Vip" style="width:100%">
+                     </form>
+                </div>
+            </div>
+          @endif
+          
+            <!--Easy Chinese VIP input form-->
+          @if($chineseData!=null)
+            <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                <div style="border:solid thin gray;border-radius:5px; margin:5px; padding:5px;">
+                     <h5 class="h5" style="text-align:center;">Easy Chinese</h5>
+                     
+                     <p>Select course and add</p>
+                    <form style="padding:5px;" action="{{route('addVip',$learner->id)}}" method="POST">
+                        
+                        @csrf
+                        <input type="hidden" value="chinese" name="major">
+                        
+                        <!-- VIP mark -->
+                        <div class="form-check"  style="margin-bottom:5px">
+                          <input class="form-check-input" type="checkbox" name="vip_chinese" id="vip_chinese"
+                          @if($chineseData->is_vip==1) checked   @endif
+                          />
+                          <label class="form-check-label" for="vip_chinese">VIP access</label>
+                        </div>
 
+                        @foreach ($mainCourses as $mainCourse)
+                            @if ($mainCourse->major=='chinese')
+
+                            <div class="form-check"  style="margin-bottom:5px">
+                              <input class="form-check-input" type="checkbox" name="{{$mainCourse->course_id}}" id="{{$mainCourse->course_id}}"
+                                @foreach ($coursesChinese as $vipCourse)
+                                    @if ($vipCourse==$mainCourse->course_id)
+                                          checked 
+                                    @endif
+                                @endforeach
+                              />
+                              <label class="form-check-label" for="{{$mainCourse->course_id}}">{{$mainCourse->title}}</label>
+                            </div>
+
+                            @endif
+                          
+                          @endforeach
+                        <input id="inputForm" type="text" name="amount" placeholder="Enter Amount"/>
+                        <input type="submit" class="btn btn-primary" value="Add to Vip" style="width:100%">
+                     </form>
+                </div>
+            </div>
+          @endif
+          
+          
+           <!--Easy Japanese VIP input form-->
+          @if($JapaneseData!=null)
+            <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                <div style="border:solid thin gray;border-radius:5px; margin:5px; padding:5px;">
+                     <h5 class="h5" style="text-align:center;">Easy Japanese</h5>
+                     
+                     <p>Select course and add</p>
+                    <form style="padding:5px;" action="{{route('addVip',$learner->id)}}" method="POST">
+                        
+                        @csrf
+                        <input type="hidden" value="japanese" name="major">
+                        
+                        <!-- VIP mark -->
+                        <div class="form-check"  style="margin-bottom:5px">
+                          <input class="form-check-input" type="checkbox" name="vip_japanese" id="vip_japanese"
+                          @if($JapaneseData->is_vip==1) checked   @endif
+                          />
+                          <label class="form-check-label" for="vip_japanese">VIP access</label>
+                        </div>
+
+                        @foreach ($mainCourses as $mainCourse)
+                            @if ($mainCourse->major=='japanese')
+
+                            <div class="form-check"  style="margin-bottom:5px">
+                              <input class="form-check-input" type="checkbox" name="{{$mainCourse->course_id}}" id="{{$mainCourse->course_id}}"
+                                @foreach ($coursesJapanese as $vipCourse)
+                                    @if ($vipCourse==$mainCourse->course_id)
+                                          checked 
+                                    @endif
+                                @endforeach
+                              />
+                              <label class="form-check-label" for="{{$mainCourse->course_id}}">{{$mainCourse->title}}</label>
+                            </div>
+
+                            @endif
+                          
+                          @endforeach
+                        <input id="inputForm" type="text" name="amount" placeholder="Enter Amount"/>
                         <input type="submit" class="btn btn-primary" value="Add to Vip" style="width:100%">
                      </form>
                 </div>

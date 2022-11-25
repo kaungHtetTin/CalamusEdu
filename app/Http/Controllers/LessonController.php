@@ -127,9 +127,10 @@ class LessonController extends Controller
        ]);
    }
 
-   public function addLesson(Request $req,$course){
+    public function addLesson(Request $req,$course){
 
         $req->validate([
+            'title_mini'=>'required',
             'title'=>'required',
             'link'=>'required',
             'post'=>'required',
@@ -137,6 +138,7 @@ class LessonController extends Controller
         ]);
         
        
+        $title_mini=$req->title_mini;
         $title=$req->title;
         $link=$req->link;
         $body=$req->post;
@@ -197,15 +199,17 @@ class LessonController extends Controller
             
         }
   
-         
     
         if($major=='korea'){
             $noti_owner="1001";
-        }else{
+        }else if($major=='english'){
             $noti_owner="1002";
+        }else if($major=='chinese'){
+            $noti_owner="1003";
+        }else if($major=="japanese"){
+            $noti_owner="1004";
         }
     
-        
     
         $lesson=new lesson;
         $lesson->cate="";
@@ -216,6 +220,7 @@ class LessonController extends Controller
         $lesson->isChannel=$isChannel;
         $lesson->link=$link;
         $lesson->title=$title;
+        $lesson->title_mini=$title_mini;
         $lesson->major=$major;
         $lesson->thumbnail=$imagePath;
         $lesson->save();
@@ -248,8 +253,12 @@ class LessonController extends Controller
 
         if($req->major=="korea"){
             $topic="koreaUsers";
-        }else{
+        }else if($req->major=="english"){
             $topic="englishUsers";
+        }else if($req->major=="chinese"){
+            $topic="chineseUsers";
+        }else if($req->major=="japanese"){
+            $topic="japaneseUsers";
         }
 
         FirebaseNotiPushController::pushNotificationToTopic($topic,"New Lesson",$body);
@@ -274,33 +283,43 @@ class LessonController extends Controller
     
     public function addLessonToStudyPlan(Request $req){
         
-        $req->validate([
-            'day'=>'required'
-            ]);
+        // $req->validate([
+        //     'day'=>'required'
+        //     ]);
         $lesson_id=$req->id;
         $day=$req->day;
+        $duration=$req->duration;
         
-        $course_id=DB::table('courses')
-            ->selectRaw("courses.course_id")
-            ->join("lessons_categories","courses.course_id","=","lessons_categories.course_id")
-            ->join("lessons","lessons_categories.id","=","lessons.category_id")
-            ->where("lessons.id",$lesson_id)->limit(1)->get();
-         $course_id= $course_id[0]->course_id;
+     
         
-        $studyplan=new Studyplan();
-        $studyplan->course_id=$course_id;
-        $studyplan->lesson_id=$lesson_id;
-        $studyplan->day=$day;
-        $studyplan->save();
+        if($day!=null){
+            $course_id=DB::table('courses')
+                ->selectRaw("courses.course_id")
+                ->join("lessons_categories","courses.course_id","=","lessons_categories.course_id")
+                ->join("lessons","lessons_categories.id","=","lessons.category_id")
+                ->where("lessons.id",$lesson_id)->limit(1)->get();
+             $course_id= $course_id[0]->course_id;
+            
+            $studyplan=new Studyplan();
+            $studyplan->course_id=$course_id;
+            $studyplan->lesson_id=$lesson_id;
+            $studyplan->day=$day;
+            $studyplan->save();
+        }
         
-        //return $course_id;
-        return back()->with('msg','The lesson was successfully added to study plan');
+        if($duration!=null){
+            lesson::where('id', $lesson_id)->update(['duration'=>$duration]);
+        }
+      
+        
+        return back()->with('msg','Success');
     }
 
     public function updateVideoDuration(Request $req){
+        
         $date=$req->date;
         $duration=$req->duration;
-        lesson::where('date', $date)->update(['video_duration'=>$duration]);
+        lesson::where('date', $date)->update(['duration'=>$duration]);
 
     }
  

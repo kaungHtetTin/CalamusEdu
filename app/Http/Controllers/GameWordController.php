@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\GameWordKorea;
 use App\Models\GameWordEnglish;
+use App\Models\GameWordChinese;
+use App\Models\GameWordJapanese;
+use App\Models\GameWordRussian;
 use Illuminate\Support\Facades\Storage;
 
 class GameWordController extends Controller
@@ -14,9 +17,21 @@ class GameWordController extends Controller
     }
 
     public function showGameWord($major){
+        
         if($major=="korea"){
             $word=GameWordKorea::orderBy('id','desc')->simplepaginate(10);
             $count=GameWordKorea::get()->count();
+            return view('gamewords.gameword',[
+                'words'=>$word,
+                'major'=>$major,
+                'count'=>$count
+            ]);
+        }
+        
+        if($major=="chinese"){
+            
+            $word=GameWordChinese::orderBy('id','desc')->simplepaginate(10);
+            $count=GameWordChinese::get()->count();
             return view('gamewords.gameword',[
                 'words'=>$word,
                 'major'=>$major,
@@ -33,6 +48,27 @@ class GameWordController extends Controller
                 'count'=>$count
             ]);
         }
+        
+        if($major=="japanese"){
+            $word=GameWordJapanese::orderBy('id','desc')->simplepaginate(10);
+            $count=GameWordJapanese::get()->count();
+            return view('gamewords.gameword',[
+                'words'=>$word,
+                'major'=>$major,
+                'count'=>$count
+            ]);
+        }
+        
+        if($major=="russian"){
+            $word=GameWordRussian::orderBy('id','desc')->simplepaginate(10);
+            $count=GameWordRussian::get()->count();
+            return view('gamewords.gameword',[
+                'words'=>$word,
+                'major'=>$major,
+                'count'=>$count
+            ]);
+        }
+       
          
     }
 
@@ -54,6 +90,30 @@ class GameWordController extends Controller
 
         if($major=="english"){
             $word=GameWordEnglish::find($id);
+            return view('gamewords.editgameword',[
+                'word'=>$word,
+                'major'=>$major
+            ]);
+        }
+        
+        if($major=="chinese"){
+            $word=GameWordChinese::find($id);
+            return view('gamewords.editgameword',[
+                'word'=>$word,
+                'major'=>$major
+            ]);
+        }
+        
+        if($major=="japanese"){
+            $word=GameWordJapanese::find($id);
+            return view('gamewords.editgameword',[
+                'word'=>$word,
+                'major'=>$major
+            ]);
+        }
+        
+        if($major=="russian"){
+            $word=GameWordRussian::find($id);
             return view('gamewords.editgameword',[
                 'word'=>$word,
                 'major'=>$major
@@ -124,11 +184,52 @@ class GameWordController extends Controller
             $gameword->save();
         }
         
+        if($major=='chinese'){
+            $gameword=new GameWordChinese();
+            $gameword->display_word=$displayword;
+            $gameword->display_audio=$displayaudio;
+            $gameword->display_image=$displayimage;
+            $gameword->category=$req->category;
+            $gameword->a=$req->ansA;
+            $gameword->b=$req->ansB;
+            $gameword->c=$req->ansC;
+            $gameword->ans=$req->ans;
+            $gameword->save();
+            
+        }
+        
+        if($major=='japanese'){
+            $gameword=new GameWordJapanese();
+            $gameword->display_word=$displayword;
+            $gameword->display_audio=$displayaudio;
+            $gameword->display_image=$displayimage;
+            $gameword->category=$req->category;
+            $gameword->a=$req->ansA;
+            $gameword->b=$req->ansB;
+            $gameword->c=$req->ansC;
+            $gameword->ans=$req->ans;
+            $gameword->save();
+            
+        }
+        
+        if($major=='russian'){
+            $gameword=new GameWordRussian();
+            $gameword->display_word=$displayword;
+            $gameword->display_audio=$displayaudio;
+            $gameword->display_image=$displayimage;
+            $gameword->category=$req->category;
+            $gameword->a=$req->ansA;
+            $gameword->b=$req->ansB;
+            $gameword->c=$req->ansC;
+            $gameword->ans=$req->ans;
+            $gameword->save();
+            
+        }
+        
          return back()->with('msg','Successfully Added');
     }
     
     public function deleteGameWord(Request $req){
-        
          
         $id=$req->id;
         $major=$req->major;
@@ -139,6 +240,18 @@ class GameWordController extends Controller
         
         if($major=="english"){
             GameWordEnglish::where("id",$id)->delete();
+        }
+        
+        if($major=="chinese"){
+            GameWordChinese::where("id",$id)->delete();
+        }
+        
+        if($major=="japanese"){
+            GameWordJapanese::where("id",$id)->delete();
+        }
+        
+        if($major=="russian"){
+            GameWordRussian::where("id",$id)->delete();
         }
         
         return back()->with('msg','Successfully deleted');
