@@ -146,7 +146,7 @@ class LessonController extends Controller
         $isVideo=(isset($req->isVideo))?1:0;
         $isChannel=(isset($req->isChannel))?1:0;
         $isVip=(isset($req->isVip))?1:0;
-        $add_to_discuss=(isset($req->add_to_discuss))?1:0;
+        $add_to_discuss=(isset($req->add_to_discuss))?0:1;
         $date = round(microtime(true) * 1000);
         $major=$req->major;
         
