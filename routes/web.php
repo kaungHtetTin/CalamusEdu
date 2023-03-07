@@ -148,3 +148,6 @@ Route::get('/projectoverview',[ProjectOverviewController::class,'index'])->name(
 
 //payment
 Route::get('/payments/{major}',[PaymentController::class,'index']);
+Route::get('/demo',function(){
+    return view('layouts.demo');
+});

@@ -80,6 +80,12 @@
                           <input class="form-check-input" type="checkbox" name="isVip" id="isVip"/>
                           <label class="form-check-label" for="isVip">VIP Lesson</label>
                         </div>
+                        <br>
+                        <div class="form-check"  style="margin-bottom:5px">
+                          <input class="form-check-input" type="checkbox" name="add_to_discuss" id="add_to_discuss" />
+                          <label class="form-check-label" for="add_to_discuss">Add to discussion room</label>
+                        </div>
+                        
                       </div>
                     </div><br><br>
                     <input type="submit"  class="btn-primary rounded" value="Add" style="width: 150px; margin:auto"/>

@@ -146,6 +146,7 @@ class LessonController extends Controller
         $isVideo=(isset($req->isVideo))?1:0;
         $isChannel=(isset($req->isChannel))?1:0;
         $isVip=(isset($req->isVip))?1:0;
+        $add_to_discuss=(isset($req->add_to_discuss))?1:0;
         $date = round(microtime(true) * 1000);
         $major=$req->major;
         
@@ -172,6 +173,7 @@ class LessonController extends Controller
             
         $imagePath="";
         $vimeo="";
+    
         $isVideoLesson=0;
         
         if(isset($req->isVideo)){
@@ -237,6 +239,7 @@ class LessonController extends Controller
         $post->vimeo=$vimeo;
         $post->view_count=0;
         $post->major=$major;
+        $post->hide=$add_to_discuss;
         $post->save();
         
         
