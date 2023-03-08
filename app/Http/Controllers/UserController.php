@@ -417,11 +417,18 @@ class UserController extends Controller
         return back()->with('msg','Cloud message sent.');
     }
     
-    public function showVipsetting($id){
+    public function showVipsetting(Request $req,$id){
         
-        $learner=learner::find($id);
-        $phone=$learner->learner_phone;
-    
+        if(isset($req->phone)){
+            $phone=$req->phone;
+            $learner=learner::where('learner_phone',$phone);
+            $api=true;
+        }else{
+            $learner=learner::find($id);
+            $phone=$learner->learner_phone;
+            $api=false;
+        }
+
         $koreaData=EasyKoreanUserData::where('phone',$phone)->first();
         $englishData=EasyEnglishUserData::where('phone',$phone)->first();
         $chineseData=EasyChineseUserData::where('phone',$phone)->first();
@@ -446,20 +453,30 @@ class UserController extends Controller
         $mainCourses=DB::table('courses')
         ->selectRaw("*")->get();
 
-        return view('userlayouts.vipadding',[
-            'learner'=>$learner,
-            'koreaData'=>$koreaData,
-            'englishData'=>$englishData,
-            'chineseData'=>$chineseData,
-            'JapaneseData'=>$japaneseData,
-            'russianData'=>$russianData,
-            'coursesEnglish'=>$coursesEnglish,
-            'coursesKorea'=>$coursesKorea,
-            'coursesChinese'=>$coursesChinese,
-            'coursesJapanese'=>$coursesJapanese,
-            'coursesRussian'=>$coursesRussian,
-            'mainCourses'=>$mainCourses
-        ]);
+       if(!$api){
+            return view('userlayouts.vipadding',[
+                'learner'=>$learner,
+                'koreaData'=>$koreaData,
+                'englishData'=>$englishData,
+                'chineseData'=>$chineseData,
+                'JapaneseData'=>$japaneseData,
+                'russianData'=>$russianData,
+                'coursesEnglish'=>$coursesEnglish,
+                'coursesKorea'=>$coursesKorea,
+                'coursesChinese'=>$coursesChinese,
+                'coursesJapanese'=>$coursesJapanese,
+                'coursesRussian'=>$coursesRussian,
+                'mainCourses'=>$mainCourses
+            ]);
+       }else{
+            $response['learner']=$learner;
+            $response['koreaData']=$koreaData;
+            $response['englishData']=$englishData;
+            $response['coursesEnglish']=$coursesEnglish;
+            $response['coursesKorea']=$coursesKorea;
+            $response['mainCourses']=$mainCourses;
+            return $response;
+       }
     }
     
     public function addVip(Request $req, $id){

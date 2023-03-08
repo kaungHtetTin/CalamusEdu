@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,3 +24,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::post('/lessons/updatevideoduration',[LessonController::class,'updateVideoDuration']);
 Route::get('/notifications/{major}',[NotificationController::class,'fetchNotification']);
+
+//User controlling
+Route::get('/users/vip/{id}',[UserController::class,'showVipsetting'])->name('showVipsetting');

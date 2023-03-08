@@ -54,9 +54,6 @@ class PaymentController extends Controller
         ->whereYear('date', $year)
         ->sum('amount');
         
-   
-         
-        
         return view('layouts.payment',[
                 'major'=>$major,
                 'payments'=>$payments,
