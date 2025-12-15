@@ -58,10 +58,12 @@ class SongController extends Controller
         $myFileName=str_replace(" ","",$myFileName);
         
     
-  
+        $mobileImage=$req->imageFile;
+        $webImage=$req->imageFileWeb;
         $req->lyricsFile->move('../uploads/songs/lyrics',$myFileName.".txt");
         $req->audioFile->move('../uploads/songs/audio',$myFileName.".mp3");
-        $req->imageFile->move('../uploads/songs/image', $myFileName.".png");
+        $mobileImage->move('../uploads/songs/image', $myFileName.".png");
+        $webImage->move('../uploads/songs/web', $myFileName.".png");
         
         $song=new song;
         $song->song_id=$date;

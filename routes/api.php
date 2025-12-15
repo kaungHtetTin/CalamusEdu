@@ -6,6 +6,9 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\SaveReplyController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -26,4 +29,14 @@ Route::post('/lessons/updatevideoduration',[LessonController::class,'updateVideo
 Route::get('/notifications/{major}',[NotificationController::class,'fetchNotification']);
 
 //User controlling
-Route::get('/users/vip/{id}',[UserController::class,'showVipsetting'])->name('showVipsetting');
+Route::get('/users/vip/{id}',[UserController::class,'showVipsetting']);
+Route::post('/users/passwordreset',[UserController::class,'resetPassword']);
+Route::post('/users/vipadding/{id}',[UserController::class,'addVip']);
+Route::post('/users/transfer-vip-access',[UserController::class,'transferVipAccess']);
+
+Route::get('/users/enroll',[UserController::class,'getEnroll']);
+Route::get('/payments/pending',[PaymentController::class,'getPendingPayment']);
+
+//Save Reply
+Route::apiResource('/save-replies',SaveReplyController::class);
+

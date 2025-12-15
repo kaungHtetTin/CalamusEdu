@@ -144,8 +144,12 @@ class PostController extends Controller
         }else if($major=="russian"){
             $topic="russianUsers";
         }
+        
+        $payload = array();
+        $payload['team'] = 'Calamus';
+        $payload['go'] = "cloud_message";
 
-        FirebaseNotiPushController::pushNotificationToTopic($topic,"New Calamus Post",$body);
+        FirebaseNotiPushController::pushNotificationToTopic($topic,"New Calamus Post",$body,$payload);
         
         return back()->with('msg','Post was successfully added');
     }

@@ -44,12 +44,20 @@
                           <br><br>
                         </div>
                         <div class="col-xl-4 col-lg-4col-md-12 col-sm-12">
-                          Image (.png)<br>
+                          Image (.png) for Mobile<br>
                           <i class="material-icons me-3">insert_photo</i>
                           <input type="file" accept=".png" name="imageFile"/>
                           <p class="text-danger" style="font-size: 12px;">{{$errors->first('imageFile')}}</p>
                           <br><br>
                         </div>
+                        <div class="col-xl-4 col-lg-4col-md-12 col-sm-12">
+                          Image (.png) for Web<br>
+                          <i class="material-icons me-3">insert_photo</i>
+                          <input type="file" accept=".png" name="imageFileWeb"/>
+                          <p class="text-danger" style="font-size: 12px;">{{$errors->first('imageFileWeb')}}</p>
+                          <br><br>
+                        </div>
+                        
                         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
                           Lyrics Text (.txt)<br>
                           <i class="material-icons me-3">insert_comment</i>

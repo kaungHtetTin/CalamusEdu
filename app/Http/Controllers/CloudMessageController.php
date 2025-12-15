@@ -18,8 +18,11 @@ class CloudMessageController extends Controller
         $title=$req->title;
         $msg=$req->msg;
         $topic=$req->app;
-
-        FirebaseNotiPushController::pushNotificationToTopic($topic,$title,$msg);
+        $payload = array();
+        $payload['team'] = 'Calamus';
+        $payload['go'] = "cloud_message";
+        
+        FirebaseNotiPushController::pushNotificationToTopic($topic,$title,$msg,$payload);
 
         return back()->with('msg','Cloud message sent.');
     }

@@ -155,14 +155,14 @@ class LessonController extends Controller
         }
  
         
-        $course_id=DB::table('courses')
-            ->selectRaw("courses.course_id")
+        $course=DB::table('courses')
+            ->selectRaw("courses.course_id,courses.title,courses.background_color")
             ->join("lessons_categories","courses.course_id","=","lessons_categories.course_id")
             ->join("lessons","lessons_categories.id","=","lessons.category_id")
             ->where("lessons.category_id",$categoryId)->limit(1)->get();
             
-        if(count($course_id)==1){
-            $course_id= $course_id[0]->course_id;
+        if(count($course)==1){
+            $course_id= $course[0]->course_id;
             
             DB::table('courses')->where('course_id',$course_id)->update([
                 'lessons_count'=>DB::raw("lessons_count+1")
@@ -263,8 +263,15 @@ class LessonController extends Controller
         }else if($req->major=="japanese"){
             $topic="japaneseUsers";
         }
+        
+        $payload = array();
+        $payload['team'] = 'Calamus';
+        $payload['go'] = "new_lesson";
+        $payload['course_id']=$course_id;
+        $payload['course_title']=$course[0]->title;
+        $payload['theme_color']=$course[0]->background_color;
 
-        FirebaseNotiPushController::pushNotificationToTopic($topic,"New Lesson",$body);
+        FirebaseNotiPushController::pushNotificationToTopic($topic,"New Lesson",$body,$payload);
         
         return back()->with('msgLesson','Lesson was successfully added');
 
@@ -324,6 +331,40 @@ class LessonController extends Controller
         $duration=$req->duration;
         lesson::where('date', $date)->update(['duration'=>$duration]);
 
+    }
+    
+    public function updateLectureNote(Request $req){
+        
+        $req->validate([
+                'lesson_id'=>'required',
+                'hour'=>'required',
+                'minute'=>'required',
+                'second'=>'required',
+                'note'=>'required',
+            ]);
+        
+        $lesson_id = $req->lesson_id;
+        $hour = $req->hour;
+        $minute = $req->minute;
+        $second = $req->second;
+        $note = $req->note;
+        
+        $time = $hour*60*60 + $minute*60 + $second;
+        
+        $lesson = lesson::find($lesson_id);
+        
+        $notes = json_decode($lesson->notes, true);
+        $newnote = [
+                'time'=>$time,
+                'note'=> $note,
+            ];
+        $notes[] = $newnote;
+        
+        $lesson->notes = json_encode($notes);
+        $lesson->save();
+        
+        return back()->with('msg','Success');
+        
     }
  
 }

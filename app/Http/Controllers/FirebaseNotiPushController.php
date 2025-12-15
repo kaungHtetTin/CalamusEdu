@@ -11,51 +11,71 @@ class FirebaseNotiPushController extends Controller
     
         $payload = array();
         $payload['team'] = 'Calamus';
-        $payload['go'] = "Easy Korean";
-        $res = array();
-        $res['data']['title'] = $title;
-        $res['data']['is_background'] =FALSE;
-        $res['data']['message'] = $message;
-        $res['data']['image'] = "";
-        $res['data']['payload'] = $payload;
-        $res['data']['timestamp'] = date('Y-m-d G:i:s');
+        $payload['go'] = "cloud_message";
         
-        $fields = array(
-            'to' => $to,
-            'data' => $res,
-        );
-        return FirebaseNotiPushController:: sendNotification($fields);
+        $messagePayload = [
+            'message' => [
+                'token' => $to,
+                'notification' => [
+                    'title' => $title,
+                    'body' => $message
+                ],
+                'data' => [
+                    'title' => $title,
+                    'is_background'=>"FALSE",
+                    'message' => $message,
+                    'image'=> "",
+                    'payload'=> json_encode($payload),
+                    'timestamp'=>date('Y-m-d G:i:s'),
+                ]
+            ]
+        ];
+        
+        return FirebaseNotiPushController:: sendNotification($messagePayload);
     }
 
-    public static function pushNotificationToTopic($to,$title,$message){
-        $payload = array();
-        $payload['team'] = 'Calamus';
-        $payload['go'] = "Easy Korean";
-
-        $res = array();
-        $res['data']['title'] = $title;
-        $res['data']['is_background'] =FALSE;
-        $res['data']['message'] = $message;
-        $res['data']['image'] = "";
-        $res['data']['payload'] = $payload;
-        $res['data']['timestamp'] = date('Y-m-d G:i:s');
-
-        $fields = array(
-            'to' => '/topics/' . $to,
-            'data' => $res,
-        );
-        return FirebaseNotiPushController:: sendNotification($fields);
+    public static function pushNotificationToTopic($to,$title,$message,$payload){
+       
+        if($to=='adminKorea'){
+            $start_msg=substr($message,0,3);
+            if($start_msg=="Dev"){
+                $to="ekDeveloper";
+            }
+        }
+        
+        $messagePayload = [
+            'message' => [
+                'topic' => $to,
+                'notification' => [
+                    'title' => $title,
+                    'body' => $message
+                ],
+                'data' => [
+                    'title' => $title,
+                    'is_background'=>"FALSE",
+                    'message' => $message,
+                    'image'=> "",
+                    'payload'=> json_encode($payload),
+                    'timestamp'=>date('Y-m-d G:i:s'),
+                ]
+            ]
+        ];
+        
+        return FirebaseNotiPushController:: sendNotification($messagePayload);
     }
 
 
-    public static function sendNotification($fields){
-        $FIREBASE_API_KEY="AAAA2wIrZh4:APA91bFjeO13Fl10XsRQqV0lpgfqodOw0w8fZ0HgJu71BmxTymRBswaQpiOn-WxqQrAM_H8DQ3anHBhkheOjzdukkUQhFi94yZ_kbxUGZzP_iUqq6_s2KnM9vWGyJo7eMyQhHdAyOaQ3";
-     
-        // Set POST variables
-        $url = 'https://fcm.googleapis.com/fcm/send';
+   public static function sendNotification($fields){
+        
+        $url = 'https://fcm.googleapis.com/v1/projects/learn-room/messages:send';
  
+        $serviceAccountKeyPath = base_path("important-firebase-key.json");
+   
+        // Get Access Token
+        $accessToken = self::getAccessToken($serviceAccountKeyPath);
+
         $headers = array(
-            'Authorization: key=' . $FIREBASE_API_KEY,
+            'Authorization: Bearer '. $accessToken,
             'Content-Type: application/json'
         );
         // Open connection
@@ -82,6 +102,66 @@ class FirebaseNotiPushController extends Controller
         // Close connection
         curl_close($ch);
  
-        return $headers;
+        return $result;
+       // return $headers;
+    }
+    
+    private static function getAccessToken($serviceAccountKeyPath) {
+    // Check if file exists
+        if (!file_exists($serviceAccountKeyPath)) {
+            
+            return "Service account key file not found: " . $serviceAccountKeyPath;
+        }
+        
+        
+        $serviceAccount = json_decode(file_get_contents($serviceAccountKeyPath), true);
+        
+        $jwtHeader = base64_encode(json_encode([
+            'alg' => 'RS256',
+            'typ' => 'JWT'
+        ]));
+        
+        $now = time();
+        $jwtClaimSet = base64_encode(json_encode([
+            'iss' => $serviceAccount['client_email'],
+            'scope' => 'https://www.googleapis.com/auth/firebase.messaging',
+            'aud' => 'https://oauth2.googleapis.com/token',
+            'exp' => $now + 3600,
+            'iat' => $now
+        ]));
+        
+        $jwtUnsigned = $jwtHeader . '.' . $jwtClaimSet;
+        
+        // Sign the JWT
+        openssl_sign($jwtUnsigned, $signature, $serviceAccount['private_key'], 'SHA256');
+        $jwtSignature = base64_encode($signature);
+        
+        $jwt = $jwtUnsigned . '.' . $jwtSignature;
+        
+        // Exchange JWT for access token
+        $ch = curl_init();
+        curl_setopt_array($ch, [
+            CURLOPT_URL => 'https://oauth2.googleapis.com/token',
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => http_build_query([
+                'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+                'assertion' => $jwt
+            ]),
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_SSL_VERIFYPEER => true,
+        ]);
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        
+        curl_close($ch);
+        
+        if ($httpCode == 200) {
+            $tokenData = json_decode($response, true);
+            return $tokenData['access_token'];
+        } else {
+            error_log("Failed to get access token. HTTP Code: " . $httpCode . " Response: " . $response);
+            return null;
+        }
     }
 }

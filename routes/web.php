@@ -35,7 +35,7 @@ Route::post('/home',function(Request $req){
       ]);
 
     if(Hash::check($req->password, $pw)&& Hash::check($req->email,$gmail)){
-        session()->put('kaunghtettin5241',$req->password);
+        session()->put('kaunghtettin5241','095161017');
     
         return redirect(route('getUser'));
     }else{
@@ -58,7 +58,8 @@ Route::group(['middleware'=>['kgAuth']],function(){
 
 //users controlling routes
 Route::get('/users',[UserController::class,'getUser'])->name('getUser');
-Route::get('/users/get',[UserController::class,'searchUser'])->name('searchUser');
+Route::get('/users/get',[UserController::class,'detail'])->name('detail');
+Route::get('/users/search',[UserController::class,'searchUser'])->name('searchUser');
 Route::get('/users/passwordreset/{phone}',[UserController::class,'showPasswordReset'])->name('showPasswordReset');
 Route::post('/users/passwordreset',[UserController::class,'resetPassword'])->name('resetPassword');
 Route::get('/users/easykorean',[UserController::class,'easyKoreanUserDatas'])->name('easyKoreanUserDatas');
@@ -96,6 +97,7 @@ Route::get('/lessons/blog/{id}',[LessonController::class,'viewBlogLesson'])->nam
 Route::get('/lessons/add/{course}',[LessonController::class,'showAddLesson'])->name('showAddLesson');
 Route::post('/lessons/add/{course}',[LessonController::class,'addLesson'])->name('addLesson');
 Route::post('/lessons/video/add',[LessonController::class,'uploadVideoForLessonDownload'])->name('uploadVideoForLessonDownload');
+Route::post('/lessons/video/add-lecture-note',[LessonController::class,'updateLectureNote'])->name('lessons.add-lecture-note');
 
 Route::post('/lessons/add-studyplan',[LessonController::class,'addLessonToStudyPlan'])->name('addLessonToStudyPlan');
 Route::post('/lessons/add-vimeo',[PostController::class,'uploadVimeo'])->name('uploadVimeo');

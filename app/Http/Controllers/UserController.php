@@ -10,9 +10,12 @@ use App\Models\EasyChineseUserData;
 use App\Models\EasyJapaneseUserData;
 use App\Models\EasyRussianUserData;
 use App\Models\Payment;
+use App\Models\Partner;
+use App\Models\PartnerEarning;
 use App\Models\VipUser;
 use App\Models\course;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Hash;
 use Validator;
 
@@ -40,6 +43,16 @@ class UserController extends Controller
     }
 
     public function searchUser(Request $req){
+        $msg = $req->msg;
+        $learners = learner::where('learner_phone',$msg)
+                    ->orWhere('learner_name', 'LIKE', '%' . $msg . '%')->get();
+                    
+        return view('userlayouts.searcheduser',[
+            'learners'=>$learners,
+        ]);
+    }
+    
+    public function detail(Request $req){
         $phone=$req->phone;
         $message=$req->msg;
         $learner=learner::where('learner_phone',$phone)->first();
@@ -78,6 +91,10 @@ class UserController extends Controller
         $reseting=learner::where('learner_phone',$phone)->update([
             'password'=>$password
         ]);
+
+        if(isset($req->api)){
+            return "Password reset successfully";
+        }
 
         if($reseting){
            return redirect(route('showPasswordReset',$phone))->with('resetSuccess','Password successfully reset');
@@ -421,13 +438,16 @@ class UserController extends Controller
         
         if(isset($req->phone)){
             $phone=$req->phone;
-            $learner=learner::where('learner_phone',$phone);
+            $phone = str_replace([" ","+","*","#","-"], "", $phone);
+            $learner=learner::where('learner_phone',$phone)->first();
             $api=true;
         }else{
             $learner=learner::find($id);
             $phone=$learner->learner_phone;
             $api=false;
         }
+        
+        
 
         $koreaData=EasyKoreanUserData::where('phone',$phone)->first();
         $englishData=EasyEnglishUserData::where('phone',$phone)->first();
@@ -470,10 +490,19 @@ class UserController extends Controller
             ]);
        }else{
             $response['learner']=$learner;
+            
             $response['koreaData']=$koreaData;
             $response['englishData']=$englishData;
+            $response['japaneseData']=$japaneseData;
+            $response['russianData']=$russianData;
+            $response['chineseData']=$chineseData;
+            
             $response['coursesEnglish']=$coursesEnglish;
             $response['coursesKorea']=$coursesKorea;
+            $response['coursesJapanese']=$coursesJapanese;
+            $response['coursesChinese']=$coursesChinese;
+            $response['coursesRussian']=$coursesRussian;
+            
             $response['mainCourses']=$mainCourses;
             return $response;
        }
@@ -488,13 +517,59 @@ class UserController extends Controller
         
         //update paymant
         
-        if($req->amount!=null){
+        if($req->amount!=null || $req->amount!=0){
+            
+            if(isset($req->partner_code)){
+                $partner_code = $req->partner_code;
+                $partner = Partner::where('private_code',$partner_code)->first();
+                if($partner){
+                    $PartnerEarning = new PartnerEarning();
+                    $PartnerEarning->partner_id = $partner->id;
+                    $PartnerEarning->target_course_id  = null;
+                    $PartnerEarning->target_package_id = null;
+                    $PartnerEarning->learner_phone = $phone;
+                    $PartnerEarning->price = $req->amount;
+                    $PartnerEarning->commission_rate = $partner->commission_rate;
+                    
+                    $original_price = $req->amount / 0.9;  // 10 % discount to user_id 
+                    $amount_received = ( $original_price * $partner->commission_rate ) /100;
+                    
+                    $PartnerEarning->amount_received = $amount_received;
+                    $PartnerEarning->status = 'pending';
+                    $PartnerEarning->save();
+                    
+                }else{
+                    if(isset($req->api)){
+                        return response(304).json("Wrong promotion Code! Activation fail");
+                    }
+                }
+                
+            }
+            
+            if(isset($req->api)){
+                $screenshot="";
+                $approve=0;
+                $myPath="https://www.calamuseducation.com/financial/";
+                $file=$req->file('myfile');
+                if(!empty($req->myfile)){
+                    $result=Storage::disk('calamusFinancial')->put('uploads',$file);
+                    $screenshot=$myPath.$result;
+                    
+                }
+                
+            }else{
+                $screenshot="";
+                $approve=1;
+            }
+            
             $payment =new Payment();
             $payment->user_id=$phone;
             $payment->major=$req->major;
             $payment->amount=$req->amount;
+            $payment->screenshot=$screenshot;
+            $payment->approve=$approve;
             $payment->save();
-            
+
         }
         
        // easy english courses
@@ -570,14 +645,14 @@ class UserController extends Controller
             if($req->vip_russian=="on"){
                   EasyRussianUserData::where('phone',$phone)->update(['is_vip'=>1]);
             }else{
-                   EasyRussianUserData::where('phone',$phone)->update(['is_vip'=>0]);
+                  EasyRussianUserData::where('phone',$phone)->update(['is_vip'=>0]);
             }
           
         }
 
 
         // add specific course
-       foreach($mainCourses as $mainCourse){
+        foreach($mainCourses as $mainCourse){
             $id=$mainCourse->course_id;
             if($mainCourse->major==$req->major){
                 if($req->$id=="on"){
@@ -595,6 +670,125 @@ class UserController extends Controller
             
         }
         
+        if(isset($req->api)){
+            return "Activated";
+        }
+        
+        
        return back()->with('msg','Successfully Updated.');
     }
+    
+    public function getEnroll(Request $req){
+        
+        $phone=$req->phone;
+		$major=$req->major;
+        
+        $courses=DB::table('courses')
+            ->selectRaw("
+                courses.course_id,
+                courses.lessons_count,
+                background_color,
+                title,
+                description,
+                cover_url
+            ")
+            ->where('major',$major)->get();
+        
+        $enrolls=DB::table('courses')
+            ->selectRaw("
+                courses.course_id,
+                count(*) as learned,
+                courses.lessons_count as total
+            ")
+            ->groupBy("courses.course_id")
+            ->where("studies.learner_id",$phone)
+            ->where("courses.major",$major)
+            ->join("lessons_categories","lessons_categories.course_id","=","courses.course_id")
+            ->join("lessons","lessons_categories.id","=","lessons.category_id")
+            ->join("studies","lessons.id","=","studies.lesson_id")
+            ->get();
+            
+        $data['enrolls']=$enrolls;
+        $data['courses']=$courses;
+        return $data;
+        
+    }
+    
+    public function getDiamondUsers(){
+        
+    }
+    
+    public function transferVipAccess(Request $req){
+        $source_phone = $req->source;
+        $target_phone = $req->target;
+        $major = $req->major;
+        
+        $sourceUser = false;
+        $targetUser = false;
+        if($major=='korea'){
+            $sourceUser=EasyKoreanUserData::where('phone',$source_phone)->first();
+            $targetUser=EasyKoreanUserData::where('phone',$target_phone)->first();
+        }
+        
+        if($major=='english'){
+            $sourceUser=EasyEnglishUserData::where('phone',$source_phone)->first();
+            $targetUser=EasyEnglishUserData::where('phone',$target_phone)->first();
+        }
+        
+        if($major=='japanese'){
+            $sourceUser=EasyJapaneseUserData::where('phone',$source_phone)->first();
+            $targetUser=EasyJapaneseUserData::where('phone',$target_phone)->first();
+        }
+        
+        if($major=='chinese'){
+            $sourceUser=EasyChineseUserData::where('phone',$source_phone)->first();
+            $targetUser=EasyChineseUserData::where('phone',$target_phone)->first();
+        }
+        
+        if($major=='russian'){
+            $sourceUser=EasyRussianUserData::where('phone',$source_phone)->first();
+            $targetUser=EasyRussianUserData::where('phone',$target_phone)->first();
+        }
+        
+        if(!$sourceUser){
+            $response['status']="fail";
+            $response['error'] = "The source user was not found!";
+            return $response;
+        }
+        
+        if(!$targetUser){
+            $response['status']="fail";
+            $response['error'] = "The target user was not found!";
+            return $response;
+        }
+        
+        $source_courses = VipUser::where('major',$major)->where('phone',$source_phone)->get();
+        if(count($source_courses)==0){
+            $response['status']="fail";
+            $response['error'] = "The source is not a VIP account";
+            return $response;
+        }
+        
+        $target_courses = VipUser::where('major',$major)->where('phone',$target_phone)->get();
+        if(count($target_courses)>0){
+            $response['status']="fail";
+            $response['error'] = "The target has been already a VIP account";
+            return $response;
+        }
+        
+        VipUser::where('phone',$source_phone)->where('major',$major)->update(['phone'=>$target_phone]);
+        
+        $targetUser->is_vip = $sourceUser->is_vip;
+        $targetUser->gold_plan = $sourceUser->gold_plan;
+        $targetUser->save();
+        
+        $sourceUser->is_vip = 0;
+        $sourceUser->gold_plan = 0;
+        $sourceUser->save();
+        
+        $response['status']="success";
+        return $response;
+        
+    }
+    
 }

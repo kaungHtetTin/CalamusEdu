@@ -42,7 +42,7 @@
       </div>
       <div class="card-body">
         <div class="row">
-          <div class="col-xl-7 col-md-7 mb-4">
+            <div class="col-xl-7 col-md-7 mb-4">
             <!--<iframe class="rounded" src="https://www.youtube.com/embed/{{$lesson->link}}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen-->
             <!--  style="width:100% ; height:300px"></iframe> -->
               
@@ -99,7 +99,7 @@
             </div>
           </div>
          
-            <div class="col-xl-5 col-md-5 mb-4">
+           <div class="col-xl-5 col-md-5 mb-4">
              <h6 class="h6">Upload Video For Downloading This Lesson</h6>
              <form enctype="multipart/form-data" action="{{route('uploadVideoForLessonDownload')}}" method="POST">
              @csrf
@@ -122,20 +122,34 @@
                  <input type="hidden" name="id" value="{{$lesson->id}}"/>
                  <input type="submit" class="btn-primary rounded" value="Add"/>
              </form>
-             
-            
-             <br>
             </div>
             
+            <div class="col-12">
+                 <form enctype="multipart/form-data" action="{{route('lessons.add-lecture-note')}}" method="post">
+                     @csrf
+                     <div style="display:flex;width:100%">
+                         <Input style="width:60px;margin:3px;" type="text" name="hour" placeholder="Hour" value="0"/>
+                         <Input style="width:60px;margin:3px;" type="text" name="minute" placeholder="Minute" value="0"/>
+                         <Input style="width:60px;margin:3px;" type="text" name="second" placeholder="Second"/>
+                     </div>
+                     <textarea style="width:300px;margin:3px;" placeholder="Enter note" name="note"></textarea>
+                 
+                     <br>
+                     <input type="hidden" name="lesson_id" value="{{$lesson->id}}"/>
+                     <input type="submit" class="btn-primary rounded" value="Add"/>
+                 </form>
+                 <br>
+            </div>
+        
 
-          <form action="" method="" class="col-xl-7 col-md-7 mb-4">
-            @csrf
-            <input type="submit" class="btn-primary rounded" value="Send"/>
-            <input type="text" placeholder="Write a comment" id="inputForm" name="pw"/>
-            <input type="hidden" name="phone" value=""/>
-          </form>
+            <form action="" method="" class="col-xl-7 col-md-7 mb-4">
+                @csrf
+                <input type="submit" class="btn-primary rounded" value="Send"/>
+                <input type="text" placeholder="Write a comment" id="inputForm" name="pw"/>
+                <input type="hidden" name="phone" value=""/>
+            </form>
 
-          <div class="col-xl-6 col-md-6 mb-4">
+            <div class="col-xl-6 col-md-6 mb-4">
             @foreach ($comments as $comment)
             <div style="display:flex;">
                <div >
