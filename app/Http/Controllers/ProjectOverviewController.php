@@ -23,12 +23,12 @@ class ProjectOverviewController extends Controller
         
         
         return view('layouts.overview',[
-            'learner_count'=>$learner_count,
-            'koeran_user_count'=>$korean_user_count,
-            'english_user_count'=>$english_user_count,
-            'chinese_user_count'=>$chinese_user_count,
-            'japanese_user_count'=>$japanese_user_count,
-            'russian_user_count'=>$russian_user_count
-            ]);
+            'learner_count' => $learner_count,
+            'korean_user_count' => $korean_user_count,
+            'english_user_count' => $english_user_count,
+            'chinese_user_count' => $chinese_user_count,
+            'japanese_user_count' => $japanese_user_count,
+            'russian_user_count' => $russian_user_count,
+        ]);
     }
 }

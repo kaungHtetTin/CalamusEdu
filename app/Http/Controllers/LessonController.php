@@ -15,33 +15,277 @@ use Illuminate\Support\Facades\Storage;
 class LessonController extends Controller
 {
     public function showLessonMain(){
-     
-        return view('lessons.lessonmain');
+        // Lesson Statistics
+        $total_lessons = lesson::count();
+        
+        // Lessons by language
+        $english_lessons = lesson::where('major', 'english')->count();
+        $korean_lessons = lesson::where('major', 'korea')->count();
+        $chinese_lessons = lesson::where('major', 'chinese')->count();
+        $japanese_lessons = lesson::where('major', 'japanese')->count();
+        $russian_lessons = lesson::where('major', 'russian')->count();
+        
+        // Video vs Non-Video lessons
+        $video_lessons = lesson::where('isVideo', 1)->count();
+        $non_video_lessons = lesson::where('isVideo', 0)->count();
+        
+        // VIP vs Regular lessons
+        $vip_lessons = lesson::where('isVip', 1)->count();
+        $regular_lessons = lesson::where('isVip', 0)->count();
+        
+        // Total categories
+        $total_categories = DB::table('lessons_categories')->select('id')->distinct()->count();
+        
+        // Categories by language
+        $english_categories = DB::table('lessons_categories')->where('major', 'english')->select('id')->distinct()->count();
+        $korean_categories = DB::table('lessons_categories')->where('major', 'korea')->select('id')->distinct()->count();
+        $chinese_categories = DB::table('lessons_categories')->where('major', 'chinese')->select('id')->distinct()->count();
+        $japanese_categories = DB::table('lessons_categories')->where('major', 'japanese')->select('id')->distinct()->count();
+        $russian_categories = DB::table('lessons_categories')->where('major', 'russian')->select('id')->distinct()->count();
+        
+        return view('lessons.lessonmain', [
+            'total_lessons' => $total_lessons,
+            'english_lessons' => $english_lessons,
+            'korean_lessons' => $korean_lessons,
+            'chinese_lessons' => $chinese_lessons,
+            'japanese_lessons' => $japanese_lessons,
+            'russian_lessons' => $russian_lessons,
+            'video_lessons' => $video_lessons,
+            'non_video_lessons' => $non_video_lessons,
+            'vip_lessons' => $vip_lessons,
+            'regular_lessons' => $regular_lessons,
+            'total_categories' => $total_categories,
+            'english_categories' => $english_categories,
+            'korean_categories' => $korean_categories,
+            'chinese_categories' => $chinese_categories,
+            'japanese_categories' => $japanese_categories,
+            'russian_categories' => $russian_categories,
+        ]);
     }
 
 
-    public function showLessonCategory($form){
-        $major=$form;
-
-        $courses=DB::table('courses')
-        ->selectRaw('*')
-        ->join('lessons_categories','lessons_categories.course_id','=','courses.course_id')
-        ->where('lessons_categories.major',$major)
-        ->get();
-
-        $i=0;
-        foreach($courses as $course){
-            $arr[$course->course_id]['title']=$course->title;
-            $arr[$course->course_id]['data'][]=$course;
-
-             
+    public function showLessonCategory($language){
+        // Validate language parameter
+        $validLanguages = ['english', 'korea', 'chinese', 'japanese', 'russian'];
+        if (!in_array($language, $validLanguages)) {
+            abort(404, 'Invalid language');
         }
+
+        $major = $language;
+
+        // Fetch courses with categories for the language
+        $courses = DB::table('courses')
+            ->select('courses.*', 'lessons_categories.*')
+            ->join('lessons_categories', 'lessons_categories.course_id', '=', 'courses.course_id')
+            ->where('lessons_categories.major', $major)
+            ->orderBy('courses.course_id')
+            ->get();
+
+        // Organize courses by course_id
+        $myCourses = [];
+        foreach($courses as $course){
+            if (!isset($myCourses[$course->course_id])) {
+                // Calculate statistics for this course
+                $courseCategories = DB::table('lessons_categories')
+                    ->where('course_id', $course->course_id)
+                    ->pluck('id')
+                    ->toArray();
+                
+                $totalCourseLessons = lesson::whereIn('category_id', $courseCategories)->count();
+                $videoCourseLessons = lesson::whereIn('category_id', $courseCategories)->where('isVideo', 1)->count();
+                $documentCourseLessons = lesson::whereIn('category_id', $courseCategories)->where('isVideo', 0)->count();
+                
+                $myCourses[$course->course_id] = [
+                    'title' => $course->title,
+                    'course_id' => $course->course_id,
+                    'total_lessons' => $totalCourseLessons,
+                    'video_lessons' => $videoCourseLessons,
+                    'document_lessons' => $documentCourseLessons,
+                    'data' => []
+                ];
+            }
+            $myCourses[$course->course_id]['data'][] = $course;
+        }
+
+        // Language-specific statistics
+        $total_lessons = lesson::where('major', $major)->count();
+        $video_lessons = lesson::where('major', $major)->where('isVideo', 1)->count();
+        $non_video_lessons = lesson::where('major', $major)->where('isVideo', 0)->count();
+        $vip_lessons = lesson::where('major', $major)->where('isVip', 1)->count();
+        $regular_lessons = lesson::where('major', $major)->where('isVip', 0)->count();
+        $total_categories = DB::table('lessons_categories')
+            ->where('major', $major)
+            ->select('id')
+            ->distinct()
+            ->count();
+        $total_courses = count($myCourses);
+
+        // Language display name mapping
+        $languageNames = [
+            'english' => 'Easy English',
+            'korea' => 'Easy Korean',
+            'chinese' => 'Easy Chinese',
+            'japanese' => 'Easy Japanese',
+            'russian' => 'Easy Russian'
+        ];
+        $languageName = $languageNames[$language] ?? ucfirst($language);
         
-        return view('lessons.lessons',[
-            'form'=>$form,
-            'major'=>$major,
-            'myCourses'=>$arr
+        return view('lessons.lessons', [
+            'language' => $language,
+            'languageName' => $languageName,
+            'major' => $major,
+            'myCourses' => $myCourses,
+            'total_lessons' => $total_lessons,
+            'video_lessons' => $video_lessons,
+            'non_video_lessons' => $non_video_lessons,
+            'vip_lessons' => $vip_lessons,
+            'regular_lessons' => $regular_lessons,
+            'total_categories' => $total_categories,
+            'total_courses' => $total_courses,
         ]);
+    }
+
+    public function showAddCourse($language){
+        // Validate language parameter
+        $validLanguages = ['english', 'korea', 'chinese', 'japanese', 'russian'];
+        if (!in_array($language, $validLanguages)) {
+            abort(404, 'Invalid language');
+        }
+
+        // Language display name mapping
+        $languageNames = [
+            'english' => 'Easy English',
+            'korea' => 'Easy Korean',
+            'chinese' => 'Easy Chinese',
+            'japanese' => 'Easy Japanese',
+            'russian' => 'Easy Russian'
+        ];
+        $languageName = $languageNames[$language] ?? ucfirst($language);
+
+        // Get teachers for dropdown
+        $teachers = DB::table('teachers')->select('id', 'name')->get();
+
+        return view('lessons.addcourse', [
+            'language' => $language,
+            'languageName' => $languageName,
+            'major' => $language,
+            'teachers' => $teachers,
+        ]);
+    }
+
+    public function addCourse(Request $req, $language){
+        // Validate language parameter
+        $validLanguages = ['english', 'korea', 'chinese', 'japanese', 'russian'];
+        if (!in_array($language, $validLanguages)) {
+            abort(404, 'Invalid language');
+        }
+
+        $req->validate([
+            'title' => 'required|string|max:50',
+            'teacher_id' => 'required|integer',
+            'description' => 'required|string|max:1000',
+            'details' => 'required|string',
+            'certificate_title' => 'required|string|max:225',
+            'certificate_code' => 'required|string|max:5',
+            'background_color' => 'required|string|max:225',
+            'duration' => 'required|integer|min:1',
+            'fee' => 'required|integer|min:0',
+            'is_vip' => 'nullable|boolean',
+        ]);
+
+        // Get the next course_id
+        $maxCourseId = DB::table('courses')->max('course_id');
+        $courseId = ($maxCourseId ?? 0) + 1;
+
+        // Insert new course
+        DB::table('courses')->insert([
+            'course_id' => $courseId,
+            'teacher_id' => $req->teacher_id,
+            'title' => $req->title,
+            'certificate_title' => $req->certificate_title,
+            'lessons_count' => 0,
+            'cover_url' => $req->cover_url ?? '',
+            'web_cover' => $req->web_cover ?? '',
+            'description' => $req->description,
+            'details' => $req->details,
+            'is_vip' => $req->has('is_vip') ? 1 : 0,
+            'duration' => $req->duration,
+            'background_color' => $req->background_color,
+            'fee' => $req->fee,
+            'enroll' => 0,
+            'rating' => 0,
+            'major' => $language,
+            'sorting' => 0,
+            'preview' => $req->preview ?? '',
+            'certificate_code' => $req->certificate_code,
+        ]);
+
+        return redirect()->route('lessons.byLanguage', $language)
+            ->with('success', 'Course created successfully!');
+    }
+
+    public function showAddCategory($language, $course){
+        // Validate language parameter
+        $validLanguages = ['english', 'korea', 'chinese', 'japanese', 'russian'];
+        if (!in_array($language, $validLanguages)) {
+            abort(404, 'Invalid language');
+        }
+
+        // Get course info
+        $courseInfo = DB::table('courses')->where('course_id', $course)->first();
+        if (!$courseInfo) {
+            abort(404, 'Course not found');
+        }
+
+        // Language display name mapping
+        $languageNames = [
+            'english' => 'Easy English',
+            'korea' => 'Easy Korean',
+            'chinese' => 'Easy Chinese',
+            'japanese' => 'Easy Japanese',
+            'russian' => 'Easy Russian'
+        ];
+        $languageName = $languageNames[$language] ?? ucfirst($language);
+
+        return view('lessons.addcategory', [
+            'language' => $language,
+            'languageName' => $languageName,
+            'course_id' => $course,
+            'course_title' => $courseInfo->title,
+            'major' => $language,
+        ]);
+    }
+
+    public function addCategory(Request $req, $language, $course){
+        // Validate language parameter
+        $validLanguages = ['english', 'korea', 'chinese', 'japanese', 'russian'];
+        if (!in_array($language, $validLanguages)) {
+            abort(404, 'Invalid language');
+        }
+
+        $req->validate([
+            'category_title' => 'required|string|max:128',
+            'category' => 'required|string|max:128',
+            'image_url' => 'required|url|max:500',
+        ]);
+
+        // Get the next category id
+        $maxCategoryId = DB::table('lessons_categories')->max('id');
+        $categoryId = ($maxCategoryId ?? 0) + 1;
+
+        // Insert new category
+        DB::table('lessons_categories')->insert([
+            'id' => $categoryId,
+            'course_id' => $course,
+            'category' => $req->category,
+            'category_title' => $req->category_title,
+            'image_url' => $req->image_url,
+            'sort_order' => round(microtime(true) * 1000),
+            'major' => $language,
+        ]);
+
+        return redirect()->route('lessons.byLanguage', $language)
+            ->with('success', 'Category created successfully!');
     }
 
     public function showLessonList(Request $req,$category_id){

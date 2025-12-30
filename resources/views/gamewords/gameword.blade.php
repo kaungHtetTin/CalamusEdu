@@ -103,7 +103,7 @@
     </div>
 </div>
 
-{{$words->links()}}
+{{$words->links('pagination.default')}}
 @endsection
 
 <script

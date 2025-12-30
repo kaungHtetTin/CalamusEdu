@@ -21,54 +21,107 @@
 
 </head>
 
-<body>
-  <!--Main Navigation-->
-  <header>
-    <!-- Sidebar -->
-    <nav id="sidebarMenu" class="collapse d-lg-block sidebar collapse bg-white">
-      <div class="position-sticky">
-        <div class="list-group list-group-flush mx-3 mt-4">
-            
-          <a href="{{route('overviewIndex')}}" class="list-group-item list-group-item-action py-2 ripple">
-            <i class="material-icons me-3">assessment</i><span>Project Overview</span></a>
-            
-          <a href="{{route('getUser')}}" class="list-group-item list-group-item-action py-2 ripple">
-            <i class="material-icons me-3">people</i><span>Users</span></a>
-          <a href="{{route('showLessonMain')}}" class="list-group-item list-group-item-action py-2 ripple">
-            <i class="material-icons me-3">school</i><span>Lessons</span>
-          </a>
-          <a href="{{route('showWordOfTheDayMain')}}" class="list-group-item list-group-item-action py-2 ripple">
-            <i class="material-icons me-3">alarm</i><span>Word Of The Day</span>
-          </a>
-          <a href="{{route('showGameWordMain')}}" class="list-group-item list-group-item-action py-2 ripple">
-            <i class="material-icons me-3">extension</i><span>Game Words</span></a>
-          <a href="{{route('showMainPostControllerView')}}" class="list-group-item list-group-item-action py-2 ripple">
-            <i class="material-icons me-3">public</i><span>Posts</span></a>
-          <a href="{{route('showSongMain')}}" class="list-group-item list-group-item-action py-2 ripple">
-            <i class="material-icons me-3">queue_music</i><span>Songs</span></a>
-            
-          <a href="{{route('showCloudMessage')}}" class="list-group-item list-group-item-action py-2 ripple">
-            <i class="material-icons me-3">send</i><span>Cloud Messaging</span></a>
-            
-          <a href="{{route('showDialogueAdder')}}" class="list-group-item list-group-item-action py-2 ripple">
-            <i class="material-icons me-3">forum</i><span>Speaking Training</span></a>
-         
+<body class="admin-layout dark-theme">
+  <!-- Top Bar -->
+  <nav class="admin-topbar">
+    <div class="topbar-content">
+      <div class="topbar-left d-flex align-items-center">
+        <button type="button" class="btn btn-link text-white p-2 me-2 drawer-toggle" id="drawerToggle">
+          <i class="fas fa-bars"></i>
+        </button>
+        <a class="navbar-brand d-flex align-items-center text-white" href="{{ route('overviewIndex') }}" style="font-weight: 600; font-size: 1.25rem;">
+          Calamus Education
+        </a>
+      </div>
+
+      <div class="topbar-center d-none d-lg-flex">
+        <form class="topbar-search-form" action="{{route('searchUser')}}" method="GET">
+          <div class="topbar-search-wrapper">
+            <i class="fas fa-search topbar-search-icon"></i>
+            <input type="search" class="topbar-search-input" name="msg" placeholder="Search user" autocomplete="off">
+            <button type="submit" class="topbar-search-btn" style="display: none;">
+              <i class="fas fa-search"></i>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="topbar-right d-flex align-items-center gap-2">
+        <button type="button" class="topbar-icon-btn" id="notificationBtn" title="Notifications">
+          <i class="fas fa-bell"></i>
+          <span class="notification-badge">0</span>
+        </button>
+        <button type="button" class="topbar-icon-btn theme-toggle-btn" id="themeToggle" title="Switch to light mode">
+          <i class="fas fa-sun"></i>
+        </button>
+        <div class="user-avatar-top">
+          <div class="avatar-circle">CA</div>
         </div>
       </div>
-    </nav>
-    <!-- Sidebar -->
-    @yield('navbar')
-  </header>
-  <!--Main Navigation-->
-  <main style="margin-top: 58px">
-    <div class="container pt-4">
-      @yield('content')
     </div>
-  </main>
+  </nav>
+
+  <!-- Drawer Overlay -->
+  <div class="drawer-overlay" id="drawerOverlay"></div>
+
+  <div class="admin-shell">
+    <!-- Navigation Drawer -->
+    <nav class="admin-sidebar drawer" id="navigationDrawer">
+      @php($routeName = Route::currentRouteName())
+
+      <div class="drawer-nav-content">
+        <a href="{{ route('overviewIndex') }}" class="admin-nav-item {{ $routeName === 'overviewIndex' ? 'active' : '' }}">
+          <i class="material-icons">assessment</i>
+          <span>Dashboard</span>
+        </a>
+
+        <a href="{{ route('getUser') }}" class="admin-nav-item {{ request()->routeIs('getUser') ? 'active' : '' }}">
+          <i class="material-icons">people</i>
+          <span>Users</span>
+        </a>
+        <a href="{{ route('lessons.main') }}" class="admin-nav-item {{ request()->routeIs('lessons.*') ? 'active' : '' }}">
+          <i class="material-icons">school</i>
+          <span>Lessons</span>
+        </a>
+        <a href="{{ route('showWordOfTheDayMain') }}" class="admin-nav-item {{ request()->routeIs('showWordOfTheDayMain') ? 'active' : '' }}">
+          <i class="material-icons">alarm</i>
+          <span>Word of the Day</span>
+        </a>
+        <a href="{{ route('showGameWordMain') }}" class="admin-nav-item {{ request()->routeIs('showGameWordMain') ? 'active' : '' }}">
+          <i class="material-icons">extension</i>
+          <span>Game Words</span>
+        </a>
+        <a href="{{ route('showSongMain') }}" class="admin-nav-item {{ request()->routeIs('showSongMain') ? 'active' : '' }}">
+          <i class="material-icons">queue_music</i>
+          <span>Songs</span>
+        </a>
+        <a href="{{ route('showMainPostControllerView') }}" class="admin-nav-item {{ request()->routeIs('showMainPostControllerView') ? 'active' : '' }}">
+          <i class="material-icons">public</i>
+          <span>Posts</span>
+        </a>
+        <a href="{{ route('showCloudMessage') }}" class="admin-nav-item {{ request()->routeIs('showCloudMessage') ? 'active' : '' }}">
+          <i class="material-icons">send</i>
+          <span>Cloud Messaging</span>
+        </a>
+        <a href="{{ route('showDialogueAdder') }}" class="admin-nav-item {{ request()->routeIs('showDialogueAdder') ? 'active' : '' }}">
+          <i class="material-icons">forum</i>
+          <span>Speaking Training</span>
+        </a>
+      </div>
+    </nav>
+
+    <main class="admin-main">
+      <div class="container-fluid py-4">
+        @yield('content')
+      </div>
+    </main>
+  </div>
+
   <!-- MDB -->
   <script type="text/javascript" src="{{asset("public/js/mdb.min.js")}}"></script>
   <!-- Custom scripts -->
   <script type="text/javascript" src="{{asset("public/js/admin.js")}}"></script>
+  @stack('scripts')
 
 </body>
 

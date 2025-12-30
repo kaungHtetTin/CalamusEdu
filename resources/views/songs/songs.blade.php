@@ -64,5 +64,5 @@
     </div>
 </div>
 
-{{$songs->links()}}
+{{$songs->links('pagination.default')}}
 @endsection

@@ -22,14 +22,138 @@ use Validator;
 
 class UserController extends Controller
 {
-    public function getUser(){
-        $learners=learner::orderBy('id','desc')->simplepaginate(20);
-        $learner_count=learner::get()->count();
-        $korean_user_count=EasyKoreanUserData::get()->count();
-        $english_user_count=EasyEnglishUserData::get()->count();
-        $chinese_user_count=EasyChineseUserData::get()->count();
-        $japanese_user_count=EasyJapaneseUserData::get()->count();
-        $russian_user_count=EasyRussianUserData::get()->count();
+    public function getUser(Request $req){
+        $search = $req->get('search', '');
+        
+        $query = learner::orderBy('id','desc');
+        
+        if (!empty($search)) {
+            $query->where(function($q) use ($search) {
+                $q->where('learner_name', 'LIKE', '%' . $search . '%')
+                  ->orWhere('learner_phone', 'LIKE', '%' . $search . '%')
+                  ->orWhere('learner_email', 'LIKE', '%' . $search . '%');
+            });
+        }
+        
+        $learners = $query->simplepaginate(20)->withQueryString();
+        $learner_count = learner::get()->count();
+        $korean_user_count = EasyKoreanUserData::get()->count();
+        $english_user_count = EasyEnglishUserData::get()->count();
+        $chinese_user_count = EasyChineseUserData::get()->count();
+        $japanese_user_count = EasyJapaneseUserData::get()->count();
+        $russian_user_count = EasyRussianUserData::get()->count();
+
+        // User Activity Statistics
+        $sevenDaysAgo = date('Y-m-d H:i:s', strtotime('-7 days'));
+        $thirtyDaysAgo = date('Y-m-d H:i:s', strtotime('-30 days'));
+        
+        // Active users (last 7 days) - count distinct phones
+        $active_users_7d = DB::table('ee_user_datas')
+            ->where('last_active', '>=', $sevenDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        $active_users_7d += DB::table('ko_user_datas')
+            ->where('last_active', '>=', $sevenDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        $active_users_7d += DB::table('cn_user_datas')
+            ->where('last_active', '>=', $sevenDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        $active_users_7d += DB::table('jp_user_datas')
+            ->where('last_active', '>=', $sevenDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        $active_users_7d += DB::table('ru_user_datas')
+            ->where('last_active', '>=', $sevenDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        
+        // Active users (last 30 days)
+        $active_users_30d = DB::table('ee_user_datas')
+            ->where('last_active', '>=', $thirtyDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        $active_users_30d += DB::table('ko_user_datas')
+            ->where('last_active', '>=', $thirtyDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        $active_users_30d += DB::table('cn_user_datas')
+            ->where('last_active', '>=', $thirtyDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        $active_users_30d += DB::table('jp_user_datas')
+            ->where('last_active', '>=', $thirtyDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        $active_users_30d += DB::table('ru_user_datas')
+            ->where('last_active', '>=', $thirtyDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        
+        // New users (last 7 days)
+        $new_users_7d = DB::table('ee_user_datas')
+            ->where('first_join', '>=', $sevenDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        $new_users_7d += DB::table('ko_user_datas')
+            ->where('first_join', '>=', $sevenDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        $new_users_7d += DB::table('cn_user_datas')
+            ->where('first_join', '>=', $sevenDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        $new_users_7d += DB::table('jp_user_datas')
+            ->where('first_join', '>=', $sevenDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        $new_users_7d += DB::table('ru_user_datas')
+            ->where('first_join', '>=', $sevenDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        
+        // New users (last 30 days)
+        $new_users_30d = DB::table('ee_user_datas')
+            ->where('first_join', '>=', $thirtyDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        $new_users_30d += DB::table('ko_user_datas')
+            ->where('first_join', '>=', $thirtyDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        $new_users_30d += DB::table('cn_user_datas')
+            ->where('first_join', '>=', $thirtyDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        $new_users_30d += DB::table('jp_user_datas')
+            ->where('first_join', '>=', $thirtyDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        $new_users_30d += DB::table('ru_user_datas')
+            ->where('first_join', '>=', $thirtyDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
 
         return view('userlayouts.user',[
             'learners'=>$learners,
@@ -39,6 +163,11 @@ class UserController extends Controller
             'chinese_user_count'=>$chinese_user_count,
             'japanese_user_count'=>$japanese_user_count,
             'russian_user_count'=>$russian_user_count,
+            'search'=>$search,
+            'active_users_7d'=>$active_users_7d,
+            'active_users_30d'=>$active_users_30d,
+            'new_users_7d'=>$new_users_7d,
+            'new_users_30d'=>$new_users_30d,
         ]);
     }
 

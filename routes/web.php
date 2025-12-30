@@ -24,37 +24,17 @@ use Illuminate\Http\Request;
 */
 //   $2y$10$LBUfbqygLh.9g00bN1fZ1ulP5bok5lIJl212Fn6f7b9tusi8IB0/G   @$calamus5241$@
 
-Route::post('/home',function(Request $req){
-
-    $gmail='$2y$10$/HveNTocaR2NAQ5p6qX.duJslTWO6kOKXtB9KKF8XCaJQDcHnDPnu';
-    $pw='$2y$10$LBUfbqygLh.9g00bN1fZ1ulP5bok5lIJl212Fn6f7b9tusi8IB0/G';
-
-    $req->validate([
-        'email' => 'required',
-        'password' => 'required',
-      ]);
-
-    if(Hash::check($req->password, $pw)&& Hash::check($req->email,$gmail)){
-        session()->put('kaunghtettin5241','095161017');
-    
-        return redirect(route('getUser'));
-    }else{
-        return back()->withInput();
-    }
-    
+Route::post('/home', function (Request $req) {
+    return redirect()->intended(route('overviewIndex'));
 })->name('home');
 
 Route::get('/', function () {
-    $pw='$2y$10$LBUfbqygLh.9g00bN1fZ1ulP5bok5lIJl212Fn6f7b9tusi8IB0/G';
-    $check=session('kaunghtettin5241');
-    if(Hash::check($check, $pw)){
-        return redirect(route('overviewIndex'));
-    }else{
-        return view('login');
-    }
-});
+    return redirect(route('overviewIndex'));
+})->name('login');
 
-Route::group(['middleware'=>['kgAuth']],function(){
+Route::post('/logout', function (Request $req) {
+    return redirect()->route('login');
+})->name('logout');
 
 //users controlling routes
 Route::get('/users',[UserController::class,'getUser'])->name('getUser');
@@ -89,9 +69,13 @@ Route::get('/wordsofday/add/{major}',[WordOfTheDayController::class,'showWordDay
 Route::post('/wordsofday/add/{major}',[WordOfTheDayController::class,'addWordDay'])->name('addWordDay');
 
 //lessons controlling routes
-Route::get('/lessons/main',[LessonController::class,'showLessonMain'])->name('showLessonMain');
-Route::get('/lessons/form/{form}',[LessonController::class,'showLessonCategory'])->name('showLessonCategory');
-Route::get('/lessons/showlists/{code}',[LessonController::class,'showLessonList'])->name('showLessonList');
+Route::get('/lessons/main',[LessonController::class,'showLessonMain'])->name('lessons.main');
+Route::get('/lessons/{language}',[LessonController::class,'showLessonCategory'])->name('lessons.byLanguage');
+Route::get('/lessons/{language}/add-course',[LessonController::class,'showAddCourse'])->name('lessons.addCourse');
+Route::post('/lessons/{language}/add-course',[LessonController::class,'addCourse'])->name('lessons.storeCourse');
+Route::get('/lessons/{language}/add-category/{course}',[LessonController::class,'showAddCategory'])->name('lessons.addCategory');
+Route::post('/lessons/{language}/add-category/{course}',[LessonController::class,'addCategory'])->name('lessons.storeCategory');
+Route::get('/lessons/showlists/{code}',[LessonController::class,'showLessonList'])->name('lessons.list');
 Route::get('/lessons/video/{id}',[LessonController::class,'viewVideoLesson'])->name('viewVideoLesson');
 Route::get('/lessons/blog/{id}',[LessonController::class,'viewBlogLesson'])->name('viewBlogLesson');
 Route::get('/lessons/add/{course}',[LessonController::class,'showAddLesson'])->name('showAddLesson');
@@ -138,7 +122,6 @@ Route::post('/requestedsong/delete/',[SongController::class,'deleteRequestedSong
 // cloud messageing
 Route::get('/cloudmessage',[CloudMessageController::class,'showCloudMessage'])->name('showCloudMessage');
 Route::post('/cloudmessage/send',[CloudMessageController::class,'sendCloudMessage'])->name('sendCloudMessage');
-});
 
 //speaking trainning
 Route::get('/addspeakingdialogue',[SpeakingTrainerController::class,'index'])->name('showDialogueAdder');

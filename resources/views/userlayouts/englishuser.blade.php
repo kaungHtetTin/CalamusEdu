@@ -100,7 +100,7 @@
       </div>
     </div>
   </section>
-  {{$users->links()}}
+  {{$users->links('pagination.default')}}
 @endsection
 
 
