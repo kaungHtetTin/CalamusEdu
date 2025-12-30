@@ -244,9 +244,16 @@ class UserController extends Controller
             ->simplepaginate(100);
         $counts=EasyEnglishUserData::count();
       
-        return view('userlayouts.englishuser',[
+        $languageConfig = [
+            'name' => 'English',
+            'primaryColor' => '#2196F3',
+            'secondaryColor' => '#1976D2'
+        ];
+      
+        return view('userlayouts.languageuser',[
             'users'=>$users,
-            'counts'=>$counts
+            'counts'=>$counts,
+            'languageConfig'=>$languageConfig
         ]);
     }
 
@@ -260,9 +267,17 @@ class UserController extends Controller
             ->orderBy('ko_user_datas.id','desc')
             ->simplepaginate(100);
         $counts=EasyKoreanUserData::count();
-        return view('userlayouts.koreauser',[
+        
+        $languageConfig = [
+            'name' => 'Korean',
+            'primaryColor' => '#FF9800',
+            'secondaryColor' => '#F57C00'
+        ];
+        
+        return view('userlayouts.languageuser',[
             'users'=>$users,
-            'counts'=>$counts
+            'counts'=>$counts,
+            'languageConfig'=>$languageConfig
         ]);
     }
 
@@ -275,9 +290,17 @@ class UserController extends Controller
             ->orderBy('cn_user_datas.id','desc')
             ->simplepaginate(100);
         $counts=EasyChineseUserData::count();
-        return view('userlayouts.chineseuser',[
+        
+        $languageConfig = [
+            'name' => 'Chinese',
+            'primaryColor' => '#F44336',
+            'secondaryColor' => '#D32F2F'
+        ];
+        
+        return view('userlayouts.languageuser',[
             'users'=>$users,
-            'counts'=>$counts
+            'counts'=>$counts,
+            'languageConfig'=>$languageConfig
         ]);
     }
     
@@ -291,9 +314,17 @@ class UserController extends Controller
             ->orderBy('jp_user_datas.id','desc')
             ->simplepaginate(100);
         $counts=EasyJapaneseUserData::count();
-        return view('userlayouts.japaneseuser',[
+        
+        $languageConfig = [
+            'name' => 'Japanese',
+            'primaryColor' => '#9C27B0',
+            'secondaryColor' => '#7B1FA2'
+        ];
+        
+        return view('userlayouts.languageuser',[
             'users'=>$users,
-            'counts'=>$counts
+            'counts'=>$counts,
+            'languageConfig'=>$languageConfig
         ]);
     }
     
@@ -306,9 +337,17 @@ class UserController extends Controller
             ->orderBy('ru_user_datas.id','desc')
             ->simplepaginate(100);
         $counts=EasyRussianUserData::count();
-        return view('userlayouts.russianuser',[
+        
+        $languageConfig = [
+            'name' => 'Russian',
+            'primaryColor' => '#4CAF50',
+            'secondaryColor' => '#388E3C'
+        ];
+        
+        return view('userlayouts.languageuser',[
             'users'=>$users,
-            'counts'=>$counts
+            'counts'=>$counts,
+            'languageConfig'=>$languageConfig
         ]);
     }
 
@@ -336,198 +375,6 @@ class UserController extends Controller
       
     }
     
-    public function filterEnglishUser(Request $req){
-        $row=$req->sqlrow;
-        $count=$req->count==null?1:$req->count;
-        $isVip=$req->vip=="on"?true:false;
-        $lastDate=$req->ago==null?"0000-00-00":(date("Y-m-d",strtotime("-".$req->ago." days")));
-      
-        if($isVip){
-            $users=DB::table('ee_user_datas')
-            ->selectRaw("
-                *
-            ")
-            ->join('learners','ee_user_datas.phone','=','learners.learner_phone')
-            ->where($row,'>=',$count)
-            ->where('is_vip',true)
-            ->where('last_active','>=',$lastDate)
-            ->orderBy($row,'desc')->simplepaginate(100)->withQueryString();
-            $counts=EasyEnglishUserData::where($row,'>=',$count) ->where('last_active','>=',$lastDate)->where('is_vip',true)->count();
-        }else{
-            $users=DB::table('ee_user_datas')
-            ->selectRaw("
-                *
-            ")
-            ->join('learners','ee_user_datas.phone','=','learners.learner_phone')
-            ->where($row,'>=',$count)
-            ->where('last_active','>=',$lastDate)
-            ->orderBy($row,'desc')->simplepaginate(100)->withQueryString();
-            $counts=EasyEnglishUserData::where($row,'>=',$count)->where('last_active','>=',$lastDate)->count();
-        }
-       
-        return view('userlayouts.englishuser',[
-            'users'=>$users,
-            'counts'=>$counts
-        ]);
-      
-      
-    }
-    
-    public function filterKoreaUser(Request $req){
-        $row=$req->sqlrow;
-        $count=$req->count==null?1:$req->count;
-        $isVip=$req->vip=="on"?true:false;
-        $lastDate=$req->ago==null?"0000-00-00":(date("Y-m-d",strtotime("-".$req->ago." days")));
-      
-        if($isVip){
-            $users=DB::table('ko_user_datas')
-            ->selectRaw("
-                *
-            ")
-            ->join('learners','ko_user_datas.phone','=','learners.learner_phone')
-            ->join('VipUsers','ko_user_datas.phone','=','VipUsers.phone')
-            ->where($row,'>=',$count)
-            ->where('is_vip',true)
-            ->where('last_active','>=',$lastDate)
-            ->groupBy('ko_user_datas.phone')
-            ->orderBy('date','desc')->simplepaginate(100)->withQueryString();
-            $counts=EasyKoreanUserData::where($row,'>=',$count) ->where('last_active','>=',$lastDate)->where('is_vip',true)->count();
-            
-         
-        }else{
-            $users=DB::table('ko_user_datas')
-            ->selectRaw("
-                *
-            ")
-            ->join('learners','ko_user_datas.phone','=','learners.learner_phone')
-            ->where($row,'>=',$count)
-            ->where('last_active','>=',$lastDate)
-            ->orderBy($row,'desc')->simplepaginate(100)->withQueryString();
-            $counts=EasyKoreanUserData::where($row,'>=',$count)->where('last_active','>=',$lastDate)->count();
-          
-            
-        }
-       
-        return view('userlayouts.koreauser',[
-            'users'=>$users,
-            'counts'=>$counts
-        ]);
-      
-      
-    }
-    
-    public function filterChineseUser(Request $req){
-        $row=$req->sqlrow;
-        $count=$req->count==null?1:$req->count;
-        $isVip=$req->vip=="on"?true:false;
-        $lastDate=$req->ago==null?"0000-00-00":(date("Y-m-d",strtotime("-".$req->ago." days")));
-      
-        if($isVip){
-            $users=DB::table('cn_user_datas')
-            ->selectRaw("
-                *
-            ")
-            ->join('learners','cn_user_datas.phone','=','learners.learner_phone')
-            ->where($row,'>=',$count)
-            ->where('is_vip',true)
-            ->where('last_active','>=',$lastDate)
-            ->orderBy($row,'desc')->simplepaginate(100)->withQueryString();
-            $counts=EasyChineseUserData::where($row,'>=',$count) ->where('last_active','>=',$lastDate)->where('is_vip',true)->count();
-        }else{
-            $users=DB::table('cn_user_datas')
-            ->selectRaw("
-                *
-            ")
-            ->join('learners','cn_user_datas.phone','=','learners.learner_phone')
-            ->where($row,'>=',$count)
-            ->where('last_active','>=',$lastDate)
-            ->orderBy($row,'desc')->simplepaginate(100)->withQueryString();
-            $counts=EasyChineseUserData::where($row,'>=',$count)->where('last_active','>=',$lastDate)->count();
-        }
-       
-        return view('userlayouts.chineseuser',[
-            'users'=>$users,
-            'counts'=>$counts
-        ]);
-      
-      
-    }
-    
-    
-    public function filterJapaneseUser(Request $req){
-        $row=$req->sqlrow;
-        $count=$req->count==null?1:$req->count;
-        $isVip=$req->vip=="on"?true:false;
-        $lastDate=$req->ago==null?"0000-00-00":(date("Y-m-d",strtotime("-".$req->ago." days")));
-      
-        if($isVip){
-            $users=DB::table('jp_user_datas')
-            ->selectRaw("
-                *
-            ")
-            ->join('learners','jp_user_datas.phone','=','learners.learner_phone')
-            ->where($row,'>=',$count)
-            ->where('is_vip',true)
-            ->where('last_active','>=',$lastDate)
-            ->orderBy($row,'desc')->simplepaginate(100)->withQueryString();
-            $counts=EasyJapaneseUserData::where($row,'>=',$count) ->where('last_active','>=',$lastDate)->where('is_vip',true)->count();
-        }else{
-            $users=DB::table('jp_user_datas')
-            ->selectRaw("
-                *
-            ")
-            ->join('learners','jp_user_datas.phone','=','learners.learner_phone')
-            ->where($row,'>=',$count)
-            ->where('last_active','>=',$lastDate)
-            ->orderBy($row,'desc')->simplepaginate(100)->withQueryString();
-            $counts=EasyJapaneseUserData::where($row,'>=',$count)->where('last_active','>=',$lastDate)->count();
-        }
-       
-        return view('userlayouts.japaneseuser',[
-            'users'=>$users,
-            'counts'=>$counts
-        ]);
-      
-      
-    }
-    
-    
-    public function filterRussianUser(Request $req){
-        $row=$req->sqlrow;
-        $count=$req->count==null?1:$req->count;
-        $isVip=$req->vip=="on"?true:false;
-        $lastDate=$req->ago==null?"0000-00-00":(date("Y-m-d",strtotime("-".$req->ago." days")));
-      
-        if($isVip){
-            $users=DB::table('ru_user_datas')
-            ->selectRaw("
-                *
-            ")
-            ->join('learners','ru_user_datas.phone','=','learners.learner_phone')
-            ->where($row,'>=',$count)
-            ->where('is_vip',true)
-            ->where('last_active','>=',$lastDate)
-            ->orderBy($row,'desc')->simplepaginate(100)->withQueryString();
-            $counts=EasyRussianUserData::where($row,'>=',$count) ->where('last_active','>=',$lastDate)->where('is_vip',true)->count();
-        }else{
-            $users=DB::table('ru_user_datas')
-            ->selectRaw("
-                *
-            ")
-            ->join('learners','ru_user_datas.phone','=','learners.learner_phone')
-            ->where($row,'>=',$count)
-            ->where('last_active','>=',$lastDate)
-            ->orderBy($row,'desc')->simplepaginate(100)->withQueryString();
-            $counts=EasyRussianUserData::where($row,'>=',$count)->where('last_active','>=',$lastDate)->count();
-        }
-       
-        return view('userlayouts.russianuser',[
-            'users'=>$users,
-            'counts'=>$counts
-        ]);
-      
-      
-    }
     
     public function showPushNotification($id){
         $learner=learner::find($id);

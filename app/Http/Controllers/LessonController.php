@@ -315,13 +315,15 @@ class LessonController extends Controller
         	    posts.comments,
         	    posts.view_count,
         	    posts.video_url,
-        	    posts.vimeo
+        	    posts.vimeo,
+        	    posts.learner_id
         	    
             ")
         ->where('posts.post_id',$lesson->date)
         ->first();
               
         $post->is_liked=0;
+        // Check if admin (learner_phone 10000) has liked this post
         $likeRows=mylike::where('content_id',$post->post_id)->get();
 
         foreach ($likeRows as $row){
@@ -335,25 +337,54 @@ class LessonController extends Controller
                         
                 }
         }
+        
+        // Get admin user info (learner_phone 10000) for comment display
+        $adminUser = DB::table('learners')
+            ->where('learner_phone', 10000)
+            ->select('learner_name', 'learner_image')
+            ->first();
             
 
         $comments=DB::table('comment')
 	    ->selectRaw('
+	        comment.id,
 	        learners.learner_name as userName,
     	    learners.learner_image as userImage,
     	    comment.body,
     	    comment.time,
-    	    comment.writer_id as userId
+    	    comment.writer_id as userId,
+    	    comment.parent
 	        ')
 	    ->where('comment.post_id',$lesson->date)
+	    ->where('comment.parent', 0)
 	    ->join('learners','learners.learner_phone','=','comment.writer_id')
 	    ->orderBy('comment.time')
 	    ->get();
+	    
+	    // Get replies for each comment
+	    foreach($comments as $comment) {
+	        $replies = DB::table('comment')
+	            ->selectRaw('
+	                comment.id,
+	                learners.learner_name as userName,
+	                learners.learner_image as userImage,
+	                comment.body,
+	                comment.time,
+	                comment.writer_id as userId
+	                ')
+	            ->where('comment.post_id', $lesson->date)
+	            ->where('comment.parent', $comment->id)
+	            ->join('learners','learners.learner_phone','=','comment.writer_id')
+	            ->orderBy('comment.time')
+	            ->get();
+	        $comment->replies = $replies;
+	    }
         
         return view('lessons.videolesson',[
         'lesson'=>$lesson,
         'post'=>$post,
-        'comments'=>$comments
+        'comments'=>$comments,
+        'adminUser'=>$adminUser
         ]);
     }
 

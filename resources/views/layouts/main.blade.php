@@ -54,8 +54,48 @@
         <button type="button" class="topbar-icon-btn theme-toggle-btn" id="themeToggle" title="Switch to light mode">
           <i class="fas fa-sun"></i>
         </button>
-        <div class="user-avatar-top">
-          <div class="avatar-circle">CA</div>
+        <div class="user-avatar-dropdown">
+          <div class="user-avatar-top" id="userAvatarDropdown" style="cursor: pointer;">
+            @if(session('admin_image') && !empty(session('admin_image')))
+              <img src="{{ session('admin_image') }}" alt="{{ session('admin_name') ?? 'Admin' }}" class="avatar-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; display: block;">
+              <div class="avatar-circle" style="display: none;">{{ strtoupper(substr(session('admin_name') ?? 'Admin', 0, 2)) }}</div>
+            @else
+              <div class="avatar-circle">{{ strtoupper(substr(session('admin_name') ?? 'Admin', 0, 2)) }}</div>
+            @endif
+          </div>
+          <div class="user-dropdown-menu" id="userDropdownMenu">
+            <div class="dropdown-header">
+              <div class="dropdown-user-info">
+                @if(session('admin_image') && !empty(session('admin_image')))
+                  <img src="{{ session('admin_image') }}" alt="{{ session('admin_name') ?? 'Admin' }}" class="dropdown-avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; display: block;">
+                  <div class="dropdown-avatar-fallback" style="display: none;">{{ strtoupper(substr(session('admin_name') ?? 'Admin', 0, 2)) }}</div>
+                @else
+                  <div class="dropdown-avatar-fallback">{{ strtoupper(substr(session('admin_name') ?? 'Admin', 0, 2)) }}</div>
+                @endif
+              </div>
+              <div class="dropdown-user-details">
+                <div class="dropdown-user-name">{{ session('admin_name') ?? 'Admin' }}</div>
+                <div class="dropdown-user-role">Administrator</div>
+              </div>
+            </div>
+            <div class="dropdown-divider"></div>
+            <a href="{{ route('overviewIndex') }}" class="dropdown-item">
+              <i class="fas fa-home"></i>
+              <span>Dashboard</span>
+            </a>
+            <a href="{{ route('getUser') }}" class="dropdown-item">
+              <i class="fas fa-user"></i>
+              <span>Profile</span>
+            </a>
+            <div class="dropdown-divider"></div>
+            <form action="{{ route('admin.logout') }}" method="POST" style="margin: 0;">
+              @csrf
+              <button type="submit" class="dropdown-item logout-item">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </div>

@@ -11,6 +11,7 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProjectOverviewController;
 use App\Http\Controllers\SpeakingTrainerController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\AdminAuthController;
 use Illuminate\Http\Request;
 /*
 |--------------------------------------------------------------------------
@@ -24,18 +25,19 @@ use Illuminate\Http\Request;
 */
 //   $2y$10$LBUfbqygLh.9g00bN1fZ1ulP5bok5lIJl212Fn6f7b9tusi8IB0/G   @$calamus5241$@
 
-Route::post('/home', function (Request $req) {
-    return redirect()->intended(route('overviewIndex'));
-})->name('home');
+// Admin Authentication Routes (Public)
+Route::get('/admin/login', [AdminAuthController::class, 'showLoginForm'])->name('admin.login');
+Route::post('/admin/login', [AdminAuthController::class, 'login'])->name('admin.login.post');
+Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
 
+// Redirect root to login
 Route::get('/', function () {
-    return redirect(route('overviewIndex'));
+    return redirect()->route('admin.login');
 })->name('login');
 
-Route::post('/logout', function (Request $req) {
-    return redirect()->route('login');
-})->name('logout');
-
+// Admin Protected Routes - Only learner_phone 10000 can access
+Route::middleware(['admin.auth'])->group(function () {
+    
 //users controlling routes
 Route::get('/users',[UserController::class,'getUser'])->name('getUser');
 Route::get('/users/get',[UserController::class,'detail'])->name('detail');
@@ -49,11 +51,6 @@ Route::get('/users/easyjapanese',[UserController::class,'easyJapaneseUserDatas']
 Route::get('/users/easyrussian',[UserController::class,'easyRussianUserDatas'])->name('easyRussianUserDatas');
 Route::get('/users/email/{id}',[UserController::class,'showSendEmail'])->name('showSendEmail');
 Route::post('/users/email/send',[UserController::class,'sendEmail'])->name('sendEmail');
-Route::get('/users/easykorean/filter',[UserController::class,'filterKoreaUser'])->name('filterKoreaUser');
-Route::get('/users/easyenglish/filter',[UserController::class,'filterEnglishUser'])->name('filterEnglishUser');
-Route::get('/users/easychinese/filter',[UserController::class,'filterChineseUser'])->name('filterChineseUser');
-Route::get('/users/easyjapanese/filter',[UserController::class,'filterJapaneseUser'])->name('filterJapaneseUser');
-Route::get('/users/easyrussian/filter',[UserController::class,'filterRussianUser'])->name('filterRussianUser');
 Route::get('/users/pushnotification/{id}',[UserController::class,'showPushNotification'])->name('showPushNotification');
 Route::post('/users/pushnotification/send',[UserController::class,'pushNotification'])->name('pushNotification');
 Route::get('/users/vipadding/{id}',[UserController::class,'showVipsetting'])->name('showVipsetting');
@@ -136,3 +133,5 @@ Route::get('/payments/{major}',[PaymentController::class,'index']);
 Route::get('/demo',function(){
     return view('layouts.demo');
 });
+
+}); // End of admin.auth middleware group

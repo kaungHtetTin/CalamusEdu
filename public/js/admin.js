@@ -142,3 +142,88 @@ if (ctx) {
     },
   });
 }
+
+// User Avatar Dropdown Toggle
+function initUserDropdown() {
+    const userAvatarContainer = document.querySelector('.user-avatar-dropdown');
+    const userAvatar = document.getElementById('userAvatarDropdown');
+    const dropdownMenu = document.getElementById('userDropdownMenu');
+    let hoverTimeout = null;
+    
+    if (!userAvatarContainer || !dropdownMenu) {
+        // Retry after a short delay if elements not found
+        setTimeout(initUserDropdown, 100);
+        return;
+    }
+    
+    // Show dropdown on hover over container
+    userAvatarContainer.addEventListener('mouseenter', function() {
+        clearTimeout(hoverTimeout);
+        dropdownMenu.classList.add('show');
+    });
+    
+    // Hide dropdown when mouse leaves container (with small delay)
+    userAvatarContainer.addEventListener('mouseleave', function(e) {
+        // Check if mouse is moving to dropdown
+        const relatedTarget = e.relatedTarget;
+        if (relatedTarget && (dropdownMenu.contains(relatedTarget) || relatedTarget.closest('.user-dropdown-menu'))) {
+            return; // Don't hide if moving to dropdown
+        }
+        
+        hoverTimeout = setTimeout(function() {
+            dropdownMenu.classList.remove('show');
+        }, 200);
+    });
+    
+    // Keep dropdown open when hovering over it
+    dropdownMenu.addEventListener('mouseenter', function() {
+        clearTimeout(hoverTimeout);
+        dropdownMenu.classList.add('show');
+    });
+    
+    // Hide dropdown when mouse leaves dropdown
+    dropdownMenu.addEventListener('mouseleave', function() {
+        hoverTimeout = setTimeout(function() {
+            dropdownMenu.classList.remove('show');
+        }, 200);
+    });
+    
+    // Toggle dropdown on avatar click
+    if (userAvatar) {
+        userAvatar.addEventListener('click', function(e) {
+            e.stopPropagation();
+            dropdownMenu.classList.toggle('show');
+        });
+    }
+    
+    // Also allow clicking on container (avatar area)
+    userAvatarContainer.addEventListener('click', function(e) {
+        // Only toggle if clicking on the avatar itself, not the dropdown
+        if (e.target.closest('.user-avatar-top') || e.target.closest('#userAvatarDropdown')) {
+            e.stopPropagation();
+            dropdownMenu.classList.toggle('show');
+        }
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!userAvatarContainer.contains(e.target) && !dropdownMenu.contains(e.target)) {
+            dropdownMenu.classList.remove('show');
+        }
+    });
+    
+    // Close dropdown on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && dropdownMenu.classList.contains('show')) {
+            dropdownMenu.classList.remove('show');
+        }
+    });
+}
+
+// Initialize on DOM ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initUserDropdown);
+} else {
+    // DOM already loaded
+    initUserDropdown();
+}

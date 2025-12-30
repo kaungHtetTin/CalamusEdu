@@ -1,16 +1,23 @@
 @extends('layouts.main')
 
 @section('content')
+@php
+  $languageConfig = $languageConfig ?? [];
+  $languageName = $languageConfig['name'] ?? 'Language';
+  $primaryColor = $languageConfig['primaryColor'] ?? '#2196F3';
+  $secondaryColor = $languageConfig['secondaryColor'] ?? '#1976D2';
+@endphp
+
 <div class="row mb-4">
   {{-- Page Header --}}
   <div class="col-12 mb-4">
     <div class="d-flex justify-content-between align-items-center">
       <div>
-        <h2 class="mb-1" style="font-weight: 600; color: var(--text-primary);">Easy Chinese Users</h2>
-        <p class="mb-0 text-muted">Manage and view Easy Chinese user data</p>
+        <h2 class="mb-1" style="font-weight: 600; color: var(--text-primary);">Easy {{ $languageName }} Users</h2>
+        <p class="mb-0 text-muted">Manage and view Easy {{ $languageName }} user data</p>
       </div>
       <div class="d-flex align-items-center gap-3">
-        <div class="stat-card-mini" style="background: linear-gradient(135deg, #F44336 0%, #D32F2F 100%);">
+        <div class="stat-card-mini" style="background: linear-gradient(135deg, {{ $primaryColor }} 0%, {{ $secondaryColor }} 100%);">
           <div class="stat-value">{{ number_format($counts) }}</div>
           <div class="stat-label">Total Users</div>
         </div>
@@ -19,56 +26,11 @@
   </div>
 </div>
 
-{{-- Filter Section --}}
-<div class="card mb-4" style="border-radius: 12px; overflow: hidden;">
-  <div class="card-header" style="background: rgba(244, 67, 54, 0.1); border-bottom: 1px solid rgba(244, 67, 54, 0.2);">
-    <h5 class="mb-0" style="color: #F44336; font-weight: 600;">
-      <i class="fas fa-filter me-2"></i>Filter Users
-    </h5>
-  </div>
-  <div class="card-body">
-    <form method="GET" action="{{ route('filterChineseUser') }}" class="filter-form">
-      <div class="row g-3">
-        <div class="col-md-3">
-          <label class="form-label" style="font-weight: 500; margin-bottom: 8px;">Category</label>
-          <select name="sqlrow" class="form-control modern-select" id="filterCategory">
-            <option value="login_time">Login Time</option>
-            <option value="game_score">Game Score</option>
-            <option value="basic_exam">Basic Exam</option>
-            <option value="song">Song</option>
-          </select>
-        </div>
-        <div class="col-md-2">
-          <label class="form-label" style="font-weight: 500; margin-bottom: 8px;">Count</label>
-          <input name="count" type="number" class="form-control modern-input" placeholder="Count" min="1">
-        </div>
-        <div class="col-md-2">
-          <label class="form-label" style="font-weight: 500; margin-bottom: 8px;">Last Days</label>
-          <input name="ago" type="number" class="form-control modern-input" placeholder="Days" min="1">
-        </div>
-        <div class="col-md-3 d-flex align-items-end">
-          <div class="form-check modern-checkbox">
-            <input name="vip" class="form-check-input" type="checkbox" id="vipCheck">
-            <label class="form-check-label" for="vipCheck">
-              <i class="fas fa-crown me-1" style="color: #FFD700;"></i>VIP Users Only
-            </label>
-          </div>
-        </div>
-        <div class="col-md-2 d-flex align-items-end">
-          <button type="submit" class="btn btn-primary w-100" style="border-radius: 8px; padding: 10px; font-weight: 500;">
-            <i class="fas fa-search me-2"></i>Apply Filter
-          </button>
-        </div>
-      </div>
-    </form>
-  </div>
-</div>
-
 <div class="card modern-table-card">
   <div class="card-header modern-table-header">
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
       <h5 class="mb-0">
-        <i class="fas fa-users me-2"></i>Easy Chinese Users
+        <i class="fas fa-users me-2"></i>Easy {{ $languageName }} Users
       </h5>
       <div class="d-flex align-items-center gap-3">
         <span class="badge modern-badge">{{ number_format($counts) }} Total</span>
@@ -147,7 +109,7 @@
   border-radius: 12px;
   color: white;
   text-align: center;
-  box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   min-width: 140px;
 }
 
@@ -163,55 +125,6 @@
   opacity: 0.9;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-}
-
-.filter-form {
-  margin: 0;
-}
-
-.modern-select,
-.modern-input {
-  border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  padding: 10px 14px;
-  transition: all 0.3s ease;
-}
-
-body.dark-theme .modern-select,
-body.dark-theme .modern-input {
-  background-color: #2d2d2d;
-  border-color: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
-}
-
-body.light-theme .modern-select,
-body.light-theme .modern-input {
-  background-color: #ffffff;
-  border-color: rgba(0, 0, 0, 0.1);
-  color: #202124;
-}
-
-.modern-select:focus,
-.modern-input:focus {
-  border-color: #F44336;
-  box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.1);
-  outline: none;
-}
-
-.modern-checkbox {
-  padding-top: 8px;
-}
-
-.modern-checkbox .form-check-input {
-  width: 18px;
-  height: 18px;
-  margin-top: 2px;
-  cursor: pointer;
-}
-
-.modern-checkbox .form-check-label {
-  cursor: pointer;
-  user-select: none;
 }
 
 body.dark-theme .card {
@@ -250,3 +163,4 @@ body.light-theme .card-header {
 }
 </style>
 @endsection
+
