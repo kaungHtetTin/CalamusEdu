@@ -1196,6 +1196,11 @@ body.light-theme .activity-stat-subtext {
   flex-shrink: 0;
 }
 
+.activity-stat-icon.active-users-today {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.2) 0%, rgba(76, 175, 80, 0.1) 100%);
+  color: #4caf50;
+}
+
 .activity-stat-icon.active-users {
   background: linear-gradient(135deg, rgba(50, 205, 50, 0.2) 0%, rgba(50, 205, 50, 0.1) 100%);
   color: #32cd32;
@@ -1204,6 +1209,11 @@ body.light-theme .activity-stat-subtext {
 .activity-stat-icon.active-users-30 {
   background: linear-gradient(135deg, rgba(33, 150, 243, 0.2) 0%, rgba(33, 150, 243, 0.1) 100%);
   color: #2196f3;
+}
+
+.activity-stat-icon.new-users-today {
+  background: linear-gradient(135deg, rgba(255, 152, 0, 0.2) 0%, rgba(255, 152, 0, 0.1) 100%);
+  color: #ff9800;
 }
 
 .activity-stat-icon.new-users {
@@ -1231,6 +1241,11 @@ body.light-theme .activity-stat-subtext {
   color: #ff9800;
 }
 
+body.light-theme .activity-stat-icon.active-users-today {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.15) 0%, rgba(76, 175, 80, 0.08) 100%);
+  color: #388e3c;
+}
+
 body.light-theme .activity-stat-icon.active-users {
   background: linear-gradient(135deg, rgba(50, 205, 50, 0.15) 0%, rgba(50, 205, 50, 0.08) 100%);
 }
@@ -1238,6 +1253,11 @@ body.light-theme .activity-stat-icon.active-users {
 body.light-theme .activity-stat-icon.active-users-30 {
   background: linear-gradient(135deg, rgba(25, 103, 210, 0.15) 0%, rgba(25, 103, 210, 0.08) 100%);
   color: #1967d2;
+}
+
+body.light-theme .activity-stat-icon.new-users-today {
+  background: linear-gradient(135deg, rgba(255, 152, 0, 0.15) 0%, rgba(255, 152, 0, 0.08) 100%);
+  color: #f57c00;
 }
 
 body.light-theme .activity-stat-icon.new-users {

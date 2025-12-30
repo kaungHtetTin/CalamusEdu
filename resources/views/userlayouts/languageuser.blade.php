@@ -21,6 +21,133 @@
           <div class="stat-value">{{ number_format($counts) }}</div>
           <div class="stat-label">Total Users</div>
         </div>
+        <div class="stat-card-mini" style="background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);">
+          <div class="stat-value">{{ number_format($vip_counts ?? 0) }}</div>
+          <div class="stat-label">VIP Users</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{-- User Activity Statistics --}}
+<div class="row mb-4">
+  <div class="col-xl-2 col-md-4 col-sm-6 mb-4">
+    <div class="card activity-stat-card">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <div class="activity-stat-label">Active Users (Today)</div>
+            <div class="activity-stat-value">{{number_format($active_users_today ?? 0)}}</div>
+            <div class="activity-stat-subtext">
+              Today's active users
+            </div>
+          </div>
+          <div class="activity-stat-icon active-users-today">
+            <i class="fas fa-user-clock"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-2 col-md-4 col-sm-6 mb-4">
+    <div class="card activity-stat-card">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <div class="activity-stat-label">Active Users (7 Days)</div>
+            <div class="activity-stat-value">{{number_format($active_users_7d ?? 0)}}</div>
+            <div class="activity-stat-subtext">
+              <span class="text-success">
+                <i class="fas fa-arrow-up me-1"></i>{{($active_users_30d ?? 0) > 0 ? round((($active_users_7d ?? 0) / ($active_users_30d ?? 1)) * 100, 1) : 0}}%
+              </span>
+              of 30-day active
+            </div>
+          </div>
+          <div class="activity-stat-icon active-users">
+            <i class="fas fa-user-check"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-2 col-md-4 col-sm-6 mb-4">
+    <div class="card activity-stat-card">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <div class="activity-stat-label">Active Users (30 Days)</div>
+            <div class="activity-stat-value">{{number_format($active_users_30d ?? 0)}}</div>
+            <div class="activity-stat-subtext">
+              Monthly active users
+            </div>
+          </div>
+          <div class="activity-stat-icon active-users-30">
+            <i class="fas fa-users"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-2 col-md-4 col-sm-6 mb-4">
+    <div class="card activity-stat-card">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <div class="activity-stat-label">New Users (Today)</div>
+            <div class="activity-stat-value">{{number_format($new_users_today ?? 0)}}</div>
+            <div class="activity-stat-subtext">
+              Today's registrations
+            </div>
+          </div>
+          <div class="activity-stat-icon new-users-today">
+            <i class="fas fa-user-plus"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-2 col-md-4 col-sm-6 mb-4">
+    <div class="card activity-stat-card">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <div class="activity-stat-label">New Users (7 Days)</div>
+            <div class="activity-stat-value">{{number_format($new_users_7d ?? 0)}}</div>
+            <div class="activity-stat-subtext">
+              <span class="text-success">
+                <i class="fas fa-arrow-up me-1"></i>{{($new_users_30d ?? 0) > 0 ? round((($new_users_7d ?? 0) / ($new_users_30d ?? 1)) * 100, 1) : 0}}%
+              </span>
+              of 30-day new
+            </div>
+          </div>
+          <div class="activity-stat-icon new-users">
+            <i class="fas fa-user-plus"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-2 col-md-4 col-sm-6 mb-4">
+    <div class="card activity-stat-card">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <div class="activity-stat-label">New Users (30 Days)</div>
+            <div class="activity-stat-value">{{number_format($new_users_30d ?? 0)}}</div>
+            <div class="activity-stat-subtext">
+              Monthly new registrations
+            </div>
+          </div>
+          <div class="activity-stat-icon new-users-30">
+            <i class="fas fa-user-friends"></i>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -33,11 +160,41 @@
         <i class="fas fa-users me-2"></i>Easy {{ $languageName }} Users
       </h5>
       <div class="d-flex align-items-center gap-3">
+        <form action="{{ request()->url() }}" method="GET" class="d-flex align-items-center search-form">
+          <div class="search-input-wrapper">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" 
+                   name="search" 
+                   class="form-control modern-search-input" 
+                   placeholder="Search by name, phone, or email..." 
+                   value="{{ $search ?? '' }}"
+                   autocomplete="off">
+            @if(!empty($search))
+              <a href="{{ request()->url() }}" class="clear-search" title="Clear search">
+                <i class="fas fa-times"></i>
+              </a>
+            @endif
+          </div>
+          <button type="submit" class="btn btn-search ms-2">
+            <i class="fas fa-search me-1"></i>Search
+          </button>
+        </form>
         <span class="badge modern-badge">{{ number_format($counts) }} Total</span>
       </div>
     </div>
   </div>
   <div class="card-body p-0">
+    @if(!empty($search))
+    <div class="search-results-info">
+      <div class="alert alert-info mb-0 border-0 rounded-0" style="background: linear-gradient(90deg, rgba(50, 205, 50, 0.1) 0%, transparent 100%); border-left: 4px solid #32cd32 !important;">
+        <i class="fas fa-info-circle me-2"></i>
+        Showing search results for: <strong>"{{ $search }}"</strong>
+        <a href="{{ request()->url() }}" class="ms-2 text-decoration-none">
+          <i class="fas fa-times me-1"></i>Clear
+        </a>
+      </div>
+    </div>
+    @endif
     <div class="table-responsive">
       <table class="table modern-table mb-0">
         <thead>

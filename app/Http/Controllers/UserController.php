@@ -234,15 +234,76 @@ class UserController extends Controller
 
     }
     
-    public function easyEnglishUserDatas(){
-        $users=DB::table('ee_user_datas')
-            ->selectRaw("
-                *
-            ")
-            ->join('learners','ee_user_datas.phone','=','learners.learner_phone')
-            ->orderBy('ee_user_datas.id','desc')
-            ->simplepaginate(100);
-        $counts=EasyEnglishUserData::count();
+    public function easyEnglishUserDatas(Request $req){
+        $search = $req->get('search', '');
+        
+        $query = DB::table('ee_user_datas')
+            ->selectRaw("*")
+            ->join('learners','ee_user_datas.phone','=','learners.learner_phone');
+        
+        if (!empty($search)) {
+            $query->where(function($q) use ($search) {
+                $q->where('learners.learner_name', 'LIKE', '%' . $search . '%')
+                  ->orWhere('learners.learner_phone', 'LIKE', '%' . $search . '%')
+                  ->orWhere('learners.learner_email', 'LIKE', '%' . $search . '%');
+            });
+        }
+        
+        $users = $query->orderBy('ee_user_datas.id','desc')
+            ->simplepaginate(100)
+            ->withQueryString();
+        
+        $counts = EasyEnglishUserData::count();
+        
+        // VIP user count
+        $vip_counts = EasyEnglishUserData::where('is_vip', 1)->count();
+        
+        // User Activity Statistics
+        $todayStart = date('Y-m-d 00:00:00');
+        $sevenDaysAgo = date('Y-m-d H:i:s', strtotime('-7 days'));
+        $thirtyDaysAgo = date('Y-m-d H:i:s', strtotime('-30 days'));
+        
+        // Active users today
+        $active_users_today = DB::table('ee_user_datas')
+            ->where('last_active', '>=', $todayStart)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        
+        // Active users (last 7 days)
+        $active_users_7d = DB::table('ee_user_datas')
+            ->where('last_active', '>=', $sevenDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        
+        // Active users (last 30 days)
+        $active_users_30d = DB::table('ee_user_datas')
+            ->where('last_active', '>=', $thirtyDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        
+        // New users today
+        $new_users_today = DB::table('ee_user_datas')
+            ->where('first_join', '>=', $todayStart)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        
+        // New users (last 7 days)
+        $new_users_7d = DB::table('ee_user_datas')
+            ->where('first_join', '>=', $sevenDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        
+        // New users (last 30 days)
+        $new_users_30d = DB::table('ee_user_datas')
+            ->where('first_join', '>=', $thirtyDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
       
         $languageConfig = [
             'name' => 'English',
@@ -253,20 +314,89 @@ class UserController extends Controller
         return view('userlayouts.languageuser',[
             'users'=>$users,
             'counts'=>$counts,
-            'languageConfig'=>$languageConfig
+            'vip_counts'=>$vip_counts,
+            'languageConfig'=>$languageConfig,
+            'search'=>$search,
+            'active_users_today'=>$active_users_today,
+            'active_users_7d'=>$active_users_7d,
+            'active_users_30d'=>$active_users_30d,
+            'new_users_today'=>$new_users_today,
+            'new_users_7d'=>$new_users_7d,
+            'new_users_30d'=>$new_users_30d
         ]);
     }
 
 
-    public function easyKoreanUserDatas(){
-        $users=DB::table('ko_user_datas')
-            ->selectRaw("
-                *
-            ")
-            ->join('learners','ko_user_datas.phone','=','learners.learner_phone')
-            ->orderBy('ko_user_datas.id','desc')
-            ->simplepaginate(100);
-        $counts=EasyKoreanUserData::count();
+    public function easyKoreanUserDatas(Request $req){
+        $search = $req->get('search', '');
+        
+        $query = DB::table('ko_user_datas')
+            ->selectRaw("*")
+            ->join('learners','ko_user_datas.phone','=','learners.learner_phone');
+        
+        if (!empty($search)) {
+            $query->where(function($q) use ($search) {
+                $q->where('learners.learner_name', 'LIKE', '%' . $search . '%')
+                  ->orWhere('learners.learner_phone', 'LIKE', '%' . $search . '%')
+                  ->orWhere('learners.learner_email', 'LIKE', '%' . $search . '%');
+            });
+        }
+        
+        $users = $query->orderBy('ko_user_datas.id','desc')
+            ->simplepaginate(100)
+            ->withQueryString();
+        
+        $counts = EasyKoreanUserData::count();
+        
+        // VIP user count
+        $vip_counts = EasyKoreanUserData::where('is_vip', 1)->count();
+        
+        // User Activity Statistics
+        $todayStart = date('Y-m-d 00:00:00');
+        $sevenDaysAgo = date('Y-m-d H:i:s', strtotime('-7 days'));
+        $thirtyDaysAgo = date('Y-m-d H:i:s', strtotime('-30 days'));
+        
+        // Active users today
+        $active_users_today = DB::table('ko_user_datas')
+            ->where('last_active', '>=', $todayStart)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        
+        // Active users (last 7 days)
+        $active_users_7d = DB::table('ko_user_datas')
+            ->where('last_active', '>=', $sevenDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        
+        // Active users (last 30 days)
+        $active_users_30d = DB::table('ko_user_datas')
+            ->where('last_active', '>=', $thirtyDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        
+        // New users today
+        $new_users_today = DB::table('ko_user_datas')
+            ->where('first_join', '>=', $todayStart)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        
+        // New users (last 7 days)
+        $new_users_7d = DB::table('ko_user_datas')
+            ->where('first_join', '>=', $sevenDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        
+        // New users (last 30 days)
+        $new_users_30d = DB::table('ko_user_datas')
+            ->where('first_join', '>=', $thirtyDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
         
         $languageConfig = [
             'name' => 'Korean',
@@ -277,19 +407,88 @@ class UserController extends Controller
         return view('userlayouts.languageuser',[
             'users'=>$users,
             'counts'=>$counts,
-            'languageConfig'=>$languageConfig
+            'vip_counts'=>$vip_counts,
+            'languageConfig'=>$languageConfig,
+            'search'=>$search,
+            'active_users_today'=>$active_users_today,
+            'active_users_7d'=>$active_users_7d,
+            'active_users_30d'=>$active_users_30d,
+            'new_users_today'=>$new_users_today,
+            'new_users_7d'=>$new_users_7d,
+            'new_users_30d'=>$new_users_30d
         ]);
     }
 
-    public function easyChineseUserDatas(){
-        $users=DB::table('cn_user_datas')
-            ->selectRaw("
-                *
-            ")
-            ->join('learners','cn_user_datas.phone','=','learners.learner_phone')
-            ->orderBy('cn_user_datas.id','desc')
-            ->simplepaginate(100);
-        $counts=EasyChineseUserData::count();
+    public function easyChineseUserDatas(Request $req){
+        $search = $req->get('search', '');
+        
+        $query = DB::table('cn_user_datas')
+            ->selectRaw("*")
+            ->join('learners','cn_user_datas.phone','=','learners.learner_phone');
+        
+        if (!empty($search)) {
+            $query->where(function($q) use ($search) {
+                $q->where('learners.learner_name', 'LIKE', '%' . $search . '%')
+                  ->orWhere('learners.learner_phone', 'LIKE', '%' . $search . '%')
+                  ->orWhere('learners.learner_email', 'LIKE', '%' . $search . '%');
+            });
+        }
+        
+        $users = $query->orderBy('cn_user_datas.id','desc')
+            ->simplepaginate(100)
+            ->withQueryString();
+        
+        $counts = EasyChineseUserData::count();
+        
+        // VIP user count
+        $vip_counts = EasyChineseUserData::where('is_vip', 1)->count();
+        
+        // User Activity Statistics
+        $todayStart = date('Y-m-d 00:00:00');
+        $sevenDaysAgo = date('Y-m-d H:i:s', strtotime('-7 days'));
+        $thirtyDaysAgo = date('Y-m-d H:i:s', strtotime('-30 days'));
+        
+        // Active users today
+        $active_users_today = DB::table('cn_user_datas')
+            ->where('last_active', '>=', $todayStart)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        
+        // Active users (last 7 days)
+        $active_users_7d = DB::table('cn_user_datas')
+            ->where('last_active', '>=', $sevenDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        
+        // Active users (last 30 days)
+        $active_users_30d = DB::table('cn_user_datas')
+            ->where('last_active', '>=', $thirtyDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        
+        // New users today
+        $new_users_today = DB::table('cn_user_datas')
+            ->where('first_join', '>=', $todayStart)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        
+        // New users (last 7 days)
+        $new_users_7d = DB::table('cn_user_datas')
+            ->where('first_join', '>=', $sevenDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        
+        // New users (last 30 days)
+        $new_users_30d = DB::table('cn_user_datas')
+            ->where('first_join', '>=', $thirtyDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
         
         $languageConfig = [
             'name' => 'Chinese',
@@ -300,20 +499,89 @@ class UserController extends Controller
         return view('userlayouts.languageuser',[
             'users'=>$users,
             'counts'=>$counts,
-            'languageConfig'=>$languageConfig
+            'vip_counts'=>$vip_counts,
+            'languageConfig'=>$languageConfig,
+            'search'=>$search,
+            'active_users_today'=>$active_users_today,
+            'active_users_7d'=>$active_users_7d,
+            'active_users_30d'=>$active_users_30d,
+            'new_users_today'=>$new_users_today,
+            'new_users_7d'=>$new_users_7d,
+            'new_users_30d'=>$new_users_30d
         ]);
     }
     
     
-    public function easyJapaneseUserDatas(){
-        $users=DB::table('jp_user_datas')
-            ->selectRaw("
-                *
-            ")
-            ->join('learners','jp_user_datas.phone','=','learners.learner_phone')
-            ->orderBy('jp_user_datas.id','desc')
-            ->simplepaginate(100);
-        $counts=EasyJapaneseUserData::count();
+    public function easyJapaneseUserDatas(Request $req){
+        $search = $req->get('search', '');
+        
+        $query = DB::table('jp_user_datas')
+            ->selectRaw("*")
+            ->join('learners','jp_user_datas.phone','=','learners.learner_phone');
+        
+        if (!empty($search)) {
+            $query->where(function($q) use ($search) {
+                $q->where('learners.learner_name', 'LIKE', '%' . $search . '%')
+                  ->orWhere('learners.learner_phone', 'LIKE', '%' . $search . '%')
+                  ->orWhere('learners.learner_email', 'LIKE', '%' . $search . '%');
+            });
+        }
+        
+        $users = $query->orderBy('jp_user_datas.id','desc')
+            ->simplepaginate(100)
+            ->withQueryString();
+        
+        $counts = EasyJapaneseUserData::count();
+        
+        // VIP user count
+        $vip_counts = EasyJapaneseUserData::where('is_vip', 1)->count();
+        
+        // User Activity Statistics
+        $todayStart = date('Y-m-d 00:00:00');
+        $sevenDaysAgo = date('Y-m-d H:i:s', strtotime('-7 days'));
+        $thirtyDaysAgo = date('Y-m-d H:i:s', strtotime('-30 days'));
+        
+        // Active users today
+        $active_users_today = DB::table('jp_user_datas')
+            ->where('last_active', '>=', $todayStart)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        
+        // Active users (last 7 days)
+        $active_users_7d = DB::table('jp_user_datas')
+            ->where('last_active', '>=', $sevenDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        
+        // Active users (last 30 days)
+        $active_users_30d = DB::table('jp_user_datas')
+            ->where('last_active', '>=', $thirtyDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        
+        // New users today
+        $new_users_today = DB::table('jp_user_datas')
+            ->where('first_join', '>=', $todayStart)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        
+        // New users (last 7 days)
+        $new_users_7d = DB::table('jp_user_datas')
+            ->where('first_join', '>=', $sevenDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        
+        // New users (last 30 days)
+        $new_users_30d = DB::table('jp_user_datas')
+            ->where('first_join', '>=', $thirtyDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
         
         $languageConfig = [
             'name' => 'Japanese',
@@ -324,19 +592,88 @@ class UserController extends Controller
         return view('userlayouts.languageuser',[
             'users'=>$users,
             'counts'=>$counts,
-            'languageConfig'=>$languageConfig
+            'vip_counts'=>$vip_counts,
+            'languageConfig'=>$languageConfig,
+            'search'=>$search,
+            'active_users_today'=>$active_users_today,
+            'active_users_7d'=>$active_users_7d,
+            'active_users_30d'=>$active_users_30d,
+            'new_users_today'=>$new_users_today,
+            'new_users_7d'=>$new_users_7d,
+            'new_users_30d'=>$new_users_30d
         ]);
     }
     
-    public function easyRussianUserDatas(){
-        $users=DB::table('ru_user_datas')
-            ->selectRaw("
-                *
-            ")
-            ->join('learners','ru_user_datas.phone','=','learners.learner_phone')
-            ->orderBy('ru_user_datas.id','desc')
-            ->simplepaginate(100);
-        $counts=EasyRussianUserData::count();
+    public function easyRussianUserDatas(Request $req){
+        $search = $req->get('search', '');
+        
+        $query = DB::table('ru_user_datas')
+            ->selectRaw("*")
+            ->join('learners','ru_user_datas.phone','=','learners.learner_phone');
+        
+        if (!empty($search)) {
+            $query->where(function($q) use ($search) {
+                $q->where('learners.learner_name', 'LIKE', '%' . $search . '%')
+                  ->orWhere('learners.learner_phone', 'LIKE', '%' . $search . '%')
+                  ->orWhere('learners.learner_email', 'LIKE', '%' . $search . '%');
+            });
+        }
+        
+        $users = $query->orderBy('ru_user_datas.id','desc')
+            ->simplepaginate(100)
+            ->withQueryString();
+        
+        $counts = EasyRussianUserData::count();
+        
+        // VIP user count
+        $vip_counts = EasyRussianUserData::where('is_vip', 1)->count();
+        
+        // User Activity Statistics
+        $todayStart = date('Y-m-d 00:00:00');
+        $sevenDaysAgo = date('Y-m-d H:i:s', strtotime('-7 days'));
+        $thirtyDaysAgo = date('Y-m-d H:i:s', strtotime('-30 days'));
+        
+        // Active users today
+        $active_users_today = DB::table('ru_user_datas')
+            ->where('last_active', '>=', $todayStart)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        
+        // Active users (last 7 days)
+        $active_users_7d = DB::table('ru_user_datas')
+            ->where('last_active', '>=', $sevenDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        
+        // Active users (last 30 days)
+        $active_users_30d = DB::table('ru_user_datas')
+            ->where('last_active', '>=', $thirtyDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        
+        // New users today
+        $new_users_today = DB::table('ru_user_datas')
+            ->where('first_join', '>=', $todayStart)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        
+        // New users (last 7 days)
+        $new_users_7d = DB::table('ru_user_datas')
+            ->where('first_join', '>=', $sevenDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
+        
+        // New users (last 30 days)
+        $new_users_30d = DB::table('ru_user_datas')
+            ->where('first_join', '>=', $thirtyDaysAgo)
+            ->select('phone')
+            ->distinct()
+            ->count();
         
         $languageConfig = [
             'name' => 'Russian',
@@ -347,7 +684,15 @@ class UserController extends Controller
         return view('userlayouts.languageuser',[
             'users'=>$users,
             'counts'=>$counts,
-            'languageConfig'=>$languageConfig
+            'vip_counts'=>$vip_counts,
+            'languageConfig'=>$languageConfig,
+            'search'=>$search,
+            'active_users_today'=>$active_users_today,
+            'active_users_7d'=>$active_users_7d,
+            'active_users_30d'=>$active_users_30d,
+            'new_users_today'=>$new_users_today,
+            'new_users_7d'=>$new_users_7d,
+            'new_users_30d'=>$new_users_30d
         ]);
     }
 
@@ -408,80 +753,6 @@ class UserController extends Controller
         FirebaseNotiPushController::pushNotificationToSingleUser($token,$title,$msg);
 
         return back()->with('msg','Cloud message sent.');
-    }
-    
-    public function showVipsetting(Request $req,$id){
-        
-        if(isset($req->phone)){
-            $phone=$req->phone;
-            $phone = str_replace([" ","+","*","#","-"], "", $phone);
-            $learner=learner::where('learner_phone',$phone)->first();
-            $api=true;
-        }else{
-            $learner=learner::find($id);
-            $phone=$learner->learner_phone;
-            $api=false;
-        }
-        
-        
-
-        $koreaData=EasyKoreanUserData::where('phone',$phone)->first();
-        $englishData=EasyEnglishUserData::where('phone',$phone)->first();
-        $chineseData=EasyChineseUserData::where('phone',$phone)->first();
-        $japaneseData=EasyJapaneseUserData::where('phone',$phone)->first();
-        $russianData=EasyRussianUserData::where('phone',$phone)->first();
-        
-        $vipCoursesKorea=VipUser::where('phone',$phone)->where('major','korea')->get();
-        $coursesKorea=array_column(json_decode($vipCoursesKorea),'course_id');
-        
-        $vipCoursesEnglish=VipUser::where('phone',$phone)->where('major','english')->get();
-        $coursesEnglish=array_column(json_decode($vipCoursesEnglish),'course_id');
-        
-        $vipCoursesChinese=VipUser::where('phone',$phone)->where('major','chinese')->get();
-        $coursesChinese=array_column(json_decode($vipCoursesChinese),'course_id');
-        
-        $vipCoursesJapanese=VipUser::where('phone',$phone)->where('major','japanese')->get();
-        $coursesJapanese=array_column(json_decode($vipCoursesJapanese),'course_id');
-        
-        $vipCoursesRussian=VipUser::where('phone',$phone)->where('major','russian')->get();
-        $coursesRussian=array_column(json_decode($vipCoursesRussian),'course_id');
-        
-        $mainCourses=DB::table('courses')
-        ->selectRaw("*")->get();
-
-       if(!$api){
-            return view('userlayouts.vipadding',[
-                'learner'=>$learner,
-                'koreaData'=>$koreaData,
-                'englishData'=>$englishData,
-                'chineseData'=>$chineseData,
-                'JapaneseData'=>$japaneseData,
-                'russianData'=>$russianData,
-                'coursesEnglish'=>$coursesEnglish,
-                'coursesKorea'=>$coursesKorea,
-                'coursesChinese'=>$coursesChinese,
-                'coursesJapanese'=>$coursesJapanese,
-                'coursesRussian'=>$coursesRussian,
-                'mainCourses'=>$mainCourses
-            ]);
-       }else{
-            $response['learner']=$learner;
-            
-            $response['koreaData']=$koreaData;
-            $response['englishData']=$englishData;
-            $response['japaneseData']=$japaneseData;
-            $response['russianData']=$russianData;
-            $response['chineseData']=$chineseData;
-            
-            $response['coursesEnglish']=$coursesEnglish;
-            $response['coursesKorea']=$coursesKorea;
-            $response['coursesJapanese']=$coursesJapanese;
-            $response['coursesChinese']=$coursesChinese;
-            $response['coursesRussian']=$coursesRussian;
-            
-            $response['mainCourses']=$mainCourses;
-            return $response;
-       }
     }
     
     public function addVip(Request $req, $id){
@@ -765,6 +1036,325 @@ class UserController extends Controller
         $response['status']="success";
         return $response;
         
+    }
+    
+    public function showUserPerformance($phone, $language){
+        $learner = learner::where('learner_phone', $phone)->first();
+        
+        if (!$learner) {
+            abort(404, 'User not found');
+        }
+        
+        // Map language names to models, table names, and course major values
+        $languageMap = [
+            'english' => [
+                'model' => EasyEnglishUserData::class, 
+                'table' => 'ee_user_datas', 
+                'name' => 'English',
+                'major' => 'english'
+            ],
+            'korean' => [
+                'model' => EasyKoreanUserData::class, 
+                'table' => 'ko_user_datas', 
+                'name' => 'Korean',
+                'major' => 'korea'
+            ],
+            'chinese' => [
+                'model' => EasyChineseUserData::class, 
+                'table' => 'cn_user_datas', 
+                'name' => 'Chinese',
+                'major' => 'chinese'
+            ],
+            'japanese' => [
+                'model' => EasyJapaneseUserData::class, 
+                'table' => 'jp_user_datas', 
+                'name' => 'Japanese',
+                'major' => 'japanese'
+            ],
+            'russian' => [
+                'model' => EasyRussianUserData::class, 
+                'table' => 'ru_user_datas', 
+                'name' => 'Russian',
+                'major' => 'russian'
+            ],
+        ];
+        
+        $lang = $languageMap[strtolower($language)] ?? null;
+        
+        if (!$lang) {
+            abort(404, 'Invalid language');
+        }
+        
+        $userData = $lang['model']::where('phone', $phone)->first();
+        
+        if (!$userData) {
+            return redirect()->route('detail', ['phone' => $phone])->with('error', 'No data found for this language.');
+        }
+        
+        // Get user ID - try both user_id and id for enrollment, use id for studies
+        $userIdForEnroll = $learner->user_id ?? $learner->id;
+        $learnerIdForStudies = $learner->id; // studies table uses learner_id which should be learners.id
+        
+        // Get all courses for this language
+        $courses = course::where('major', $lang['major'])
+            ->orderBy('sorting', 'asc')
+            ->get();
+        
+        // Get course progress data
+        $courseProgress = [];
+        
+        foreach ($courses as $course) {
+            // Check if user is enrolled in this course (try both user_id and id)
+            $enrollment = DB::table('course_enroll')
+                ->where(function($query) use ($userIdForEnroll, $learner) {
+                    $query->where('user_id', $userIdForEnroll)
+                          ->orWhere('user_id', $learner->id);
+                })
+                ->where('course_id', $course->course_id)
+                ->first();
+            
+            // Get all lessons in this course (via categories)
+            $categoryIds = DB::table('lessons_categories')
+                ->where('course_id', $course->course_id)
+                ->pluck('id')
+                ->toArray();
+            
+            $totalLessons = DB::table('lessons')
+                ->whereIn('category_id', $categoryIds)
+                ->count();
+            
+            // Get completed lessons (from studies table - uses learner_id)
+            $completedLessons = 0;
+            if ($totalLessons > 0 && !empty($categoryIds)) {
+                $lessonIds = DB::table('lessons')
+                    ->whereIn('category_id', $categoryIds)
+                    ->pluck('id')
+                    ->toArray();
+                
+                if (!empty($lessonIds)) {
+                    $completedLessons = DB::table('studies')
+                        ->where('learner_id', $learnerIdForStudies)
+                        ->whereIn('lesson_id', $lessonIds)
+                        ->distinct('lesson_id')
+                        ->count('lesson_id');
+                }
+            }
+            
+            // Calculate progress percentage
+            $progressPercentage = $totalLessons > 0 
+                ? round(($completedLessons / $totalLessons) * 100, 1) 
+                : 0;
+            
+            // Use enrollment progress if available, otherwise use calculated progress
+            $displayProgress = $enrollment ? $enrollment->progress : $progressPercentage;
+            
+            $courseProgress[] = [
+                'course' => $course,
+                'enrolled' => $enrollment ? true : false,
+                'enrollment' => $enrollment,
+                'totalLessons' => $totalLessons,
+                'completedLessons' => $completedLessons,
+                'progress' => $displayProgress,
+                'calculatedProgress' => $progressPercentage
+            ];
+        }
+        
+        return view('userlayouts.userperformance', [
+            'learner' => $learner,
+            'userData' => $userData,
+            'language' => $lang['name'],
+            'languageCode' => strtolower($language),
+            'courseProgress' => $courseProgress
+        ]);
+    }
+    
+    public function showLanguageVipManagement($phone, $language){
+        $learner = learner::where('learner_phone', $phone)->first();
+        
+        if (!$learner) {
+            abort(404, 'User not found');
+        }
+        
+        // Map language names to models, table names, and course major values
+        $languageMap = [
+            'english' => [
+                'model' => EasyEnglishUserData::class, 
+                'table' => 'ee_user_datas', 
+                'name' => 'English',
+                'major' => 'english',
+                'vipField' => 'vip_english'
+            ],
+            'korean' => [
+                'model' => EasyKoreanUserData::class, 
+                'table' => 'ko_user_datas', 
+                'name' => 'Korean',
+                'major' => 'korea',
+                'vipField' => 'vip_korea'
+            ],
+            'chinese' => [
+                'model' => EasyChineseUserData::class, 
+                'table' => 'cn_user_datas', 
+                'name' => 'Chinese',
+                'major' => 'chinese',
+                'vipField' => 'vip_chinese'
+            ],
+            'japanese' => [
+                'model' => EasyJapaneseUserData::class, 
+                'table' => 'jp_user_datas', 
+                'name' => 'Japanese',
+                'major' => 'japanese',
+                'vipField' => 'vip_japanese'
+            ],
+            'russian' => [
+                'model' => EasyRussianUserData::class, 
+                'table' => 'ru_user_datas', 
+                'name' => 'Russian',
+                'major' => 'russian',
+                'vipField' => 'vip_russian'
+            ],
+        ];
+        
+        $lang = $languageMap[strtolower($language)] ?? null;
+        
+        if (!$lang) {
+            abort(404, 'Invalid language');
+        }
+        
+        $userData = $lang['model']::where('phone', $phone)->first();
+        
+        if (!$userData) {
+            return redirect()->route('detail', ['phone' => $phone])->with('error', 'No data found for this language.');
+        }
+        
+        // Get all courses for this language
+        $courses = course::where('major', $lang['major'])
+            ->orderBy('sorting', 'asc')
+            ->get();
+        
+        // Get VIP courses for this user and language
+        $vipCourses = VipUser::where('phone', $phone)
+            ->where('major', $lang['major'])
+            ->pluck('course_id')
+            ->toArray();
+        
+        return view('userlayouts.languagevipmanagement', [
+            'learner' => $learner,
+            'userData' => $userData,
+            'language' => $lang['name'],
+            'languageCode' => strtolower($language),
+            'major' => $lang['major'],
+            'vipField' => $lang['vipField'],
+            'courses' => $courses,
+            'vipCourses' => $vipCourses
+        ]);
+    }
+    
+    public function updateLanguageVip(Request $req, $phone, $language){
+        $learner = learner::where('learner_phone', $phone)->first();
+        
+        if (!$learner) {
+            return back()->with('error', 'User not found');
+        }
+        
+        // Map language names to models and major values
+        $languageMap = [
+            'english' => [
+                'model' => EasyEnglishUserData::class, 
+                'name' => 'English',
+                'major' => 'english',
+                'vipField' => 'vip_english'
+            ],
+            'korean' => [
+                'model' => EasyKoreanUserData::class, 
+                'name' => 'Korean',
+                'major' => 'korea',
+                'vipField' => 'vip_korea'
+            ],
+            'chinese' => [
+                'model' => EasyChineseUserData::class, 
+                'name' => 'Chinese',
+                'major' => 'chinese',
+                'vipField' => 'vip_chinese'
+            ],
+            'japanese' => [
+                'model' => EasyJapaneseUserData::class, 
+                'name' => 'Japanese',
+                'major' => 'japanese',
+                'vipField' => 'vip_japanese'
+            ],
+            'russian' => [
+                'model' => EasyRussianUserData::class, 
+                'name' => 'Russian',
+                'major' => 'russian',
+                'vipField' => 'vip_russian'
+            ],
+        ];
+        
+        $lang = $languageMap[strtolower($language)] ?? null;
+        
+        if (!$lang) {
+            return back()->with('error', 'Invalid language');
+        }
+        
+        // Update VIP status
+        $isVip = $req->has($lang['vipField']) ? 1 : 0;
+        $lang['model']::where('phone', $phone)->update(['is_vip' => $isVip]);
+        
+        // Update Gold Plan (if applicable)
+        if ($req->has('gold_plan')) {
+            $lang['model']::where('phone', $phone)->update(['gold_plan' => 1]);
+        } else {
+            // Only update if the model has gold_plan field (check if it exists)
+            try {
+                $lang['model']::where('phone', $phone)->update(['gold_plan' => 0]);
+            } catch (\Exception $e) {
+                // Field might not exist for some languages, ignore
+            }
+        }
+        
+        // Get all courses for this language
+        $courses = course::where('major', $lang['major'])->get();
+        
+        // Update VIP courses
+        foreach ($courses as $course) {
+            $courseId = $course->course_id;
+            if ($req->has($courseId)) {
+                // Add/Update VIP course
+                DB::table('VipUsers')->updateOrInsert(
+                    [
+                        'phone' => $phone,
+                        'course_id' => $courseId,
+                        'major' => $lang['major']
+                    ],
+                    [
+                        'course' => $course->title,
+                        'date' => date('Y-m-d'),
+                        'deleted_account' => 0
+                    ]
+                );
+            } else {
+                // Remove VIP course
+                DB::table('VipUsers')
+                    ->where('phone', $phone)
+                    ->where('course_id', $courseId)
+                    ->where('major', $lang['major'])
+                    ->delete();
+            }
+        }
+        
+        // Handle payment if amount is provided
+        if ($req->amount && $req->amount > 0) {
+            $payment = new Payment();
+            $payment->user_id = $phone;
+            $payment->major = $lang['major'];
+            $payment->amount = $req->amount;
+            $payment->screenshot = '';
+            $payment->approve = 1; // Auto-approve for admin
+            $payment->save();
+        }
+        
+        return redirect()->route('languageVipManagement', ['phone' => $phone, 'language' => $language])
+            ->with('success', 'VIP access updated successfully for ' . $lang['name']);
     }
     
 }

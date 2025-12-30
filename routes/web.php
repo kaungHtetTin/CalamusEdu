@@ -53,8 +53,9 @@ Route::get('/users/email/{id}',[UserController::class,'showSendEmail'])->name('s
 Route::post('/users/email/send',[UserController::class,'sendEmail'])->name('sendEmail');
 Route::get('/users/pushnotification/{id}',[UserController::class,'showPushNotification'])->name('showPushNotification');
 Route::post('/users/pushnotification/send',[UserController::class,'pushNotification'])->name('pushNotification');
-Route::get('/users/vipadding/{id}',[UserController::class,'showVipsetting'])->name('showVipsetting');
-Route::post('/users/vipadding/{id}',[UserController::class,'addVip'])->name('addVip');
+Route::get('/users/vip/{phone}/{language}',[UserController::class,'showLanguageVipManagement'])->name('languageVipManagement');
+Route::post('/users/vip/{phone}/{language}',[UserController::class,'updateLanguageVip'])->name('updateLanguageVip');
+Route::get('/users/performance/{phone}/{language}',[UserController::class,'showUserPerformance'])->name('userPerformance');
 
 //word of the days routes
 
