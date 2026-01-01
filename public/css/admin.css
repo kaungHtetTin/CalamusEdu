@@ -278,20 +278,46 @@ body.light-theme .new-category-btn.btn-cancel:hover {
 }
 
 /* NEUTRAL/BACK BUTTONS - Cancel, Back actions */
+/* Back Button - Consistent Design Across All Pages */
+.btn-back,
 .btn-neutral,
 .btn-teacher-back {
   background: rgba(139, 148, 158, 0.1);
   border-color: rgba(139, 148, 158, 0.3);
   color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
+.btn-back:hover,
 .btn-neutral:hover,
 .btn-teacher-back:hover {
   background: rgba(139, 148, 158, 0.2);
   border-color: var(--text-muted);
   color: var(--text-primary);
+  text-decoration: none;
 }
 
+.btn-back:focus,
+.btn-neutral:focus,
+.btn-teacher-back:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--primary-color-light);
+}
+
+body.light-theme .btn-back,
 body.light-theme .btn-neutral,
 body.light-theme .btn-teacher-back {
   background: rgba(95, 99, 104, 0.1);
@@ -299,6 +325,7 @@ body.light-theme .btn-teacher-back {
   color: var(--text-muted);
 }
 
+body.light-theme .btn-back:hover,
 body.light-theme .btn-neutral:hover,
 body.light-theme .btn-teacher-back:hover {
   background: rgba(95, 99, 104, 0.2);
@@ -339,7 +366,13 @@ body.light-theme .btn-teacher-back:hover {
 }
 
 /* Small button size - Compact */
-.btn-sm:not(.btn-action) {
+.btn-sm:not(.btn-action):not(.btn-back) {
+  padding: 4px 10px;
+  font-size: 12px;
+  gap: 5px;
+}
+
+.btn-back.btn-sm {
   padding: 4px 10px;
   font-size: 12px;
   gap: 5px;
@@ -741,32 +774,23 @@ body.light-theme .admin-topbar {
   align-items: center;
 }
 
-.topbar-search-icon {
-  position: absolute;
-  left: 16px;
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 16px;
-  pointer-events: none;
-  z-index: 1;
-}
-
-body.light-theme .topbar-search-icon {
-  color: #9aa0a6;
-}
+/* Search icon removed - no longer used */
 
 .topbar-search-input {
   width: 100%;
-  padding: 8px 16px 8px 44px;
+  padding: 8px 16px;
   background-color: var(--bg-tertiary);
   border: 1px solid var(--border-color);
   border-radius: 6px;
   color: var(--text-primary);
   font-size: 14px;
+  line-height: 1.5;
   transition: all 0.2s ease;
 }
 
 .topbar-search-input::placeholder {
   color: var(--text-muted);
+  opacity: 1;
 }
 
 .topbar-search-input:focus {
@@ -2826,161 +2850,643 @@ body.light-theme .course-form-card .course-title-header i {
   padding: 32px;
 }
 
-/* Form Sections */
+/* Form Sections - Vimeo Style */
 .form-section {
-  margin-bottom: 32px;
-  padding-bottom: 24px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .form-section:last-of-type {
   border-bottom: none;
-  margin-bottom: 24px;
+  margin-bottom: 0;
 }
 
 body.light-theme .form-section {
-  border-bottom-color: rgba(0, 0, 0, 0.1);
+  border-bottom-color: var(--border-color);
 }
 
 .form-section-title {
-  color: var(--primary-color);
+  font-size: 15px;
   font-weight: 600;
-  font-size: 16px;
-  margin-bottom: 20px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid rgba(50, 205, 50, 0.2);
+  color: var(--text-primary);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 body.light-theme .form-section-title {
-  color: #1967d2;
-  border-bottom-color: rgba(25, 103, 210, 0.2);
+  color: var(--text-primary);
+  border-bottom-color: var(--border-color);
 }
 
 .form-section-title i {
   color: var(--primary-color);
+  font-size: 16px;
 }
 
-body.light-theme .form-section-title i {
-  color: #1967d2;
+/* Form Group - Consistent spacing */
+.form-group,
+.mb-3 {
+  margin-bottom: 16px;
 }
 
-/* Modern Input Styling */
-.modern-input {
-  background-color: rgba(255, 255, 255, 0.05);
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  color: #ffffff;
-  padding: 12px 16px;
-  transition: all 0.3s ease;
+/* Form Row */
+.form-row,
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: -8px;
+  margin-right: -8px;
 }
 
-.modern-input:focus {
-  background-color: rgba(255, 255, 255, 0.08);
-  border-color: rgba(50, 205, 50, 0.5);
-  box-shadow: 0 0 0 3px rgba(50, 205, 50, 0.1);
-  outline: none;
-  color: #ffffff;
+.form-row > *,
+.row > * {
+  padding-left: 8px;
+  padding-right: 8px;
 }
 
-.modern-input::placeholder {
-  color: rgba(255, 255, 255, 0.4);
-}
+/* ============================================
+   VIMEO FORM DESIGN SYSTEM
+   Complete form styling to match Vimeo console
+   ============================================ */
 
-body.light-theme .modern-input {
-  background-color: #ffffff;
-  border-color: #dadce0;
-  color: #202124;
-}
-
-body.light-theme .modern-input:focus {
-  background-color: #ffffff;
-  border-color: rgba(25, 103, 210, 0.5);
-  box-shadow: 0 0 0 3px rgba(25, 103, 210, 0.1);
-  color: #202124;
-}
-
-body.light-theme .modern-input::placeholder {
-  color: #9aa0a6;
-}
-
+/* Form Label - Vimeo Style */
 .form-label {
+  display: block;
   font-weight: 500;
-  color: #e0e0e0;
-  margin-bottom: 8px;
-  font-size: 14px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  line-height: 1.4;
 }
 
 body.light-theme .form-label {
-  color: #5f6368;
+  color: var(--text-primary);
 }
 
-.form-label .text-danger {
-  color: #f44336;
+.form-label .text-danger,
+.form-label .required {
+  color: var(--danger-color);
+  margin-left: 2px;
 }
 
-/* Modern Checkbox */
+/* All Form Controls - Vimeo Style */
+.form-control,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="tel"],
+input[type="url"],
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"],
+input[type="search"],
+.modern-input,
+select.form-control,
+select {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--text-primary);
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.form-control:focus,
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+input[type="tel"]:focus,
+input[type="url"]:focus,
+input[type="date"]:focus,
+input[type="time"]:focus,
+input[type="datetime-local"]:focus,
+input[type="search"]:focus,
+.modern-input:focus,
+select.form-control:focus,
+select:focus {
+  outline: none;
+  background-color: var(--bg-secondary);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--primary-color-light);
+  color: var(--text-primary);
+}
+
+.form-control::placeholder,
+input::placeholder,
+.modern-input::placeholder,
+select::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
+}
+
+.form-control:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: var(--bg-tertiary);
+}
+
+/* Light Theme Form Controls */
+body.light-theme .form-control,
+body.light-theme input[type="text"],
+body.light-theme input[type="email"],
+body.light-theme input[type="password"],
+body.light-theme input[type="number"],
+body.light-theme input[type="tel"],
+body.light-theme input[type="url"],
+body.light-theme input[type="date"],
+body.light-theme input[type="time"],
+body.light-theme input[type="datetime-local"],
+body.light-theme input[type="search"],
+body.light-theme .modern-input,
+body.light-theme select.form-control,
+body.light-theme select {
+  background-color: #ffffff;
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+body.light-theme .form-control:focus,
+body.light-theme input:focus,
+body.light-theme .modern-input:focus,
+body.light-theme select:focus {
+  background-color: #ffffff;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--primary-color-light);
+}
+
+body.light-theme .form-control::placeholder,
+body.light-theme input::placeholder,
+body.light-theme .modern-input::placeholder {
+  color: var(--text-muted);
+}
+
+/* Textarea - Vimeo Style */
+textarea.form-control,
+textarea {
+  min-height: 100px;
+  resize: vertical;
+  font-family: inherit;
+  padding: 8px 12px;
+}
+
+textarea.form-control:focus,
+textarea:focus {
+  outline: none;
+  background-color: var(--bg-secondary);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--primary-color-light);
+}
+
+body.light-theme textarea.form-control,
+body.light-theme textarea {
+  background-color: #ffffff;
+  border-color: var(--border-color);
+}
+
+body.light-theme textarea.form-control:focus,
+body.light-theme textarea:focus {
+  background-color: #ffffff;
+  border-color: var(--primary-color);
+}
+
+/* Select Dropdown - Vimeo Style */
+select.form-control,
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238b949e' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px;
+  padding-right: 36px;
+  cursor: pointer;
+}
+
+body.light-theme select.form-control,
+body.light-theme select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236e7781' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+}
+
+/* Checkbox - Vimeo Style */
+.form-check-input[type="checkbox"],
+input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-top: 0.25em;
+  margin-right: 8px;
+  vertical-align: top;
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  flex-shrink: 0;
+}
+
+.form-check-input[type="checkbox"]:checked,
+input[type="checkbox"]:checked {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M10 3L4.5 8.5 2 6l1.5-1.5L4.5 5.5 8.5 1.5 10 3z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 12px;
+}
+
+.form-check-input[type="checkbox"]:focus,
+input[type="checkbox"]:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--primary-color-light);
+}
+
+.form-check-input[type="checkbox"]:disabled,
+input[type="checkbox"]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+body.light-theme .form-check-input[type="checkbox"],
+body.light-theme input[type="checkbox"] {
+  background-color: #ffffff;
+  border-color: var(--border-color);
+}
+
+body.light-theme .form-check-input[type="checkbox"]:checked,
+body.light-theme input[type="checkbox"]:checked {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+/* Radio Button - Vimeo Style */
+.form-check-input[type="radio"],
+input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  margin-top: 0.25em;
+  margin-right: 8px;
+  vertical-align: top;
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  flex-shrink: 0;
+}
+
+.form-check-input[type="radio"]:checked,
+input[type="radio"]:checked {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  background-image: radial-gradient(circle, #ffffff 40%, transparent 40%);
+  background-size: 8px 8px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.form-check-input[type="radio"]:focus,
+input[type="radio"]:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--primary-color-light);
+}
+
+.form-check-input[type="radio"]:disabled,
+input[type="radio"]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+body.light-theme .form-check-input[type="radio"],
+body.light-theme input[type="radio"] {
+  background-color: #ffffff;
+  border-color: var(--border-color);
+}
+
+body.light-theme .form-check-input[type="radio"]:checked,
+body.light-theme input[type="radio"]:checked {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+/* Form Check Label */
+.form-check-label,
+label {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  cursor: pointer;
+  line-height: 1.5;
+}
+
+body.light-theme .form-check-label,
+body.light-theme label {
+  color: var(--text-primary);
+}
+
+/* Form Check Container */
+.form-check {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0;
+  padding: 0;
+  min-height: 38px;
+}
+
+.form-check-input {
+  margin-top: 0;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.form-check-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.form-check-label i {
+  margin-right: 6px;
+}
+
+/* Modern Checkbox Container - Vimeo Style */
 .modern-checkbox {
-  padding: 16px;
-  background-color: rgba(255, 255, 255, 0.05);
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  transition: all 0.3s ease;
+  padding: 8px 12px;
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  min-height: 38px;
+  display: flex;
+  align-items: center;
 }
 
 .modern-checkbox:hover {
-  background-color: rgba(255, 255, 255, 0.08);
-  border-color: rgba(50, 205, 50, 0.3);
+  background-color: var(--bg-hover);
+  border-color: var(--primary-color-medium);
 }
 
 .modern-checkbox .form-check-input {
-  width: 20px;
-  height: 20px;
-  margin-top: 2px;
+  width: 18px;
+  height: 18px;
+  margin-top: 0;
+  margin-right: 8px;
   cursor: pointer;
+  flex-shrink: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  transition: all 0.2s ease;
 }
 
 .modern-checkbox .form-check-input:checked {
-  background-color: #32cd32;
-  border-color: #32cd32;
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M10 3L4.5 8.5 2 6l1.5-1.5L4.5 5.5 8.5 1.5 10 3z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 12px;
 }
 
 .modern-checkbox .form-check-label {
-  color: #ffffff;
+  color: var(--text-primary);
   cursor: pointer;
-  font-weight: 500;
+  font-weight: 400;
+  font-size: 14px;
+  margin: 0;
+  display: flex;
+  align-items: center;
 }
 
 body.light-theme .modern-checkbox {
-  background-color: #f8f9fa;
-  border-color: #dadce0;
+  background-color: #f6f8fa;
+  border-color: var(--border-color);
 }
 
 body.light-theme .modern-checkbox:hover {
   background-color: #f1f3f4;
-  border-color: rgba(25, 103, 210, 0.3);
+  border-color: var(--primary-color-medium);
+}
+
+body.light-theme .modern-checkbox .form-check-input {
+  background-color: #ffffff;
+  border-color: var(--border-color);
 }
 
 body.light-theme .modern-checkbox .form-check-input:checked {
-  background-color: #1967d2;
-  border-color: #1967d2;
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M10 3L4.5 8.5 2 6l1.5-1.5L4.5 5.5 8.5 1.5 10 3z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 12px;
 }
 
 body.light-theme .modern-checkbox .form-check-label {
-  color: #202124;
+  color: var(--text-primary);
 }
 
-/* Form Actions */
+/* Form Actions - Vimeo Style */
 .form-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
-  padding-top: 24px;
-  margin-top: 24px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  gap: 10px;
+  padding-top: 20px;
+  margin-top: 20px;
+  border-top: 1px solid var(--border-color);
 }
 
 body.light-theme .form-actions {
-  border-top-color: rgba(0, 0, 0, 0.1);
+  border-top-color: var(--border-color);
+}
+
+/* File Input - Vimeo Style */
+input[type="file"],
+.form-control[type="file"] {
+  padding: 8px 12px;
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+input[type="file"]:focus,
+.form-control[type="file"]:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--primary-color-light);
+}
+
+body.light-theme input[type="file"],
+body.light-theme .form-control[type="file"] {
+  background-color: #ffffff;
+  border-color: var(--border-color);
+}
+
+/* Color Picker Input - Vimeo Style */
+.form-control-color,
+input[type="color"] {
+  width: 50px;
+  height: 38px;
+  padding: 2px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: var(--bg-tertiary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.form-control-color:hover,
+input[type="color"]:hover {
+  border-color: var(--primary-color);
+}
+
+.form-control-color:focus,
+input[type="color"]:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--primary-color-light);
+}
+
+body.light-theme .form-control-color,
+body.light-theme input[type="color"] {
+  background: #ffffff;
+  border-color: var(--border-color);
+}
+
+/* Input Group - Vimeo Style */
+.input-group {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+}
+
+.input-group .form-control,
+.input-group input {
+  border-radius: 6px 0 0 6px;
+}
+
+.input-group .form-control:not(:first-child),
+.input-group input:not(:first-child) {
+  border-left: 0;
+  border-radius: 0;
+}
+
+.input-group .form-control:not(:last-child),
+.input-group input:not(:last-child) {
+  border-right: 0;
+}
+
+.input-group-text {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 0 6px 6px 0;
+  white-space: nowrap;
+}
+
+body.light-theme .input-group-text {
+  background-color: #f6f8fa;
+  border-color: var(--border-color);
+  color: var(--text-secondary);
+}
+
+/* Validation States - Vimeo Style */
+.form-control.is-invalid,
+input.is-invalid,
+select.is-invalid,
+textarea.is-invalid {
+  border-color: var(--danger-color);
+}
+
+.form-control.is-invalid:focus,
+input.is-invalid:focus,
+select.is-invalid:focus,
+textarea.is-invalid:focus {
+  border-color: var(--danger-color);
+  box-shadow: 0 0 0 3px rgba(248, 81, 73, 0.1);
+}
+
+.form-control.is-valid,
+input.is-valid,
+select.is-valid,
+textarea.is-valid {
+  border-color: var(--success-color);
+}
+
+.form-control.is-valid:focus,
+input.is-valid:focus,
+select.is-valid:focus,
+textarea.is-valid:focus {
+  border-color: var(--success-color);
+  box-shadow: 0 0 0 3px rgba(63, 185, 80, 0.1);
+}
+
+.invalid-feedback,
+.valid-feedback {
+  display: block;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.invalid-feedback {
+  color: var(--danger-color);
+}
+
+.valid-feedback {
+  color: var(--success-color);
+}
+
+/* Form Text - Vimeo Style */
+.form-text {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  display: block;
+}
+
+body.light-theme .form-text {
+  color: var(--text-muted);
+}
+
+.form-text i {
+  margin-right: 4px;
 }
 
 @media (max-width: 768px) {
@@ -2989,17 +3495,33 @@ body.light-theme .form-actions {
   }
   
   .form-section {
-    margin-bottom: 24px;
-    padding-bottom: 20px;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
   }
   
   .form-actions {
     flex-direction: column;
   }
   
+  .form-actions .btn,
+  .form-actions button,
+  .form-actions a,
   .form-actions .new-category-btn {
     width: 100%;
     justify-content: center;
+  }
+  
+  .form-row,
+  .row {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  
+  .form-row > *,
+  .row > * {
+    padding-left: 0;
+    padding-right: 0;
+    margin-bottom: 16px;
   }
 }
 

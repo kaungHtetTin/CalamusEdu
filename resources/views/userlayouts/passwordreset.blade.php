@@ -4,7 +4,6 @@
 <form class="d-none d-md-flex input-group w-auto my-auto" action="{{route('searchUser')}}" method="GET">
   <input autocomplete="off" type="search" class="form-control rounded"
     placeholder='Search a user' style="min-width: 225px" name="phone" />
-  <span class="input-group-text border-0"><i class="fas fa-search"></i></span>
 </form>
 @endsection
 

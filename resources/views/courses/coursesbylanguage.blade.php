@@ -21,8 +21,9 @@
             <a href="{{route('lessons.addCourse', $language)}}" class="btn btn-sm btn-primary">
               <i class="fas fa-plus me-2"></i>Create New Course
             </a>
-            <a href="{{route('showCoursesMain')}}" class="btn btn-sm btn-neutral">
-              <i class="fas fa-arrow-left me-2"></i>Back to Courses
+            <a href="{{route('showCoursesMain')}}" class="btn-back btn-sm">
+              <i class="fas fa-arrow-left"></i>
+              <span>Back to Courses</span>
             </a>
           </div>
         </div>

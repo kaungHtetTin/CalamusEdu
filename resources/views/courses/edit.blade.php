@@ -37,8 +37,9 @@
             <i class="fas fa-edit me-3" style="font-size: 24px; color: #2196F3;"></i>
             <h4 class="mb-0">Edit Course - {{$languageName}}</h4>
           </div>
-          <a href="{{route('courses.byLanguage', $language)}}" class="btn btn-sm btn-neutral">
-            <i class="fas fa-arrow-left me-2"></i>Back to Courses
+          <a href="{{route('courses.byLanguage', $language)}}" class="btn-back btn-sm">
+            <i class="fas fa-arrow-left"></i>
+            <span>Back to Courses</span>
           </a>
         </div>
       </div>
@@ -113,12 +114,11 @@
               </div>
 
               <div class="col-md-6 mb-3">
-                <div class="form-check modern-checkbox">
-                  <input class="form-check-input" type="checkbox" id="is_vip" name="is_vip" value="1" {{old('is_vip', $course->is_vip) ? 'checked' : ''}}>
-                  <label class="form-check-label" for="is_vip">
-                    <i class="fas fa-crown me-2"></i>VIP Course
-                  </label>
-                </div>
+                <label for="is_vip" class="form-label">VIP Course <span class="text-danger">*</span></label>
+                <select class="form-control modern-input" id="is_vip" name="is_vip" required>
+                  <option value="0" {{old('is_vip', $course->is_vip) == 0 ? 'selected' : ''}}>No</option>
+                  <option value="1" {{old('is_vip', $course->is_vip) == 1 ? 'selected' : ''}}>Yes</option>
+                </select>
               </div>
             </div>
           </div>
@@ -200,24 +200,6 @@
             <div class="mb-4">
               <label class="form-label">Preview</label>
               <div class="card" style="border: 1px solid rgba(156, 39, 176, 0.2); border-radius: 8px; padding: 1rem;">
-                <div class="mb-3">
-                  <label for="preview" class="form-label">Preview URL</label>
-                  <input type="url" class="form-control modern-input" id="preview" name="preview" value="{{old('preview', $course->preview)}}" maxlength="1000" placeholder="https://example.com/preview">
-                  <small class="form-text text-muted">Enter a URL for the preview video or content</small>
-                </div>
-                <div class="text-center" style="color: #6c757d; margin: 0.5rem 0;">
-                  <i class="fas fa-minus"></i> OR <i class="fas fa-minus"></i>
-                </div>
-                <div class="mb-3">
-                  <label for="vimeo_video_id" class="form-label">
-                    <i class="fab fa-vimeo me-2" style="color: #1ab7ea;"></i>Vimeo Video ID
-                  </label>
-                  <input type="text" class="form-control modern-input" id="vimeo_video_id" name="vimeo_video_id" value="{{old('vimeo_video_id')}}" placeholder="Enter Vimeo video ID (e.g., 123456789)">
-                  <small class="form-text text-muted">If you already have a Vimeo video, enter its ID. The URL will be: https://vimeo.com/[ID]</small>
-                </div>
-                <div class="text-center" style="color: #6c757d; margin: 0.5rem 0;">
-                  <i class="fas fa-minus"></i> OR <i class="fas fa-minus"></i>
-                </div>
                 <div>
                   <label for="preview_file" class="form-label">
                     <i class="fab fa-vimeo me-2" style="color: #1ab7ea;"></i>Upload Video to Vimeo
@@ -233,19 +215,20 @@
                   </div>
                 </div>
                 @if($course->preview)
-                  <div class="mt-3 p-2" style="background: rgba(156, 39, 176, 0.05); border-radius: 6px;">
-                    <small class="text-muted d-block mb-1">
+                  <div class="mt-3">
+                    <small class="text-muted d-block mb-2">
                       <i class="fas fa-info-circle me-1"></i><strong>Current Preview:</strong>
                     </small>
-                    <a href="{{$course->preview}}" target="_blank" class="text-decoration-none">
-                      {{$course->preview}}
-                      <i class="fas fa-external-link-alt ms-1" style="font-size: 10px;"></i>
-                    </a>
-                    @if(strpos($course->preview, 'vimeo.com') !== false)
-                      <div class="mt-2">
-                        <iframe src="{{str_replace('vimeo.com/', 'player.vimeo.com/video/', $course->preview)}}" width="100%" height="200" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="border-radius: 4px;"></iframe>
+                    <div class="video-player-container">
+                      <div class="video-wrapper">
+                        <iframe id="coursePreviewPlayer" src="{{$course->preview}}" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="Course Preview"></iframe>
                       </div>
-                    @endif
+                    </div>
+                    <div class="mt-2">
+                      <a href="{{$course->preview}}" target="_blank" class="text-decoration-none text-muted" style="font-size: 12px;">
+                        <i class="fas fa-external-link-alt me-1"></i>Open in new tab
+                      </a>
+                    </div>
                   </div>
                 @endif
               </div>
@@ -263,13 +246,14 @@
 
             <div class="mb-3">
               <label for="details" class="form-label">Details <span class="text-danger">*</span></label>
-              <textarea class="form-control modern-input" id="details" name="details" rows="5" required placeholder="Enter course details">{{old('details', $course->details)}}</textarea>
+              <div id="details-editor" style="min-height: 200px;"></div>
+              <textarea class="d-none" id="details" name="details" required>{{old('details', $course->details)}}</textarea>
             </div>
           </div>
 
           <div class="form-actions">
-            <a href="{{route('courses.byLanguage', $language)}}" class="new-category-btn btn-cancel">
-              <i class="fas fa-times"></i>
+            <a href="{{route('courses.byLanguage', $language)}}" class="btn-back btn-sm">
+              <i class="fas fa-arrow-left"></i>
               <span>Cancel</span>
             </a>
             <button type="submit" class="new-category-btn">
@@ -284,6 +268,10 @@
 </div>
 
 @push('scripts')
+<!-- Quill.js Rich Text Editor -->
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Sync color picker with text input
@@ -376,21 +364,6 @@ document.addEventListener('DOMContentLoaded', function() {
         webCoverPreviewImg.src = '';
     });
 
-    // Vimeo video ID input - extract ID from URL if full URL is pasted
-    const vimeoVideoIdInput = document.getElementById('vimeo_video_id');
-    if (vimeoVideoIdInput) {
-        vimeoVideoIdInput.addEventListener('paste', function(e) {
-            setTimeout(() => {
-                let value = this.value.trim();
-                // Extract video ID from Vimeo URL
-                const vimeoUrlMatch = value.match(/vimeo\.com\/(?:.*\/)?(\d+)/);
-                if (vimeoUrlMatch) {
-                    this.value = vimeoUrlMatch[1];
-                }
-            }, 10);
-        });
-    }
-
     // Show upload status when file is selected
     const previewFileInput = document.getElementById('preview_file');
     const uploadStatus = document.getElementById('vimeo_upload_status');
@@ -407,6 +380,76 @@ document.addEventListener('DOMContentLoaded', function() {
                 uploadStatus.style.display = 'none';
             }
         });
+    }
+
+    // Initialize Quill Rich Text Editor for Details
+    const detailsEditor = document.getElementById('details-editor');
+    const detailsTextarea = document.getElementById('details');
+    
+    if (detailsEditor && detailsTextarea) {
+        // Initialize Quill with toolbar options
+        const quill = new Quill('#details-editor', {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    ['bold', 'italic'],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }]
+                ]
+            },
+            placeholder: 'Enter course details...'
+        });
+
+        // Set initial content from textarea
+        if (detailsTextarea.value) {
+            quill.root.innerHTML = detailsTextarea.value;
+        }
+
+        // Update textarea on text change
+        quill.on('text-change', function() {
+            detailsTextarea.value = quill.root.innerHTML;
+        });
+
+        // Also update on form submit to ensure latest content
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function() {
+                detailsTextarea.value = quill.root.innerHTML;
+            });
+        }
+
+        // Force icon colors in dark mode using JavaScript
+        function setToolbarIconColors() {
+            const toolbar = detailsEditor.querySelector('.ql-toolbar');
+            if (toolbar && document.body.classList.contains('dark-theme')) {
+                const buttons = toolbar.querySelectorAll('button');
+                buttons.forEach(button => {
+                    const svgs = button.querySelectorAll('svg, svg *');
+                    svgs.forEach(svg => {
+                        if (svg.tagName === 'svg' || svg.tagName === 'path' || svg.tagName === 'line' || 
+                            svg.tagName === 'polyline' || svg.tagName === 'polygon' || 
+                            svg.tagName === 'circle' || svg.tagName === 'rect') {
+                            svg.setAttribute('stroke', '#ffffff');
+                            svg.setAttribute('fill', '#ffffff');
+                            svg.style.stroke = '#ffffff';
+                            svg.style.fill = '#ffffff';
+                            svg.style.color = '#ffffff';
+                        }
+                    });
+                });
+            }
+        }
+
+        // Set colors immediately and after a short delay to ensure Quill has rendered
+        setTimeout(setToolbarIconColors, 100);
+        setTimeout(setToolbarIconColors, 500);
+        
+        // Also set colors when theme changes
+        const observer = new MutationObserver(function(mutations) {
+            if (document.body.classList.contains('dark-theme')) {
+                setToolbarIconColors();
+            }
+        });
+        observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
     }
 });
 </script>
@@ -513,6 +556,141 @@ body.light-theme .image-upload-area {
 body.light-theme .image-upload-area:hover {
     border-color: #9c27b0;
     background: rgba(156, 39, 176, 0.05);
+}
+
+/* Quill Editor Styling */
+#details-editor {
+    border-radius: 4px;
+}
+
+#details-editor .ql-editor {
+    min-height: 200px;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+#details-editor .ql-toolbar {
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    border-bottom: 1px solid #ccc;
+}
+
+#details-editor .ql-container {
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+body.dark-theme #details-editor {
+    background: transparent !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+body.dark-theme #details-editor .ql-container {
+    background: var(--bg-secondary) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+body.dark-theme #details-editor .ql-editor {
+    color: var(--text-primary) !important;
+    background: var(--bg-secondary) !important;
+}
+
+body.dark-theme #details-editor .ql-toolbar {
+    background: var(--bg-secondary) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    border-bottom-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Dark theme toolbar icon fixes - using brighter color for visibility */
+body.dark-theme #details-editor.ql-container .ql-toolbar.ql-snow button {
+    color: #ffffff !important;
+}
+
+body.dark-theme #details-editor .ql-toolbar button {
+    color: #ffffff !important;
+}
+
+body.dark-theme #details-editor .ql-toolbar button:hover,
+body.dark-theme #details-editor .ql-toolbar button.ql-active {
+    background: rgba(255, 255, 255, 0.15) !important;
+    color: #ffffff !important;
+}
+
+/* Target all stroke and fill elements directly - multiple selectors for maximum coverage */
+body.dark-theme #details-editor.ql-container .ql-toolbar.ql-snow .ql-stroke,
+body.dark-theme #details-editor.ql-container .ql-toolbar.ql-snow button .ql-stroke,
+body.dark-theme #details-editor.ql-container .ql-toolbar.ql-snow button svg .ql-stroke,
+body.dark-theme #details-editor .ql-toolbar .ql-stroke,
+body.dark-theme #details-editor .ql-toolbar button .ql-stroke,
+body.dark-theme #details-editor .ql-toolbar button svg .ql-stroke {
+    stroke: #ffffff !important;
+}
+
+body.dark-theme #details-editor.ql-container .ql-toolbar.ql-snow .ql-fill,
+body.dark-theme #details-editor.ql-container .ql-toolbar.ql-snow button .ql-fill,
+body.dark-theme #details-editor.ql-container .ql-toolbar.ql-snow button svg .ql-fill,
+body.dark-theme #details-editor .ql-toolbar .ql-fill,
+body.dark-theme #details-editor .ql-toolbar button .ql-fill,
+body.dark-theme #details-editor .ql-toolbar button svg .ql-fill {
+    fill: #ffffff !important;
+}
+
+/* Target all SVG paths directly */
+body.dark-theme #details-editor .ql-toolbar button svg,
+body.dark-theme #details-editor .ql-toolbar button svg path,
+body.dark-theme #details-editor .ql-toolbar button svg line,
+body.dark-theme #details-editor .ql-toolbar button svg polyline,
+body.dark-theme #details-editor .ql-toolbar button svg polygon,
+body.dark-theme #details-editor .ql-toolbar button svg circle,
+body.dark-theme #details-editor .ql-toolbar button svg rect {
+    stroke: #ffffff !important;
+    fill: #ffffff !important;
+    color: #ffffff !important;
+}
+
+/* Target all child elements */
+body.dark-theme #details-editor .ql-toolbar button svg * {
+    stroke: #ffffff !important;
+    fill: #ffffff !important;
+    color: #ffffff !important;
+}
+
+/* Hover and active states */
+body.dark-theme #details-editor .ql-toolbar button:hover svg,
+body.dark-theme #details-editor .ql-toolbar button:hover svg *,
+body.dark-theme #details-editor .ql-toolbar button.ql-active svg,
+body.dark-theme #details-editor .ql-toolbar button.ql-active svg * {
+    stroke: #ffffff !important;
+    fill: #ffffff !important;
+    color: #ffffff !important;
+}
+
+/* Specific button types */
+body.dark-theme #details-editor .ql-toolbar button.ql-bold svg,
+body.dark-theme #details-editor .ql-toolbar button.ql-italic svg,
+body.dark-theme #details-editor .ql-toolbar button.ql-list svg,
+body.dark-theme #details-editor .ql-toolbar button.ql-list svg * {
+    stroke: #ffffff !important;
+    fill: #ffffff !important;
+    color: #ffffff !important;
+}
+
+body.dark-theme #details-editor .ql-toolbar .ql-picker-label {
+    color: var(--text-primary) !important;
+}
+
+body.dark-theme #details-editor .ql-toolbar .ql-picker-options {
+    background: var(--bg-secondary) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Remove unnecessary dividers from form sections */
+.form-section {
+    border-bottom: none !important;
+}
+
+.form-section-title {
+    border-bottom: none !important;
 }
 </style>
 @endpush

@@ -32,7 +32,7 @@
             <i class="fas fa-video me-3" style="font-size: 24px; color: #32cd32;"></i>
             <h4 class="mb-0">{{$lesson->title}}</h4>
           </div>
-          <a href="javascript:history.back()" class="new-category-btn btn-cancel">
+          <a href="javascript:history.back()" class="btn-back btn-sm">
             <i class="fas fa-arrow-left"></i>
             <span>Back</span>
           </a>

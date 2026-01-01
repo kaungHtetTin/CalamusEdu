@@ -37,7 +37,6 @@
       <div class="topbar-center d-none d-lg-flex">
         <form class="topbar-search-form" action="{{route('searchUser')}}" method="GET">
           <div class="topbar-search-wrapper">
-            <i class="fas fa-search topbar-search-icon"></i>
             <input type="search" class="topbar-search-input" name="msg" placeholder="Search user" autocomplete="off">
             <button type="submit" class="topbar-search-btn" style="display: none;">
               <i class="fas fa-search"></i>

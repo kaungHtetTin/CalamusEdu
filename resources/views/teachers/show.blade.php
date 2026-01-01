@@ -35,8 +35,9 @@
                   <a href="{{route('teachers.edit', $teacher->id)}}" class="btn-teacher-action btn-teacher-edit">
                     <i class="fas fa-edit me-2"></i>Edit
                   </a>
-                  <a href="{{route('teachers.index')}}" class="btn-teacher-action btn-teacher-back">
-                    <i class="fas fa-arrow-left me-2"></i>Back to List
+                  <a href="{{route('teachers.index')}}" class="btn-back btn-sm">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back to List</span>
                   </a>
                 </div>
               </div>
