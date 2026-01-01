@@ -136,16 +136,21 @@
         <div class="category-tabs-container mb-4">
           <div class="category-tabs">
             @foreach ($myCourse['data'] as $sub)
-            <a href="{{route('lessons.list', $sub->id)}}?cate={{$sub->category}}&major={{$major}}" class="category-tab-item">
-              <div class="category-tab-box">
-                @if ($sub->course_id == 9)
-                  <img src="https://www.calamuseducation.com/uploads/icons/videoplaylist.png" class="category-icon" alt="Video Playlist"/>
-                @else
-                  <img src="{{$sub->image_url}}" class="category-icon" alt="{{$sub->category_title}}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'40\' height=\'40\'%3E%3Crect width=\'40\' height=\'40\' fill=\'%233d3d3d\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'central\' text-anchor=\'middle\' fill=\'%239e9e9e\' font-size=\'16\'%3E📚%3C/text%3E%3C/svg%3E'"/>
-                @endif
-                <span class="category-title">{{$sub->category_title}}</span>
-              </div>
-            </a>
+            <div class="category-tab-wrapper position-relative">
+              <a href="{{route('lessons.list', $sub->id)}}?cate={{$sub->category}}&major={{$major}}" class="category-tab-item">
+                <div class="category-tab-box">
+                  @if ($sub->course_id == 9)
+                    <img src="https://www.calamuseducation.com/uploads/icons/videoplaylist.png" class="category-icon" alt="Video Playlist"/>
+                  @else
+                    <img src="{{$sub->image_url}}" class="category-icon" alt="{{$sub->category_title}}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'40\' height=\'40\'%3E%3Crect width=\'40\' height=\'40\' fill=\'%233d3d3d\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'central\' text-anchor=\'middle\' fill=\'%239e9e9e\' font-size=\'16\'%3E📚%3C/text%3E%3C/svg%3E'"/>
+                  @endif
+                  <span class="category-title">{{$sub->category_title}}</span>
+                </div>
+              </a>
+              <a href="{{route('lessons.editCategory', $sub->id)}}" class="category-edit-btn" title="Edit Category" onclick="event.stopPropagation();">
+                <i class="fas fa-edit"></i>
+              </a>
+            </div>
             @endforeach
           </div>
         </div>
@@ -171,8 +176,12 @@
           </ul>
         </div>
 
-        {{-- New Category Button --}}
+        {{-- Action Buttons --}}
         <div class="new-category-container">
+          <a href="{{route('lessons.sortCategories', ['course' => $myCourse['course_id'], 'language' => $language])}}" class="btn-back btn-sm me-2" title="Sort Categories">
+            <i class="fas fa-sort"></i>
+            <span>Sort Categories</span>
+          </a>
           <a href="{{route('lessons.addCategory', ['course' => $myCourse['course_id'], 'language' => $language])}}" class="new-category-btn" title="New Category">
             <i class="fas fa-plus"></i>
             <span>New Category</span>
@@ -186,6 +195,53 @@
 @endforeach
 
 @push('scripts')
+<style>
+.category-tab-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.category-edit-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: rgba(33, 150, 243, 0.9);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10;
+    text-decoration: none;
+    font-size: 12px;
+    opacity: 0;
+    transform: scale(0.8);
+}
+
+.category-tab-wrapper:hover .category-edit-btn {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.category-edit-btn:hover {
+    background: rgba(33, 150, 243, 1);
+    transform: scale(1.1);
+    color: white;
+}
+
+body.dark-theme .category-edit-btn {
+    background: rgba(33, 150, 243, 0.9);
+}
+
+body.dark-theme .category-edit-btn:hover {
+    background: rgba(33, 150, 243, 1);
+}
+</style>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const isDarkTheme = !document.body.classList.contains('light-theme');

@@ -46,7 +46,7 @@
       <div class="card-body">
         <div class="row">
           <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-            <a href="{{route('easyEnglishUserDatas')}}" class="text-decoration-none quick-access-link">
+            <a href="{{route('easyLanguageUserDatas', 'english')}}" class="text-decoration-none quick-access-link">
               <div class="text-center p-3 rounded" style="background-color: rgba(33, 150, 243, 0.1); border: 2px solid rgba(33, 150, 243, 0.3); transition: all 0.3s;" onmouseover="this.style.backgroundColor='rgba(33, 150, 243, 0.2)'; this.style.borderColor='rgba(33, 150, 243, 0.5)'" onmouseout="this.style.backgroundColor='rgba(33, 150, 243, 0.1)'; this.style.borderColor='rgba(33, 150, 243, 0.3)'">
                 <img src="{{asset('public/img/easyenglish.png')}}" style="width: 40px;height:40px" class="mb-2"/>
                 <div class="fw-bold">Easy English</div>
@@ -55,7 +55,7 @@
             </a>
           </div>
           <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-            <a href="{{route('easyKoreanUserDatas')}}" class="text-decoration-none quick-access-link">
+            <a href="{{route('easyLanguageUserDatas', 'korean')}}" class="text-decoration-none quick-access-link">
               <div class="text-center p-3 rounded" style="background-color: rgba(255, 152, 0, 0.1); border: 2px solid rgba(255, 152, 0, 0.3); transition: all 0.3s;" onmouseover="this.style.backgroundColor='rgba(255, 152, 0, 0.2)'; this.style.borderColor='rgba(255, 152, 0, 0.5)'" onmouseout="this.style.backgroundColor='rgba(255, 152, 0, 0.1)'; this.style.borderColor='rgba(255, 152, 0, 0.3)'">
                 <img src="{{asset('public/img/easykorean.png')}}" style="width: 40px;height:40px" class="mb-2"/>
                 <div class="fw-bold">Easy Korean</div>
@@ -64,7 +64,7 @@
             </a>
           </div>
           <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-            <a href="{{route('easyChineseUserDatas')}}" class="text-decoration-none quick-access-link">
+            <a href="{{route('easyLanguageUserDatas', 'chinese')}}" class="text-decoration-none quick-access-link">
               <div class="text-center p-3 rounded" style="background-color: rgba(244, 67, 54, 0.1); border: 2px solid rgba(244, 67, 54, 0.3); transition: all 0.3s;" onmouseover="this.style.backgroundColor='rgba(244, 67, 54, 0.2)'; this.style.borderColor='rgba(244, 67, 54, 0.5)'" onmouseout="this.style.backgroundColor='rgba(244, 67, 54, 0.1)'; this.style.borderColor='rgba(244, 67, 54, 0.3)'">
                 <img src="{{asset('public/img/easychinese.png')}}" style="width: 40px;height:40px" class="mb-2"/>
                 <div class="fw-bold">Easy Chinese</div>
@@ -73,7 +73,7 @@
             </a>
           </div>
           <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-            <a href="{{route('easyJapaneseUserDatas')}}" class="text-decoration-none quick-access-link">
+            <a href="{{route('easyLanguageUserDatas', 'japanese')}}" class="text-decoration-none quick-access-link">
               <div class="text-center p-3 rounded" style="background-color: rgba(156, 39, 176, 0.1); border: 2px solid rgba(156, 39, 176, 0.3); transition: all 0.3s;" onmouseover="this.style.backgroundColor='rgba(156, 39, 176, 0.2)'; this.style.borderColor='rgba(156, 39, 176, 0.5)'" onmouseout="this.style.backgroundColor='rgba(156, 39, 176, 0.1)'; this.style.borderColor='rgba(156, 39, 176, 0.3)'">
                 <img src="{{asset('public/img/easyjapanese.png')}}" style="width: 40px;height:40px" class="mb-2"/>
                 <div class="fw-bold">Easy Japanese</div>
@@ -82,7 +82,7 @@
             </a>
           </div>
           <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-            <a href="{{route('easyRussianUserDatas')}}" class="text-decoration-none quick-access-link">
+            <a href="{{route('easyLanguageUserDatas', 'russian')}}" class="text-decoration-none quick-access-link">
               <div class="text-center p-3 rounded" style="background-color: rgba(76, 175, 80, 0.1); border: 2px solid rgba(76, 175, 80, 0.3); transition: all 0.3s;" onmouseover="this.style.backgroundColor='rgba(76, 175, 80, 0.2)'; this.style.borderColor='rgba(76, 175, 80, 0.5)'" onmouseout="this.style.backgroundColor='rgba(76, 175, 80, 0.1)'; this.style.borderColor='rgba(76, 175, 80, 0.3)'">
                 <img src="{{asset('public/img/easyrussian.png')}}" style="width: 40px;height:40px" class="mb-2"/>
                 <div class="fw-bold">Easy Russian</div>
@@ -425,11 +425,11 @@ document.addEventListener('DOMContentLoaded', function() {
           if (elements.length > 0) {
             const index = elements[0].index;
             const routes = [
-              '{{route('easyEnglishUserDatas')}}',
-              '{{route('easyKoreanUserDatas')}}',
-              '{{route('easyChineseUserDatas')}}',
-              '{{route('easyJapaneseUserDatas')}}',
-              '{{route('easyRussianUserDatas')}}'
+              '{{route('easyLanguageUserDatas', 'english')}}',
+              '{{route('easyLanguageUserDatas', 'korean')}}',
+              '{{route('easyLanguageUserDatas', 'chinese')}}',
+              '{{route('easyLanguageUserDatas', 'japanese')}}',
+              '{{route('easyLanguageUserDatas', 'russian')}}'
             ];
             window.location.href = routes[index];
           }
@@ -494,11 +494,11 @@ document.addEventListener('DOMContentLoaded', function() {
           if (elements.length > 0) {
             const index = elements[0].index;
             const routes = [
-              '{{route('easyEnglishUserDatas')}}',
-              '{{route('easyKoreanUserDatas')}}',
-              '{{route('easyChineseUserDatas')}}',
-              '{{route('easyJapaneseUserDatas')}}',
-              '{{route('easyRussianUserDatas')}}'
+              '{{route('easyLanguageUserDatas', 'english')}}',
+              '{{route('easyLanguageUserDatas', 'korean')}}',
+              '{{route('easyLanguageUserDatas', 'chinese')}}',
+              '{{route('easyLanguageUserDatas', 'japanese')}}',
+              '{{route('easyLanguageUserDatas', 'russian')}}'
             ];
             window.location.href = routes[index];
           }

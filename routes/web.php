@@ -46,11 +46,8 @@ Route::get('/users/get',[UserController::class,'detail'])->name('detail');
 Route::get('/users/search',[UserController::class,'searchUser'])->name('searchUser');
 Route::get('/users/passwordreset/{phone}',[UserController::class,'showPasswordReset'])->name('showPasswordReset');
 Route::post('/users/passwordreset',[UserController::class,'resetPassword'])->name('resetPassword');
-Route::get('/users/easykorean',[UserController::class,'easyKoreanUserDatas'])->name('easyKoreanUserDatas');
-Route::get('/users/easyenglish',[UserController::class,'easyEnglishUserDatas'])->name('easyEnglishUserDatas');
-Route::get('/users/easychinese',[UserController::class,'easyChineseUserDatas'])->name('easyChineseUserDatas');
-Route::get('/users/easyjapanese',[UserController::class,'easyJapaneseUserDatas'])->name('easyJapaneseUserDatas');
-Route::get('/users/easyrussian',[UserController::class,'easyRussianUserDatas'])->name('easyRussianUserDatas');
+// Language user datas routes - using dynamic route for all languages
+Route::get('/users/easy{language}',[UserController::class,'easyLanguageUserDatas'])->name('easyLanguageUserDatas')->where('language', 'korean|english|chinese|japanese|russian');
 Route::get('/users/email/{id}',[UserController::class,'showSendEmail'])->name('showSendEmail');
 Route::post('/users/email/send',[UserController::class,'sendEmail'])->name('sendEmail');
 Route::get('/users/pushnotification/{id}',[UserController::class,'showPushNotification'])->name('showPushNotification');
@@ -75,11 +72,17 @@ Route::get('/lessons/{language}/add-course',[LessonController::class,'showAddCou
 Route::post('/lessons/{language}/add-course',[LessonController::class,'addCourse'])->name('lessons.storeCourse');
 Route::get('/lessons/{language}/add-category/{course}',[LessonController::class,'showAddCategory'])->name('lessons.addCategory');
 Route::post('/lessons/{language}/add-category/{course}',[LessonController::class,'addCategory'])->name('lessons.storeCategory');
+Route::get('/lessons/category/{id}/edit',[LessonController::class,'showEditCategory'])->name('lessons.editCategory');
+Route::post('/lessons/category/{id}/update',[LessonController::class,'updateCategory'])->name('lessons.updateCategory');
+Route::get('/lessons/{language}/sort-categories/{course}',[LessonController::class,'showSortCategories'])->name('lessons.sortCategories');
+Route::post('/lessons/{language}/sort-categories/{course}',[LessonController::class,'updateSortCategories'])->name('lessons.updateSortCategories');
 Route::get('/lessons/showlists/{code}',[LessonController::class,'showLessonList'])->name('lessons.list');
 Route::get('/lessons/video/{id}',[LessonController::class,'viewVideoLesson'])->name('viewVideoLesson');
 Route::get('/lessons/blog/{id}',[LessonController::class,'viewBlogLesson'])->name('viewBlogLesson');
 Route::get('/lessons/add/{course}',[LessonController::class,'showAddLesson'])->name('showAddLesson');
 Route::post('/lessons/add/{course}',[LessonController::class,'addLesson'])->name('addLesson');
+Route::get('/lessons/{id}/edit',[LessonController::class,'showEditLesson'])->name('lessons.edit');
+Route::post('/lessons/{id}/update',[LessonController::class,'updateLesson'])->name('lessons.update');
 Route::post('/lessons/video/add',[LessonController::class,'uploadVideoForLessonDownload'])->name('uploadVideoForLessonDownload');
 Route::post('/lessons/video/add-lecture-note',[LessonController::class,'updateLectureNote'])->name('lessons.add-lecture-note');
 

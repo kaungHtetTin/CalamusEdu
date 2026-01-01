@@ -69,7 +69,7 @@
                   <i class="fas fa-eye"></i>
                   <span>Detail</span>
                 </a>
-                <a href="{{route('showAddLesson', $lesson->category_id)}}?edit={{$lesson->id}}" class="lesson-action-btn btn-edit" title="Edit Lesson">
+                <a href="{{route('lessons.edit', $lesson->id)}}" class="lesson-action-btn btn-edit" title="Edit Lesson">
                   <i class="fas fa-edit"></i>
                   <span>Edit</span>
                 </a>

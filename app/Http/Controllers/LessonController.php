@@ -79,6 +79,7 @@ class LessonController extends Controller
             ->join('lessons_categories', 'lessons_categories.course_id', '=', 'courses.course_id')
             ->where('lessons_categories.major', $major)
             ->orderBy('courses.course_id')
+            ->orderBy('lessons_categories.sort_order')
             ->get();
 
         // Organize courses by course_id
@@ -88,6 +89,7 @@ class LessonController extends Controller
                 // Calculate statistics for this course
                 $courseCategories = DB::table('lessons_categories')
                     ->where('course_id', $course->course_id)
+                    ->orderBy('sort_order')
                     ->pluck('id')
                     ->toArray();
                 
@@ -288,27 +290,180 @@ class LessonController extends Controller
 
         $req->validate([
             'category_title' => 'required|string|max:128',
-            'category' => 'required|string|max:128',
-            'image_url' => 'required|url|max:500',
+            'category_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
         ]);
+
+        // Handle category image upload
+        $imageUrl = '';
+        if ($req->hasFile('category_image')) {
+            $imageFile = $req->file('category_image');
+            $imagePath = Storage::disk('calamusPost')->put('lessons/categories', $imageFile);
+            $baseUrl = env('COURSE_IMAGES_BASE_URL', env('APP_URL', 'https://www.calamuseducation.com') . '/uploads');
+            $imageUrl = rtrim($baseUrl, '/') . '/' . $imagePath;
+        }
 
         // Get the next category id
         $maxCategoryId = DB::table('lessons_categories')->max('id');
         $categoryId = ($maxCategoryId ?? 0) + 1;
 
+        // Generate category code from title (use title as category code, truncated to 128 chars)
+        $categoryCode = substr($req->category_title, 0, 128);
+
         // Insert new category
         DB::table('lessons_categories')->insert([
             'id' => $categoryId,
             'course_id' => $course,
-            'category' => $req->category,
+            'category' => $categoryCode,
             'category_title' => $req->category_title,
-            'image_url' => $req->image_url,
+            'image_url' => $imageUrl,
             'sort_order' => round(microtime(true) * 1000),
             'major' => $language,
         ]);
 
         return redirect()->route('lessons.byLanguage', $language)
             ->with('success', 'Category created successfully!');
+    }
+
+    public function showEditCategory($id){
+        $category = DB::table('lessons_categories')->where('id', $id)->first();
+        
+        if (!$category) {
+            abort(404, 'Category not found');
+        }
+
+        // Get course info
+        $courseInfo = DB::table('courses')->where('course_id', $category->course_id)->first();
+        if (!$courseInfo) {
+            abort(404, 'Course not found');
+        }
+
+        // Language display name mapping
+        $languageNames = [
+            'english' => 'Easy English',
+            'korea' => 'Easy Korean',
+            'chinese' => 'Easy Chinese',
+            'japanese' => 'Easy Japanese',
+            'russian' => 'Easy Russian'
+        ];
+        $languageName = $languageNames[$category->major] ?? ucfirst($category->major);
+
+        return view('lessons.editcategory', [
+            'category' => $category,
+            'language' => $category->major,
+            'languageName' => $languageName,
+            'course_id' => $category->course_id,
+            'course_title' => $courseInfo->title,
+            'major' => $category->major,
+        ]);
+    }
+
+    public function updateCategory(Request $req, $id){
+        $category = DB::table('lessons_categories')->where('id', $id)->first();
+        
+        if (!$category) {
+            abort(404, 'Category not found');
+        }
+
+        $req->validate([
+            'category_title' => 'required|string|max:128',
+            'category_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+        ]);
+
+        $updateData = [
+            'category_title' => $req->category_title,
+            // Update category code from title (use title as category code, truncated to 128 chars)
+            'category' => substr($req->category_title, 0, 128),
+        ];
+
+        // Handle category image upload
+        if ($req->hasFile('category_image')) {
+            // Delete old image if exists
+            if ($category->image_url) {
+                $oldPath = str_replace(env('COURSE_IMAGES_BASE_URL', env('APP_URL', 'https://www.calamuseducation.com') . '/uploads') . '/', '', $category->image_url);
+                if (Storage::disk('calamusPost')->exists($oldPath)) {
+                    Storage::disk('calamusPost')->delete($oldPath);
+                }
+            }
+            
+            $imageFile = $req->file('category_image');
+            $imagePath = Storage::disk('calamusPost')->put('lessons/categories', $imageFile);
+            $baseUrl = env('COURSE_IMAGES_BASE_URL', env('APP_URL', 'https://www.calamuseducation.com') . '/uploads');
+            $updateData['image_url'] = rtrim($baseUrl, '/') . '/' . $imagePath;
+        }
+
+        // Update category
+        DB::table('lessons_categories')
+            ->where('id', $id)
+            ->update($updateData);
+
+        return redirect()->route('lessons.byLanguage', $category->major)
+            ->with('success', 'Category updated successfully!');
+    }
+
+    public function showSortCategories($language, $course){
+        // Validate language parameter
+        $validLanguages = ['english', 'korea', 'chinese', 'japanese', 'russian'];
+        if (!in_array($language, $validLanguages)) {
+            abort(404, 'Invalid language');
+        }
+
+        // Get course info
+        $courseInfo = DB::table('courses')->where('course_id', $course)->first();
+        if (!$courseInfo) {
+            abort(404, 'Course not found');
+        }
+
+        // Get categories for this course, ordered by current sort_order
+        $categories = DB::table('lessons_categories')
+            ->where('course_id', $course)
+            ->where('major', $language)
+            ->orderBy('sort_order')
+            ->get();
+
+        // Language display name mapping
+        $languageNames = [
+            'english' => 'Easy English',
+            'korea' => 'Easy Korean',
+            'chinese' => 'Easy Chinese',
+            'japanese' => 'Easy Japanese',
+            'russian' => 'Easy Russian'
+        ];
+        $languageName = $languageNames[$language] ?? ucfirst($language);
+
+        return view('lessons.sortcategories', [
+            'language' => $language,
+            'languageName' => $languageName,
+            'course_id' => $course,
+            'course_title' => $courseInfo->title,
+            'categories' => $categories,
+            'major' => $language,
+        ]);
+    }
+
+    public function updateSortCategories(Request $req, $language, $course){
+        // Validate language parameter
+        $validLanguages = ['english', 'korea', 'chinese', 'japanese', 'russian'];
+        if (!in_array($language, $validLanguages)) {
+            abort(404, 'Invalid language');
+        }
+
+        $req->validate([
+            'categories' => 'required|array',
+            'categories.*.id' => 'required|integer',
+            'categories.*.sort_order' => 'required|integer|min:0',
+        ]);
+
+        // Update sort order for each category
+        foreach ($req->categories as $categoryData) {
+            DB::table('lessons_categories')
+                ->where('id', $categoryData['id'])
+                ->where('course_id', $course)
+                ->where('major', $language)
+                ->update(['sort_order' => (int)$categoryData['sort_order']]);
+        }
+
+        return redirect()->route('lessons.byLanguage', $language)
+            ->with('success', 'Category sorting updated successfully!');
     }
 
     public function showLessonList(Request $req,$category_id){
@@ -424,6 +579,155 @@ class LessonController extends Controller
            'course'=>$course
        ]);
    }
+
+   public function showEditLesson($id){
+       $lesson = lesson::find($id);
+       
+       if (!$lesson) {
+           abort(404, 'Lesson not found');
+       }
+
+       // Get category info
+       $category = LessonCategory::where('id', $lesson->category_id)->first();
+       if (!$category) {
+           abort(404, 'Category not found');
+       }
+
+       // Get course info to get categories list
+       $courseInfo = DB::table('courses')
+           ->select('courses.*')
+           ->join('lessons_categories', 'lessons_categories.course_id', '=', 'courses.course_id')
+           ->where('lessons_categories.id', $lesson->category_id)
+           ->first();
+
+       if (!$courseInfo) {
+           abort(404, 'Course not found');
+       }
+
+       // Get all categories for this course (for category selection)
+       $categories = DB::table('lessons_categories')
+           ->where('course_id', $courseInfo->course_id)
+           ->where('major', $lesson->major)
+           ->orderBy('sort_order')
+           ->get();
+
+       // Get post data
+       $post = DB::table('posts')->where('post_id', $lesson->date)->first();
+
+       // Store categories in session for the view (like in showAddLesson)
+       $lessonArr = [];
+       foreach($categories as $cat) {
+           $lessonArr[] = (object)[
+               'id' => $cat->id,
+               'category_title' => $cat->category_title
+           ];
+       }
+       session()->put($courseInfo->title, $lessonArr);
+       session()->put('major', $lesson->major);
+
+       return view('lessons.editlesson', [
+           'lesson' => $lesson,
+           'post' => $post,
+           'category' => $category,
+           'course' => $courseInfo->title,
+           'categories' => $categories,
+       ]);
+   }
+
+    public function updateLesson(Request $req, $id){
+        $lesson = lesson::find($id);
+        
+        if (!$lesson) {
+            abort(404, 'Lesson not found');
+        }
+
+        $req->validate([
+            'title_mini' => 'required',
+            'title' => 'required',
+            'link' => 'required',
+            'post' => 'required',
+            'cate' => 'required'
+        ]);
+
+        $title_mini = $req->title_mini;
+        $title = $req->title;
+        $link = $req->link;
+        $body = $req->post;
+        $categoryId = $req->cate;
+        $isVideo = (isset($req->isVideo)) ? 1 : 0;
+        $isChannel = (isset($req->isChannel)) ? 1 : 0;
+        $isVip = (isset($req->isVip)) ? 1 : 0;
+        $add_to_discuss = (isset($req->add_to_discuss)) ? 0 : 1;
+        $major = $req->major;
+
+        $imagePath = $lesson->thumbnail;
+        $vimeo = "";
+        $isVideoLesson = $lesson->isVideo;
+        $isVideoPost = 0;
+
+        if(isset($req->isVideo)){
+            $isVideoLesson = 1;
+            $vimeo = $req->vimeo ?? "";
+            $myPath = "https://www.calamuseducation.com/uploads/";
+            $file = $req->file('myfile');
+            if(!empty($req->myfile)){
+                // Delete old thumbnail if exists
+                if ($lesson->thumbnail) {
+                    $oldPath = str_replace($myPath, '', $lesson->thumbnail);
+                    if (Storage::disk('calamusPost')->exists($oldPath)) {
+                        Storage::disk('calamusPost')->delete($oldPath);
+                    }
+                }
+                $result = Storage::disk('calamusPost')->put('posts', $file);
+                $imagePath = $myPath . $result;
+            }
+            
+            // For post: isVideo = 0 if VIP, otherwise 1
+            $isVideoPost = ($isVip == 1) ? 0 : 1;
+        } else {
+            $isVideoLesson = 0;
+            $imagePath = "";
+            $templink = $req->link;
+            // Parse blog link if it contains "edit/"
+            if(strpos($templink, "edit/") !== false) {
+                $templink = substr($templink, strpos($templink, "edit/") + 5);
+                $blogId = substr($templink, 0, 19);
+                $blogPostId = substr($templink, 20);
+                $link = "https://www.blogger.com/feeds/" . $blogId . "/posts/default/" . $blogPostId . "?alt=json";
+            } else {
+                // Link is already in correct format (JSON feed URL)
+                $link = $req->link;
+            }
+            $isVideoPost = 0;
+        }
+
+        // Update lesson
+        $updateData = [
+            'category_id' => $categoryId,
+            'isVideo' => $isVideoLesson,
+            'isVip' => $isVip,
+            'isChannel' => $isChannel,
+            'link' => $link,
+            'title' => $title,
+            'title_mini' => $title_mini,
+            'thumbnail' => $imagePath,
+        ];
+        
+        lesson::where('id', $id)->update($updateData);
+
+        // Update post
+        $postUpdateData = [
+            'body' => $body,
+            'image' => $imagePath,
+            'has_video' => $isVideoPost,
+            'vimeo' => $vimeo,
+            'hide' => $add_to_discuss,
+        ];
+        
+        DB::table('posts')->where('post_id', $lesson->date)->update($postUpdateData);
+
+        return redirect()->route('lessons.list', $categoryId)->with('msgLesson', 'Lesson was successfully updated');
+    }
 
     public function addLesson(Request $req,$course){
 

@@ -162,7 +162,6 @@
       <div class="d-flex align-items-center gap-3">
         <form action="{{ request()->url() }}" method="GET" class="d-flex align-items-center search-form">
           <div class="search-input-wrapper">
-            <i class="fas fa-search search-icon"></i>
             <input type="text" 
                    name="search" 
                    class="form-control modern-search-input" 
