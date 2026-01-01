@@ -6,6 +6,10 @@ use Illuminate\Http\Request;
 use App\Models\course;
 use App\Models\VipUser;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use App\Services\VimeoService;
 
 class CourseController extends Controller
 {
@@ -127,5 +131,143 @@ class CourseController extends Controller
             'avg_rating' => $avg_rating,
         ]);
     }
+
+    public function edit($courseId){
+        $course = course::where('course_id', $courseId)->first();
+        
+        if (!$course) {
+            abort(404, 'Course not found');
+        }
+
+        // Language display name mapping
+        $languageNames = [
+            'english' => 'Easy English',
+            'korea' => 'Easy Korean',
+            'chinese' => 'Easy Chinese',
+            'japanese' => 'Easy Japanese',
+            'russian' => 'Easy Russian'
+        ];
+
+        $languageName = $languageNames[$course->major] ?? ucfirst($course->major);
+
+        // Get teachers for dropdown
+        $teachers = DB::table('teachers')->select('id', 'name')->get();
+
+        return view('courses.edit', [
+            'course' => $course,
+            'language' => $course->major,
+            'languageName' => $languageName,
+            'teachers' => $teachers,
+        ]);
+    }
+
+    public function update(Request $req, $courseId){
+        $course = course::where('course_id', $courseId)->first();
+        
+        if (!$course) {
+            abort(404, 'Course not found');
+        }
+
+        $req->validate([
+            'title' => 'required|string|max:50',
+            'teacher_id' => 'required|integer',
+            'description' => 'required|string|max:1000',
+            'details' => 'required|string',
+            'certificate_title' => 'required|string|max:225',
+            'certificate_code' => 'required|string|max:5',
+            'background_color' => 'required|string|max:225',
+            'duration' => 'required|integer|min:1',
+            'fee' => 'required|integer|min:0',
+            'is_vip' => 'nullable|boolean',
+            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'web_cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'preview' => 'nullable|string|max:1000',
+            'preview_file' => 'nullable|file|mimes:mp4,webm,ogg,mov,avi',
+            'vimeo_video_id' => 'nullable|string',
+        ]);
+
+        try {
+            $updateData = [
+                'teacher_id' => $req->teacher_id,
+                'title' => $req->title,
+                'certificate_title' => $req->certificate_title,
+                'description' => $req->description,
+                'details' => $req->details,
+                'is_vip' => $req->has('is_vip') ? 1 : 0,
+                'duration' => $req->duration,
+                'background_color' => $req->background_color,
+                'fee' => $req->fee,
+                'certificate_code' => $req->certificate_code,
+            ];
+
+            // Handle cover image upload
+            if ($req->hasFile('cover_image')) {
+                // Delete old cover image if exists
+                if ($course->cover_url) {
+                    $oldPath = str_replace(env('COURSE_IMAGES_BASE_URL', env('APP_URL', 'https://www.calamuseducation.com') . '/uploads') . '/', '', $course->cover_url);
+                    if (Storage::disk('calamusPost')->exists($oldPath)) {
+                        Storage::disk('calamusPost')->delete($oldPath);
+                    }
+                }
+                
+                $coverFile = $req->file('cover_image');
+                $coverPath = Storage::disk('calamusPost')->put('courses/covers', $coverFile);
+                $baseUrl = env('COURSE_IMAGES_BASE_URL', env('APP_URL', 'https://www.calamuseducation.com') . '/uploads');
+                $updateData['cover_url'] = rtrim($baseUrl, '/') . '/' . $coverPath;
+            }
+
+            // Handle web cover image upload
+            if ($req->hasFile('web_cover_image')) {
+                // Delete old web cover image if exists
+                if ($course->web_cover) {
+                    $oldPath = str_replace(env('COURSE_IMAGES_BASE_URL', env('APP_URL', 'https://www.calamuseducation.com') . '/uploads') . '/', '', $course->web_cover);
+                    if (Storage::disk('calamusPost')->exists($oldPath)) {
+                        Storage::disk('calamusPost')->delete($oldPath);
+                    }
+                }
+                
+                $webCoverFile = $req->file('web_cover_image');
+                $webCoverPath = Storage::disk('calamusPost')->put('courses/web-covers', $webCoverFile);
+                $baseUrl = env('COURSE_IMAGES_BASE_URL', env('APP_URL', 'https://www.calamuseducation.com') . '/uploads');
+                $updateData['web_cover'] = rtrim($baseUrl, '/') . '/' . $webCoverPath;
+            }
+
+            // Handle preview (URL, Vimeo upload, or file upload)
+            if ($req->has('preview') && !empty($req->preview)) {
+                $updateData['preview'] = $req->preview;
+            } elseif ($req->has('vimeo_video_id') && !empty($req->vimeo_video_id)) {
+                // Vimeo video ID provided - construct Vimeo URL
+                $updateData['preview'] = 'https://vimeo.com/' . $req->vimeo_video_id;
+            } elseif ($req->hasFile('preview_file')) {
+                // Upload to Vimeo using service
+                try {
+                    $vimeoService = new VimeoService();
+                    $playerUrl = $vimeoService->uploadVideo(
+                        $req->file('preview_file'),
+                        $course->title . ' - Preview',
+                        $course->major,
+                        $course->title,
+                        'Preview'
+                    );
+                    $updateData['preview'] = $playerUrl;
+                } catch (\Exception $e) {
+                    return back()->with('error', 'Vimeo upload failed: ' . $e->getMessage())->withInput();
+                }
+            } else {
+                // Keep existing preview if not provided
+                $updateData['preview'] = $course->preview;
+            }
+
+            // Update course
+            DB::table('courses')
+                ->where('course_id', $courseId)
+                ->update($updateData);
+
+            return back()->with('success', 'Course updated successfully!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to update course: ' . $e->getMessage())->withInput();
+        }
+    }
+
 }
 

@@ -191,37 +191,60 @@ class LessonController extends Controller
             'duration' => 'required|integer|min:1',
             'fee' => 'required|integer|min:0',
             'is_vip' => 'nullable|boolean',
+            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'web_cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
         ]);
 
         // Get the next course_id
         $maxCourseId = DB::table('courses')->max('course_id');
         $courseId = ($maxCourseId ?? 0) + 1;
 
-        // Insert new course
-        DB::table('courses')->insert([
-            'course_id' => $courseId,
-            'teacher_id' => $req->teacher_id,
-            'title' => $req->title,
-            'certificate_title' => $req->certificate_title,
-            'lessons_count' => 0,
-            'cover_url' => $req->cover_url ?? '',
-            'web_cover' => $req->web_cover ?? '',
-            'description' => $req->description,
-            'details' => $req->details,
-            'is_vip' => $req->has('is_vip') ? 1 : 0,
-            'duration' => $req->duration,
-            'background_color' => $req->background_color,
-            'fee' => $req->fee,
-            'enroll' => 0,
-            'rating' => 0,
-            'major' => $language,
-            'sorting' => 0,
-            'preview' => $req->preview ?? '',
-            'certificate_code' => $req->certificate_code,
-        ]);
+        // Handle cover image upload
+        $coverUrl = '';
+        if ($req->hasFile('cover_image')) {
+            $coverFile = $req->file('cover_image');
+            $coverPath = Storage::disk('calamusPost')->put('courses/covers', $coverFile);
+            $baseUrl = env('COURSE_IMAGES_BASE_URL', env('APP_URL', 'https://www.calamuseducation.com') . '/uploads');
+            $coverUrl = rtrim($baseUrl, '/') . '/' . $coverPath;
+        }
 
-        return redirect()->route('lessons.byLanguage', $language)
-            ->with('success', 'Course created successfully!');
+        // Handle web cover image upload
+        $webCoverUrl = '';
+        if ($req->hasFile('web_cover_image')) {
+            $webCoverFile = $req->file('web_cover_image');
+            $webCoverPath = Storage::disk('calamusPost')->put('courses/web-covers', $webCoverFile);
+            $baseUrl = env('COURSE_IMAGES_BASE_URL', env('APP_URL', 'https://www.calamuseducation.com') . '/uploads');
+            $webCoverUrl = rtrim($baseUrl, '/') . '/' . $webCoverPath;
+        }
+
+        try {
+            // Insert new course
+            DB::table('courses')->insert([
+                'course_id' => $courseId,
+                'teacher_id' => $req->teacher_id,
+                'title' => $req->title,
+                'certificate_title' => $req->certificate_title,
+                'lessons_count' => 0,
+                'cover_url' => $coverUrl,
+                'web_cover' => $webCoverUrl,
+                'description' => $req->description,
+                'details' => $req->details,
+                'is_vip' => $req->has('is_vip') ? 1 : 0,
+                'duration' => $req->duration,
+                'background_color' => $req->background_color,
+                'fee' => $req->fee,
+                'enroll' => 0,
+                'rating' => 0,
+                'major' => $language,
+                'sorting' => 0,
+                'preview' => '', // Preview will be handled in edit functionality
+                'certificate_code' => $req->certificate_code,
+            ]);
+
+            return back()->with('success', 'Course created successfully!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to create course: ' . $e->getMessage())->withInput();
+        }
     }
 
     public function showAddCategory($language, $course){

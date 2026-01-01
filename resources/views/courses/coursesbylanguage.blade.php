@@ -17,9 +17,14 @@
               <p class="mb-0 text-muted" style="font-size: 14px;">Manage and view courses for {{$languageName}}</p>
             </div>
           </div>
-          <a href="{{route('showCoursesMain')}}" class="btn btn-sm" style="background: rgba(156, 39, 176, 0.1); color: #9c27b0; border: 1px solid rgba(156, 39, 176, 0.3);">
-            <i class="fas fa-arrow-left me-2"></i>Back to Courses
-          </a>
+          <div class="d-flex gap-2">
+            <a href="{{route('lessons.addCourse', $language)}}" class="btn btn-sm btn-primary">
+              <i class="fas fa-plus me-2"></i>Create New Course
+            </a>
+            <a href="{{route('showCoursesMain')}}" class="btn btn-sm btn-neutral">
+              <i class="fas fa-arrow-left me-2"></i>Back to Courses
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -105,7 +110,12 @@
         <div class="row">
           @foreach($courses as $course)
           <div class="col-xl-4 col-md-6 mb-4">
-            <div class="course-item-card" style="border-radius: 12px; overflow: hidden; border: 1px solid rgba(0, 0, 0, 0.1); transition: all 0.3s ease; height: 100%;">
+            <div class="course-item-card" style="position: relative; border-radius: 12px; overflow: hidden; border: 1px solid rgba(0, 0, 0, 0.1); transition: all 0.3s ease; height: 100%;">
+              {{-- Circular Edit Button --}}
+              <a href="{{route('courses.edit', $course->course_id)}}" class="course-edit-btn" title="Edit Course">
+                <i class="fas fa-edit"></i>
+              </a>
+              
               <div class="card-body p-4">
                 <div class="d-flex align-items-start mb-3">
                   @if($course->cover_url)
@@ -133,7 +143,7 @@
                   {{Str::limit($course->description, 100)}}
                 </p>
                 
-                <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="d-flex justify-content-between align-items-center">
                   <div>
                     <small class="text-muted d-block" style="font-size: 12px;">
                       <i class="fas fa-graduation-cap me-1"></i>{{$course->lessons_count}} Lessons
@@ -147,15 +157,6 @@
                       <i class="fas fa-star"></i> {{number_format($course->rating, 1)}}
                     </div>
                   </div>
-                </div>
-                
-                <div class="d-flex gap-2">
-                  <button class="btn btn-sm flex-grow-1" style="background: rgba(156, 39, 176, 0.1); color: #9c27b0; border: 1px solid rgba(156, 39, 176, 0.3);">
-                    <i class="fas fa-eye me-1"></i>View
-                  </button>
-                  <button class="btn btn-sm flex-grow-1" style="background: rgba(33, 150, 243, 0.1); color: #2196F3; border: 1px solid rgba(33, 150, 243, 0.3);">
-                    <i class="fas fa-edit me-1"></i>Edit
-                  </button>
                 </div>
               </div>
             </div>
@@ -215,6 +216,35 @@ body.dark-theme .course-item-card:hover {
 
 body.light-theme .course-item-card {
   border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+.course-edit-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(255, 152, 0, 0.3);
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.course-edit-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(255, 152, 0, 0.5);
+  background: linear-gradient(135deg, #fb8c00 0%, #e65100 100%);
+  color: white;
+}
+
+.course-edit-btn:active {
+  transform: scale(0.95);
 }
 </style>
 

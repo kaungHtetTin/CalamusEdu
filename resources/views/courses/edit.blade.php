@@ -32,13 +32,18 @@
   <div class="col-xl-12 col-md-12 mb-4">
     <div class="card course-form-card">
       <div class="course-title-header">
-        <div class="d-flex align-items-center">
-          <i class="fas fa-graduation-cap me-3" style="font-size: 24px; color: #32cd32;"></i>
-          <h4 class="mb-0">Add New Course - {{$languageName}}</h4>
+        <div class="d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center">
+            <i class="fas fa-edit me-3" style="font-size: 24px; color: #2196F3;"></i>
+            <h4 class="mb-0">Edit Course - {{$languageName}}</h4>
+          </div>
+          <a href="{{route('courses.byLanguage', $language)}}" class="btn btn-sm btn-neutral">
+            <i class="fas fa-arrow-left me-2"></i>Back to Courses
+          </a>
         </div>
       </div>
       <div class="card-body course-form-body">
-        <form action="{{route('lessons.storeCourse', $language)}}" method="POST" enctype="multipart/form-data">
+        <form action="{{route('courses.update', $course->course_id)}}" method="POST" enctype="multipart/form-data">
           @csrf
           
           <div class="form-section">
@@ -48,7 +53,7 @@
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label for="title" class="form-label">Course Title <span class="text-danger">*</span></label>
-                <input type="text" class="form-control modern-input" id="title" name="title" value="{{old('title')}}" required maxlength="50" placeholder="Enter course title">
+                <input type="text" class="form-control modern-input" id="title" name="title" value="{{old('title', $course->title)}}" required maxlength="50" placeholder="Enter course title">
               </div>
 
               <div class="col-md-6 mb-3">
@@ -56,7 +61,7 @@
                 <select class="form-control modern-input" id="teacher_id" name="teacher_id" required>
                   <option value="">Select Teacher</option>
                   @foreach($teachers as $teacher)
-                    <option value="{{$teacher->id}}" {{old('teacher_id') == $teacher->id ? 'selected' : ''}}>
+                    <option value="{{$teacher->id}}" {{old('teacher_id', $course->teacher_id) == $teacher->id ? 'selected' : ''}}>
                       {{$teacher->name}}
                     </option>
                   @endforeach
@@ -70,15 +75,14 @@
               <i class="fas fa-certificate me-2"></i>Certificate Details
             </h6>
             <div class="row">
-
               <div class="col-md-6 mb-3">
                 <label for="certificate_title" class="form-label">Certificate Title <span class="text-danger">*</span></label>
-                <input type="text" class="form-control modern-input" id="certificate_title" name="certificate_title" value="{{old('certificate_title')}}" required maxlength="225" placeholder="Enter certificate title">
+                <input type="text" class="form-control modern-input" id="certificate_title" name="certificate_title" value="{{old('certificate_title', $course->certificate_title)}}" required maxlength="225" placeholder="Enter certificate title">
               </div>
 
               <div class="col-md-6 mb-3">
                 <label for="certificate_code" class="form-label">Certificate Code <span class="text-danger">*</span></label>
-                <input type="text" class="form-control modern-input" id="certificate_code" name="certificate_code" value="{{old('certificate_code')}}" required maxlength="5" placeholder="e.g., ENG01">
+                <input type="text" class="form-control modern-input" id="certificate_code" name="certificate_code" value="{{old('certificate_code', $course->certificate_code)}}" required maxlength="5" placeholder="e.g., ENG01">
               </div>
             </div>
           </div>
@@ -90,12 +94,12 @@
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label for="duration" class="form-label">Duration (days) <span class="text-danger">*</span></label>
-                <input type="number" class="form-control modern-input" id="duration" name="duration" value="{{old('duration')}}" required min="1" placeholder="Enter duration in days">
+                <input type="number" class="form-control modern-input" id="duration" name="duration" value="{{old('duration', $course->duration)}}" required min="1" placeholder="Enter duration in days">
               </div>
 
               <div class="col-md-6 mb-3">
                 <label for="fee" class="form-label">Fee <span class="text-danger">*</span></label>
-                <input type="number" class="form-control modern-input" id="fee" name="fee" value="{{old('fee', 0)}}" required min="0" placeholder="Enter course fee">
+                <input type="number" class="form-control modern-input" id="fee" name="fee" value="{{old('fee', $course->fee)}}" required min="0" placeholder="Enter course fee">
               </div>
             </div>
 
@@ -103,14 +107,14 @@
               <div class="col-md-6 mb-3">
                 <label for="background_color" class="form-label">Background Color <span class="text-danger">*</span></label>
                 <div class="d-flex gap-2">
-                  <input type="color" class="form-control form-control-color" id="background_color_picker" value="{{old('background_color', '#2196F3')}}" style="width: 60px; height: 38px;">
-                  <input type="text" class="form-control modern-input" id="background_color" name="background_color" value="{{old('background_color', '#2196F3')}}" required maxlength="225" placeholder="#2196F3">
+                  <input type="color" class="form-control form-control-color" id="background_color_picker" value="{{old('background_color', $course->background_color)}}" style="width: 60px; height: 38px;">
+                  <input type="text" class="form-control modern-input" id="background_color" name="background_color" value="{{old('background_color', $course->background_color)}}" required maxlength="225" placeholder="#2196F3">
                 </div>
               </div>
 
               <div class="col-md-6 mb-3">
                 <div class="form-check modern-checkbox">
-                  <input class="form-check-input" type="checkbox" id="is_vip" name="is_vip" value="1" {{old('is_vip') ? 'checked' : ''}}>
+                  <input class="form-check-input" type="checkbox" id="is_vip" name="is_vip" value="1" {{old('is_vip', $course->is_vip) ? 'checked' : ''}}>
                   <label class="form-check-label" for="is_vip">
                     <i class="fas fa-crown me-2"></i>VIP Course
                   </label>
@@ -129,23 +133,32 @@
                 <div class="image-upload-wrapper">
                   <div class="image-upload-area" id="cover_upload_area">
                     <input type="file" class="d-none" id="cover_image" name="cover_image" accept="image/*">
-                    <div class="upload-placeholder" id="cover_placeholder">
-                      <i class="fas fa-cloud-upload-alt fa-3x mb-3" style="color: #9c27b0;"></i>
-                      <p class="mb-2">Click to upload cover image</p>
-                      <small class="text-muted">PNG, JPG, GIF, WEBP (Max 5MB)</small>
-                    </div>
-                    <div class="image-preview d-none" id="cover_preview">
-                      <img id="cover_preview_img" src="" alt="Cover Preview">
-                      <button type="button" class="btn-remove-image" id="cover_remove_btn" title="Remove image">
-                        <i class="fas fa-times"></i>
-                      </button>
-                    </div>
+                    @if($course->cover_url)
+                      <div class="image-preview" id="cover_preview">
+                        <img id="cover_preview_img" src="{{$course->cover_url}}" alt="Cover Preview">
+                        <button type="button" class="btn-remove-image" id="cover_remove_btn" title="Remove image">
+                          <i class="fas fa-times"></i>
+                        </button>
+                      </div>
+                      <div class="upload-placeholder d-none" id="cover_placeholder">
+                        <i class="fas fa-cloud-upload-alt fa-3x mb-3" style="color: #9c27b0;"></i>
+                        <p class="mb-2">Click to upload cover image</p>
+                        <small class="text-muted">PNG, JPG, GIF, WEBP (Max 5MB)</small>
+                      </div>
+                    @else
+                      <div class="upload-placeholder" id="cover_placeholder">
+                        <i class="fas fa-cloud-upload-alt fa-3x mb-3" style="color: #9c27b0;"></i>
+                        <p class="mb-2">Click to upload cover image</p>
+                        <small class="text-muted">PNG, JPG, GIF, WEBP (Max 5MB)</small>
+                      </div>
+                      <div class="image-preview d-none" id="cover_preview">
+                        <img id="cover_preview_img" src="" alt="Cover Preview">
+                        <button type="button" class="btn-remove-image" id="cover_remove_btn" title="Remove image">
+                          <i class="fas fa-times"></i>
+                        </button>
+                      </div>
+                    @endif
                   </div>
-                  @if(old('cover_url'))
-                    <small class="text-muted d-block mt-2">
-                      <i class="fas fa-info-circle me-1"></i>Current: {{old('cover_url')}}
-                    </small>
-                  @endif
                 </div>
               </div>
 
@@ -154,24 +167,87 @@
                 <div class="image-upload-wrapper">
                   <div class="image-upload-area" id="web_cover_upload_area">
                     <input type="file" class="d-none" id="web_cover_image" name="web_cover_image" accept="image/*">
-                    <div class="upload-placeholder" id="web_cover_placeholder">
-                      <i class="fas fa-cloud-upload-alt fa-3x mb-3" style="color: #9c27b0;"></i>
-                      <p class="mb-2">Click to upload web cover image</p>
-                      <small class="text-muted">PNG, JPG, GIF, WEBP (Max 5MB)</small>
-                    </div>
-                    <div class="image-preview d-none" id="web_cover_preview">
-                      <img id="web_cover_preview_img" src="" alt="Web Cover Preview">
-                      <button type="button" class="btn-remove-image" id="web_cover_remove_btn" title="Remove image">
-                        <i class="fas fa-times"></i>
-                      </button>
+                    @if($course->web_cover)
+                      <div class="image-preview" id="web_cover_preview">
+                        <img id="web_cover_preview_img" src="{{$course->web_cover}}" alt="Web Cover Preview">
+                        <button type="button" class="btn-remove-image" id="web_cover_remove_btn" title="Remove image">
+                          <i class="fas fa-times"></i>
+                        </button>
+                      </div>
+                      <div class="upload-placeholder d-none" id="web_cover_placeholder">
+                        <i class="fas fa-cloud-upload-alt fa-3x mb-3" style="color: #9c27b0;"></i>
+                        <p class="mb-2">Click to upload web cover image</p>
+                        <small class="text-muted">PNG, JPG, GIF, WEBP (Max 5MB)</small>
+                      </div>
+                    @else
+                      <div class="upload-placeholder" id="web_cover_placeholder">
+                        <i class="fas fa-cloud-upload-alt fa-3x mb-3" style="color: #9c27b0;"></i>
+                        <p class="mb-2">Click to upload web cover image</p>
+                        <small class="text-muted">PNG, JPG, GIF, WEBP (Max 5MB)</small>
+                      </div>
+                      <div class="image-preview d-none" id="web_cover_preview">
+                        <img id="web_cover_preview_img" src="" alt="Web Cover Preview">
+                        <button type="button" class="btn-remove-image" id="web_cover_remove_btn" title="Remove image">
+                          <i class="fas fa-times"></i>
+                        </button>
+                      </div>
+                    @endif
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label">Preview</label>
+              <div class="card" style="border: 1px solid rgba(156, 39, 176, 0.2); border-radius: 8px; padding: 1rem;">
+                <div class="mb-3">
+                  <label for="preview" class="form-label">Preview URL</label>
+                  <input type="url" class="form-control modern-input" id="preview" name="preview" value="{{old('preview', $course->preview)}}" maxlength="1000" placeholder="https://example.com/preview">
+                  <small class="form-text text-muted">Enter a URL for the preview video or content</small>
+                </div>
+                <div class="text-center" style="color: #6c757d; margin: 0.5rem 0;">
+                  <i class="fas fa-minus"></i> OR <i class="fas fa-minus"></i>
+                </div>
+                <div class="mb-3">
+                  <label for="vimeo_video_id" class="form-label">
+                    <i class="fab fa-vimeo me-2" style="color: #1ab7ea;"></i>Vimeo Video ID
+                  </label>
+                  <input type="text" class="form-control modern-input" id="vimeo_video_id" name="vimeo_video_id" value="{{old('vimeo_video_id')}}" placeholder="Enter Vimeo video ID (e.g., 123456789)">
+                  <small class="form-text text-muted">If you already have a Vimeo video, enter its ID. The URL will be: https://vimeo.com/[ID]</small>
+                </div>
+                <div class="text-center" style="color: #6c757d; margin: 0.5rem 0;">
+                  <i class="fas fa-minus"></i> OR <i class="fas fa-minus"></i>
+                </div>
+                <div>
+                  <label for="preview_file" class="form-label">
+                    <i class="fab fa-vimeo me-2" style="color: #1ab7ea;"></i>Upload Video to Vimeo
+                  </label>
+                  <input type="file" class="form-control modern-input" id="preview_file" name="preview_file" accept="video/mp4,video/webm,video/ogg,video/mov,video/avi">
+                  <small class="form-text text-muted">
+                    <i class="fas fa-info-circle me-1"></i>Upload a video file to automatically upload to Vimeo (MP4, MOV, AVI, WEBM, OGG)
+                  </small>
+                  <div id="vimeo_upload_status" class="mt-2" style="display: none;">
+                    <div class="alert alert-info mb-0">
+                      <i class="fas fa-spinner fa-spin me-2"></i><span id="upload_status_text">Uploading to Vimeo...</span>
                     </div>
                   </div>
-                  @if(old('web_cover'))
-                    <small class="text-muted d-block mt-2">
-                      <i class="fas fa-info-circle me-1"></i>Current: {{old('web_cover')}}
-                    </small>
-                  @endif
                 </div>
+                @if($course->preview)
+                  <div class="mt-3 p-2" style="background: rgba(156, 39, 176, 0.05); border-radius: 6px;">
+                    <small class="text-muted d-block mb-1">
+                      <i class="fas fa-info-circle me-1"></i><strong>Current Preview:</strong>
+                    </small>
+                    <a href="{{$course->preview}}" target="_blank" class="text-decoration-none">
+                      {{$course->preview}}
+                      <i class="fas fa-external-link-alt ms-1" style="font-size: 10px;"></i>
+                    </a>
+                    @if(strpos($course->preview, 'vimeo.com') !== false)
+                      <div class="mt-2">
+                        <iframe src="{{str_replace('vimeo.com/', 'player.vimeo.com/video/', $course->preview)}}" width="100%" height="200" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="border-radius: 4px;"></iframe>
+                      </div>
+                    @endif
+                  </div>
+                @endif
               </div>
             </div>
           </div>
@@ -182,23 +258,23 @@
             </h6>
             <div class="mb-3">
               <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
-              <textarea class="form-control modern-input" id="description" name="description" rows="3" required maxlength="1000" placeholder="Enter course description">{{old('description')}}</textarea>
+              <textarea class="form-control modern-input" id="description" name="description" rows="3" required maxlength="1000" placeholder="Enter course description">{{old('description', $course->description)}}</textarea>
             </div>
 
             <div class="mb-3">
               <label for="details" class="form-label">Details <span class="text-danger">*</span></label>
-              <textarea class="form-control modern-input" id="details" name="details" rows="5" required placeholder="Enter course details">{{old('details')}}</textarea>
+              <textarea class="form-control modern-input" id="details" name="details" rows="5" required placeholder="Enter course details">{{old('details', $course->details)}}</textarea>
             </div>
           </div>
 
           <div class="form-actions">
-            <a href="{{route('lessons.byLanguage', $language)}}" class="new-category-btn btn-cancel">
+            <a href="{{route('courses.byLanguage', $language)}}" class="new-category-btn btn-cancel">
               <i class="fas fa-times"></i>
               <span>Cancel</span>
             </a>
             <button type="submit" class="new-category-btn">
               <i class="fas fa-save"></i>
-              <span>Create Course</span>
+              <span>Update Course</span>
             </button>
           </div>
         </form>
@@ -299,6 +375,39 @@ document.addEventListener('DOMContentLoaded', function() {
         webCoverPreview.classList.add('d-none');
         webCoverPreviewImg.src = '';
     });
+
+    // Vimeo video ID input - extract ID from URL if full URL is pasted
+    const vimeoVideoIdInput = document.getElementById('vimeo_video_id');
+    if (vimeoVideoIdInput) {
+        vimeoVideoIdInput.addEventListener('paste', function(e) {
+            setTimeout(() => {
+                let value = this.value.trim();
+                // Extract video ID from Vimeo URL
+                const vimeoUrlMatch = value.match(/vimeo\.com\/(?:.*\/)?(\d+)/);
+                if (vimeoUrlMatch) {
+                    this.value = vimeoUrlMatch[1];
+                }
+            }, 10);
+        });
+    }
+
+    // Show upload status when file is selected
+    const previewFileInput = document.getElementById('preview_file');
+    const uploadStatus = document.getElementById('vimeo_upload_status');
+    const uploadStatusText = document.getElementById('upload_status_text');
+    
+    if (previewFileInput && uploadStatus) {
+        previewFileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                uploadStatus.style.display = 'block';
+                const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+                uploadStatusText.innerHTML = 'File selected: ' + file.name + ' (' + fileSizeMB + ' MB). The video will be uploaded to Vimeo when you submit the form.';
+            } else {
+                uploadStatus.style.display = 'none';
+            }
+        });
+    }
 });
 </script>
 
@@ -322,14 +431,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 /* Cover Image - 1:1 Aspect Ratio (Square) */
 #cover_upload_area {
-   
     width: 200px;
     height: 200px;
 }
 
 /* Web Cover Image - 16:9 Aspect Ratio */
 #web_cover_upload_area {
- 
     width: 355px;
     height: 200px;
 }

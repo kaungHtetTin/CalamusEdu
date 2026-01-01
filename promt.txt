@@ -1,0 +1,9 @@
+Video uploaded successfully. But the structure now is.
+root/Russian
+root/Basic Course
+root/Preview/video_file
+
+It should be 
+root/Russian/Basic Course/Reivew/video_file
+
+Check the api documentation and fix the issue.

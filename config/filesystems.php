@@ -55,9 +55,20 @@ return [
         
         
         
+        /*
+         * Calamus Post and Course Images Storage
+         * 
+         * Environment Variables:
+         * - UPLOADS_PATH: Physical path for uploads directory (default: '../uploads')
+         * - COURSE_IMAGES_BASE_URL: Base URL for course images (default: APP_URL + '/uploads')
+         * 
+         * Example for production:
+         * UPLOADS_PATH=/var/www/uploads
+         * COURSE_IMAGES_BASE_URL=https://www.calamuseducation.com/uploads
+         */
         'calamusPost' => [
             'driver' => 'local',
-            'root'   => '../uploads',
+            'root'   => env('UPLOADS_PATH', '../uploads'),
         ],
 
     ],

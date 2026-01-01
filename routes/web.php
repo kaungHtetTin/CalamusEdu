@@ -106,6 +106,8 @@ Route::post('/song/artists/delete',[SongController::class,'deleteArtist'])->name
 
 //courses controlling routes
 Route::get('/courses',[CourseController::class,'showCoursesMain'])->name('showCoursesMain');
+Route::get('/courses/{courseId}/edit',[CourseController::class,'edit'])->name('courses.edit')->where('courseId', '[0-9]+');
+Route::post('/courses/{courseId}/update',[CourseController::class,'update'])->name('courses.update')->where('courseId', '[0-9]+');
 Route::get('/courses/{language}',[CourseController::class,'showCoursesByLanguage'])->name('courses.byLanguage');
 
 //posts controlling routes

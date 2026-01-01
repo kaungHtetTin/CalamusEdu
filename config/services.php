@@ -30,4 +30,18 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    /*
+     * Vimeo API Configuration
+     * 
+     * Add these to your .env file:
+     * VIMEO_CLIENT_ID=your_client_id
+     * VIMEO_CLIENT_SECRET=your_client_secret
+     * VIMEO_ACCESS_TOKEN=your_access_token
+     */
+    'vimeo' => [
+        'client_id' => env('VIMEO_CLIENT_ID'),
+        'client_secret' => env('VIMEO_CLIENT_SECRET'),
+        'access_token' => env('VIMEO_ACCESS_TOKEN'),
+    ],
+
 ];

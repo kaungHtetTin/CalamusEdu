@@ -16,11 +16,11 @@
         }
         
         body {
-            background: linear-gradient(135deg, #1976D2 0%, #1565C0 30%, #0D47A1 60%, #1976D2 100%);
+            background: linear-gradient(135deg, #1967d2 0%, #1557b0 30%, #0d47a1 60%, #1967d2 100%);
             background-size: 200% 200%;
             animation: gradientShift 15s ease infinite;
             min-height: 100vh;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -37,9 +37,9 @@
             right: 0;
             bottom: 0;
             background: 
-                radial-gradient(circle at 20% 50%, rgba(33, 150, 243, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(30, 136, 229, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 40% 20%, rgba(25, 118, 210, 0.2) 0%, transparent 50%);
+                radial-gradient(circle at 20% 50%, rgba(25, 103, 210, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(21, 87, 176, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(25, 103, 210, 0.2) 0%, transparent 50%);
             pointer-events: none;
         }
         
@@ -65,7 +65,7 @@
         
         /* Window Title Bar */
         .window-title-bar {
-            background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+            background: linear-gradient(135deg, #1967d2 0%, #1557b0 100%);
             padding: 12px 16px;
             display: flex;
             align-items: center;
@@ -164,14 +164,14 @@
         
         .form-control:focus {
             outline: none;
-            border-color: #1976D2;
-            box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+            border-color: #1967d2;
+            box-shadow: 0 0 0 3px rgba(25, 103, 210, 0.1);
         }
         
         .btn-login {
             width: 100%;
             padding: 12px;
-            background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+            background: linear-gradient(135deg, #1967d2 0%, #1557b0 100%);
             color: #ffffff;
             border: none;
             border-radius: 6px;
@@ -179,12 +179,12 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+            box-shadow: 0 4px 12px rgba(25, 103, 210, 0.3);
         }
         
         .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(25, 118, 210, 0.4);
+            box-shadow: 0 6px 20px rgba(25, 103, 210, 0.4);
         }
         
         .btn-login:active {
