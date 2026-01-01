@@ -8,10 +8,12 @@ use App\Http\Controllers\GameWordController;
 use App\Http\Controllers\SongController;
 use App\Http\Controllers\CloudMessageController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\CourseController;
 use App\Http\Controllers\ProjectOverviewController;
 use App\Http\Controllers\SpeakingTrainerController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\AdminAuthController;
+use App\Http\Controllers\TeacherController;
 use Illuminate\Http\Request;
 /*
 |--------------------------------------------------------------------------
@@ -102,6 +104,10 @@ Route::get('/song/artists/addform/{major}',[SongController::class,'showAddArtist
 Route::post('/song/artists/add',[SongController::class,'addArtist'])->name('addArtist');
 Route::post('/song/artists/delete',[SongController::class,'deleteArtist'])->name('deleteArtist');
 
+//courses controlling routes
+Route::get('/courses',[CourseController::class,'showCoursesMain'])->name('showCoursesMain');
+Route::get('/courses/{language}',[CourseController::class,'showCoursesByLanguage'])->name('courses.byLanguage');
+
 //posts controlling routes
 Route::get('/posts',[PostController::class,'showMainPostControllerView'])->name('showMainPostControllerView');
 Route::get('/posts/{major}',[PostController::class,'showTimeline'])->name('showTimeline');
@@ -131,6 +137,16 @@ Route::get('/projectoverview',[ProjectOverviewController::class,'index'])->name(
 
 //payment
 Route::get('/payments/{major}',[PaymentController::class,'index']);
+
+//teachers controlling routes
+Route::get('/teachers',[TeacherController::class,'index'])->name('teachers.index');
+Route::get('/teachers/create',[TeacherController::class,'create'])->name('teachers.create');
+Route::post('/teachers',[TeacherController::class,'store'])->name('teachers.store');
+Route::get('/teachers/{id}',[TeacherController::class,'show'])->name('teachers.show');
+Route::get('/teachers/{id}/edit',[TeacherController::class,'edit'])->name('teachers.edit');
+Route::put('/teachers/{id}',[TeacherController::class,'update'])->name('teachers.update');
+Route::delete('/teachers/{id}',[TeacherController::class,'destroy'])->name('teachers.destroy');
+
 Route::get('/demo',function(){
     return view('layouts.demo');
 });

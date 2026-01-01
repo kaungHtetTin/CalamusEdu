@@ -111,40 +111,48 @@
 
       <div class="drawer-nav-content">
         <a href="{{ route('overviewIndex') }}" class="admin-nav-item {{ $routeName === 'overviewIndex' ? 'active' : '' }}">
-          <i class="material-icons">assessment</i>
+          <i class="fas fa-chart-line"></i>
           <span>Dashboard</span>
         </a>
 
         <a href="{{ route('getUser') }}" class="admin-nav-item {{ request()->routeIs('getUser') ? 'active' : '' }}">
-          <i class="material-icons">people</i>
+          <i class="fas fa-users"></i>
           <span>Users</span>
         </a>
         <a href="{{ route('lessons.main') }}" class="admin-nav-item {{ request()->routeIs('lessons.*') ? 'active' : '' }}">
-          <i class="material-icons">school</i>
+          <i class="fas fa-graduation-cap"></i>
           <span>Lessons</span>
         </a>
+        <a href="{{ route('showCoursesMain') }}" class="admin-nav-item {{ request()->routeIs('showCoursesMain') ? 'active' : '' }}">
+          <i class="fas fa-book"></i>
+          <span>Courses</span>
+        </a>
+        <a href="{{ route('teachers.index') }}" class="admin-nav-item {{ request()->routeIs('teachers.*') ? 'active' : '' }}">
+          <i class="fas fa-chalkboard-teacher"></i>
+          <span>Teachers</span>
+        </a>
         <a href="{{ route('showWordOfTheDayMain') }}" class="admin-nav-item {{ request()->routeIs('showWordOfTheDayMain') ? 'active' : '' }}">
-          <i class="material-icons">alarm</i>
+          <i class="fas fa-calendar-day"></i>
           <span>Word of the Day</span>
         </a>
         <a href="{{ route('showGameWordMain') }}" class="admin-nav-item {{ request()->routeIs('showGameWordMain') ? 'active' : '' }}">
-          <i class="material-icons">extension</i>
+          <i class="fas fa-gamepad"></i>
           <span>Game Words</span>
         </a>
         <a href="{{ route('showSongMain') }}" class="admin-nav-item {{ request()->routeIs('showSongMain') ? 'active' : '' }}">
-          <i class="material-icons">queue_music</i>
+          <i class="fas fa-music"></i>
           <span>Songs</span>
         </a>
         <a href="{{ route('showMainPostControllerView') }}" class="admin-nav-item {{ request()->routeIs('showMainPostControllerView') ? 'active' : '' }}">
-          <i class="material-icons">public</i>
+          <i class="fas fa-newspaper"></i>
           <span>Posts</span>
         </a>
         <a href="{{ route('showCloudMessage') }}" class="admin-nav-item {{ request()->routeIs('showCloudMessage') ? 'active' : '' }}">
-          <i class="material-icons">send</i>
+          <i class="fas fa-cloud"></i>
           <span>Cloud Messaging</span>
         </a>
         <a href="{{ route('showDialogueAdder') }}" class="admin-nav-item {{ request()->routeIs('showDialogueAdder') ? 'active' : '' }}">
-          <i class="material-icons">forum</i>
+          <i class="fas fa-comments"></i>
           <span>Speaking Training</span>
         </a>
       </div>
