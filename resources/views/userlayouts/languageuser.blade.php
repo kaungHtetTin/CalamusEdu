@@ -8,20 +8,20 @@
   $secondaryColor = $languageConfig['secondaryColor'] ?? '#1976D2';
 @endphp
 
-<div class="row mb-4">
-  {{-- Page Header --}}
-  <div class="col-12 mb-4">
-    <div class="d-flex justify-content-between align-items-center">
+<div class="row mb-3">
+  {{-- Page Header - Vimeo Style --}}
+  <div class="col-12 mb-3">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
       <div>
-        <h2 class="mb-1" style="font-weight: 600; color: var(--text-primary);">Easy {{ $languageName }} Users</h2>
-        <p class="mb-0 text-muted">Manage and view Easy {{ $languageName }} user data</p>
+        <h2 class="mb-1 page-title">Easy {{ $languageName }} Users</h2>
+        <p class="mb-0 page-subtitle">Manage and view Easy {{ $languageName }} user data</p>
       </div>
-      <div class="d-flex align-items-center gap-3">
-        <div class="stat-card-mini" style="background: linear-gradient(135deg, {{ $primaryColor }} 0%, {{ $secondaryColor }} 100%);">
+      <div class="d-flex align-items-center gap-2">
+        <div class="stat-card-mini" style="border-left: 3px solid {{ $primaryColor }};">
           <div class="stat-value">{{ number_format($counts) }}</div>
           <div class="stat-label">Total Users</div>
         </div>
-        <div class="stat-card-mini" style="background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);">
+        <div class="stat-card-mini" style="border-left: 3px solid #FFD700;">
           <div class="stat-value">{{ number_format($vip_counts ?? 0) }}</div>
           <div class="stat-label">VIP Users</div>
         </div>
@@ -174,11 +174,12 @@
               </a>
             @endif
           </div>
-          <button type="submit" class="btn btn-search ms-2">
-            <i class="fas fa-search me-1"></i>Search
+          <button type="submit" class="btn-primary btn-sm" title="Search" style="margin-left: 5px;">
+            <i class="fas fa-search"></i>
+            <span>Search</span>
           </button>
         </form>
-        <span class="badge modern-badge">{{ number_format($counts) }} Total</span>
+        <span class="badge modern-badge" style="color: #fff;">{{ number_format($counts) }} Total</span>
       </div>
     </div>
   </div>
@@ -232,7 +233,7 @@
             </td>
             <td class="table-actions">
               <a href="{{ route('detail') }}?phone={{ $user->learner_phone }}" 
-                 class="btn-action" 
+                 class="btn-action-primary" 
                  title="View Details">
                 <i class="fas fa-eye"></i>
               </a>

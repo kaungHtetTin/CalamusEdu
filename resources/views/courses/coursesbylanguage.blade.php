@@ -18,12 +18,9 @@
             </div>
           </div>
           <div class="d-flex gap-2">
-            <a href="{{route('lessons.addCourse', $language)}}" class="btn btn-sm btn-primary">
-              <i class="fas fa-plus me-2"></i>Create New Course
-            </a>
-            <a href="{{route('showCoursesMain')}}" class="btn-back btn-sm">
-              <i class="fas fa-arrow-left"></i>
-              <span>Back to Courses</span>
+            <a href="{{route('lessons.addCourse', $language)}}" class="new-category-btn" title="New Course">
+              <i class="fas fa-plus"></i>
+              <span>New Course</span>
             </a>
           </div>
         </div>

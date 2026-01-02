@@ -21,8 +21,8 @@
         </h5>
         <span class="badge modern-badge">{{number_format($teacher_count)}} Total</span>
       </div>
-      <a href="{{route('teachers.create')}}" class="btn-add-teacher" title="Add New Teacher">
-        <i class="fas fa-plus-circle"></i>
+      <a href="{{route('teachers.create')}}" class="btn-primary btn-sm" title="Add New Teacher">
+        <i class="fas fa-plus"></i>
         <span>Add Teacher</span>
       </a>
     </div>
@@ -69,12 +69,12 @@
             </td>
             <td class="teachers-table-actions">
               <a href="{{route('teachers.show', $teacher->id)}}" 
-                 class="btn-action" 
+                 class="btn-action-primary" 
                  title="View Details">
                 <i class="fas fa-eye"></i>
               </a>
               <a href="{{route('teachers.edit', $teacher->id)}}" 
-                 class="btn-action btn-action-warning" 
+                 class="btn-action-warning" 
                  title="Edit">
                 <i class="fas fa-edit"></i>
               </a>
@@ -84,7 +84,7 @@
                     onsubmit="return confirm('Are you sure you want to delete this teacher?');">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="btn-action btn-action-danger" title="Delete">
+                <button type="submit" class="btn-action-danger" title="Delete">
                   <i class="fas fa-trash"></i>
                 </button>
               </form>

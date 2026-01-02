@@ -54,57 +54,57 @@
   </div>
 </div>
 
-<div class="row">
-  {{-- Language Cards --}}
-  <div class="col-xl-12 col-md-12 mb-4">
+<div class="row mb-3">
+  {{-- Language Cards - Vimeo Style --}}
+  <div class="col-xl-12 col-md-12">
     <div class="card">
       <div class="card-header">
         <h5 class="mb-0">Quick Access</h5>
       </div>
       <div class="card-body">
-        <div class="row">
-          <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-            <a href="{{route('lessons.byLanguage','english')}}" class="text-decoration-none quick-access-link">
-              <div class="text-center p-3 rounded lesson-card" style="background-color: rgba(33, 150, 243, 0.1); border: 2px solid rgba(33, 150, 243, 0.3); transition: all 0.3s;" onmouseover="this.style.backgroundColor='rgba(33, 150, 243, 0.2)'; this.style.borderColor='rgba(33, 150, 243, 0.5)'" onmouseout="this.style.backgroundColor='rgba(33, 150, 243, 0.1)'; this.style.borderColor='rgba(33, 150, 243, 0.3)'">
-                <img src="{{asset('public/img/easyenglish.png')}}" style="width: 50px;height:50px" class="mb-2"/>
-                <div class="fw-bold">Easy English</div>
+        <div class="row g-3">
+          <div class="col-xl-2 col-md-4 col-sm-6">
+            <a href="{{route('lessons.byLanguage','english')}}" class="quick-access-card quick-access-english">
+              <div class="quick-access-icon">
+                <img src="{{asset('public/img/easyenglish.png')}}" alt="Easy English"/>
               </div>
+              <div class="quick-access-title">Easy English</div>
             </a>
           </div>
 
-          <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-            <a href="{{route('lessons.byLanguage','korea')}}" class="text-decoration-none quick-access-link">
-              <div class="text-center p-3 rounded lesson-card" style="background-color: rgba(255, 152, 0, 0.1); border: 2px solid rgba(255, 152, 0, 0.3); transition: all 0.3s;" onmouseover="this.style.backgroundColor='rgba(255, 152, 0, 0.2)'; this.style.borderColor='rgba(255, 152, 0, 0.5)'" onmouseout="this.style.backgroundColor='rgba(255, 152, 0, 0.1)'; this.style.borderColor='rgba(255, 152, 0, 0.3)'">
-                <img src="{{asset('public/img/easykorean.png')}}" style="width: 50px;height:50px" class="mb-2"/>
-                <div class="fw-bold">Easy Korean</div>
+          <div class="col-xl-2 col-md-4 col-sm-6">
+            <a href="{{route('lessons.byLanguage','korea')}}" class="quick-access-card quick-access-korean">
+              <div class="quick-access-icon">
+                <img src="{{asset('public/img/easykorean.png')}}" alt="Easy Korean"/>
               </div>
+              <div class="quick-access-title">Easy Korean</div>
             </a>
           </div>
 
-          <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-            <a href="{{route('lessons.byLanguage','chinese')}}" class="text-decoration-none quick-access-link">
-              <div class="text-center p-3 rounded lesson-card" style="background-color: rgba(244, 67, 54, 0.1); border: 2px solid rgba(244, 67, 54, 0.3); transition: all 0.3s;" onmouseover="this.style.backgroundColor='rgba(244, 67, 54, 0.2)'; this.style.borderColor='rgba(244, 67, 54, 0.5)'" onmouseout="this.style.backgroundColor='rgba(244, 67, 54, 0.1)'; this.style.borderColor='rgba(244, 67, 54, 0.3)'">
-                <img src="{{asset('public/img/easychinese.png')}}" style="width: 50px;height:50px" class="mb-2"/>
-                <div class="fw-bold">Easy Chinese</div>
+          <div class="col-xl-2 col-md-4 col-sm-6">
+            <a href="{{route('lessons.byLanguage','chinese')}}" class="quick-access-card quick-access-chinese">
+              <div class="quick-access-icon">
+                <img src="{{asset('public/img/easychinese.png')}}" alt="Easy Chinese"/>
               </div>
+              <div class="quick-access-title">Easy Chinese</div>
             </a>
           </div>
 
-          <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-            <a href="{{route('lessons.byLanguage','japanese')}}" class="text-decoration-none quick-access-link">
-              <div class="text-center p-3 rounded lesson-card" style="background-color: rgba(156, 39, 176, 0.1); border: 2px solid rgba(156, 39, 176, 0.3); transition: all 0.3s;" onmouseover="this.style.backgroundColor='rgba(156, 39, 176, 0.2)'; this.style.borderColor='rgba(156, 39, 176, 0.5)'" onmouseout="this.style.backgroundColor='rgba(156, 39, 176, 0.1)'; this.style.borderColor='rgba(156, 39, 176, 0.3)'">
-                <img src="{{asset('public/img/easyjapanese.png')}}" style="width: 50px;height:50px" class="mb-2"/>
-                <div class="fw-bold">Easy Japanese</div>
+          <div class="col-xl-2 col-md-4 col-sm-6">
+            <a href="{{route('lessons.byLanguage','japanese')}}" class="quick-access-card quick-access-japanese">
+              <div class="quick-access-icon">
+                <img src="{{asset('public/img/easyjapanese.png')}}" alt="Easy Japanese"/>
               </div>
+              <div class="quick-access-title">Easy Japanese</div>
             </a>
           </div>
 
-          <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-            <a href="{{route('lessons.byLanguage','russian')}}" class="text-decoration-none quick-access-link">
-              <div class="text-center p-3 rounded lesson-card" style="background-color: rgba(76, 175, 80, 0.1); border: 2px solid rgba(76, 175, 80, 0.3); transition: all 0.3s;" onmouseover="this.style.backgroundColor='rgba(76, 175, 80, 0.2)'; this.style.borderColor='rgba(76, 175, 80, 0.5)'" onmouseout="this.style.backgroundColor='rgba(76, 175, 80, 0.1)'; this.style.borderColor='rgba(76, 175, 80, 0.3)'">
-                <img src="{{asset('public/img/easyrussian.png')}}" style="width: 50px;height:50px" class="mb-2"/>
-                <div class="fw-bold">Easy Russian</div>
+          <div class="col-xl-2 col-md-4 col-sm-6">
+            <a href="{{route('lessons.byLanguage','russian')}}" class="quick-access-card quick-access-russian">
+              <div class="quick-access-icon">
+                <img src="{{asset('public/img/easyrussian.png')}}" alt="Easy Russian"/>
               </div>
+              <div class="quick-access-title">Easy Russian</div>
             </a>
           </div>
         </div>

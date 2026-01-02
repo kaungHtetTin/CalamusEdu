@@ -65,13 +65,11 @@
                 </div>
               </div>
               <div class="lesson-item-buttons">
-                <a href="{{$viewLesson}}" class="lesson-action-btn btn-detail" title="View Details">
+                <a href="{{$viewLesson}}" class="btn-action-primary" title="View Details">
                   <i class="fas fa-eye"></i>
-                  <span>Detail</span>
                 </a>
-                <a href="{{route('lessons.edit', $lesson->id)}}" class="lesson-action-btn btn-edit" title="Edit Lesson">
+                <a href="{{route('lessons.edit', $lesson->id)}}" class="btn-action-warning" title="Edit Lesson">
                   <i class="fas fa-edit"></i>
-                  <span>Edit</span>
                 </a>
               </div>
             </div>

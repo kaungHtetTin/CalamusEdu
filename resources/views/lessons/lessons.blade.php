@@ -100,12 +100,20 @@
 
 {{-- Courses and Categories --}}
 <div class="row mb-4">
-  <div class="col-xl-12 col-md-12">
-    <div class="card">
-      <div class="card-header">
-        <div class="d-flex justify-content-between align-items-center">
-          <h5 class="mb-0">{{$languageName}} - Courses</h5>
-          <div class="new-category-container no-border">
+  <div class="col-12">
+    <div class="card" style="border-radius: 12px; overflow: hidden;">
+      <div class="card-header" style="background: linear-gradient(135deg, rgba(156, 39, 176, 0.1) 0%, rgba(156, 39, 176, 0.05) 100%); border-bottom: 1px solid rgba(156, 39, 176, 0.2); padding: 20px 24px;">
+        <div class="d-flex align-items-center justify-content-between flex-wrap">
+          <div class="d-flex align-items-center">
+            <div class="header-icon-wrapper" style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%); display: flex; align-items: center; justify-content: center; margin-right: 16px; color: white; font-size: 20px;">
+              <i class="fas fa-book"></i>
+            </div>
+            <div>
+              <h5 class="mb-0" style="font-weight: 600;">{{$languageName}} Courses</h5>
+              <p class="mb-0 text-muted" style="font-size: 14px;">Manage and view courses for {{$languageName}}</p>
+            </div>
+          </div>
+          <div class="d-flex gap-2">
             <a href="{{route('lessons.addCourse', $language)}}" class="new-category-btn" title="New Course">
               <i class="fas fa-plus"></i>
               <span>New Course</span>
@@ -126,14 +134,46 @@
 <div class="row mb-4">
   <div class="col-xl-12 col-md-12">
     <div class="card course-section-card">
-      {{-- Course Title --}}
+      {{-- Course Title Header --}}
       <div class="card-header course-title-header">
-        <h4 class="mb-0">{{$myCourse['title']}}</h4>
+        <div class="d-flex align-items-center justify-content-between flex-wrap">
+          <div class="d-flex align-items-center flex-wrap" style="gap: 8px;">
+            <h4 class="mb-0">{{$myCourse['title']}}</h4>
+            <div class="course-statistics-legend">
+              <div class="legend-item">
+                <i class="fas fa-book"></i>
+                <span class="legend-label">Total:</span>
+                <span class="legend-value">{{number_format($myCourse['total_lessons'])}}</span>
+              </div>
+              <div class="legend-item">
+                <i class="fas fa-video"></i>
+                <span class="legend-label">Video:</span>
+                <span class="legend-value">{{number_format($myCourse['video_lessons'])}}</span>
+              </div>
+              <div class="legend-item">
+                <i class="fas fa-file-alt"></i>
+                <span class="legend-label">Document:</span>
+                <span class="legend-value">{{number_format($myCourse['document_lessons'])}}</span>
+              </div>
+            </div>
+          </div>
+          <div class="course-header-actions">
+            <a href="{{route('lessons.sortCategories', ['course' => $myCourse['course_id'], 'language' => $language])}}" class="btn-back btn-sm me-2" title="Sort Categories">
+              <i class="fas fa-sort"></i>
+              <span>Sort</span>
+            </a>
+            <a href="{{route('lessons.addCategory', ['course' => $myCourse['course_id'], 'language' => $language])}}" class="new-category-btn" title="New Category">
+              <i class="fas fa-plus"></i>
+              <span>New Category</span>
+            </a>
+          </div>
+        </div>
       </div>
       
       <div class="card-body">
+
         {{-- Category Tabs --}}
-        <div class="category-tabs-container mb-4">
+        <div class="category-tabs-container">
           <div class="category-tabs">
             @foreach ($myCourse['data'] as $sub)
             <div class="category-tab-wrapper position-relative">
@@ -153,39 +193,6 @@
             </div>
             @endforeach
           </div>
-        </div>
-
-        {{-- Statistics Section --}}
-        <div class="course-statistics">
-          <ul class="statistics-list">
-            <li>
-              <i class="fas fa-book me-2"></i>
-              <span class="stat-label">Total Lesson:</span>
-              <span class="stat-value">{{number_format($myCourse['total_lessons'])}}</span>
-            </li>
-            <li>
-              <i class="fas fa-video me-2"></i>
-              <span class="stat-label">Total Video Lesson:</span>
-              <span class="stat-value">{{number_format($myCourse['video_lessons'])}}</span>
-            </li>
-            <li>
-              <i class="fas fa-file-alt me-2"></i>
-              <span class="stat-label">Total Document Lesson:</span>
-              <span class="stat-value">{{number_format($myCourse['document_lessons'])}}</span>
-            </li>
-          </ul>
-        </div>
-
-        {{-- Action Buttons --}}
-        <div class="new-category-container">
-          <a href="{{route('lessons.sortCategories', ['course' => $myCourse['course_id'], 'language' => $language])}}" class="btn-back btn-sm me-2" title="Sort Categories">
-            <i class="fas fa-sort"></i>
-            <span>Sort Categories</span>
-          </a>
-          <a href="{{route('lessons.addCategory', ['course' => $myCourse['course_id'], 'language' => $language])}}" class="new-category-btn" title="New Category">
-            <i class="fas fa-plus"></i>
-            <span>New Category</span>
-          </a>
         </div>
       </div>
     </div>

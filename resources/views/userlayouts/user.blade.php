@@ -37,57 +37,57 @@
     </div>
   </div>
 
-  {{-- Quick Links Cards --}}
-  <div class="col-xl-12 col-md-12 mb-4">
+  {{-- Quick Links Cards - Vimeo Style --}}
+  <div class="col-xl-12 col-md-12 mb-3">
     <div class="card">
       <div class="card-header">
         <h5 class="mb-0">Quick Access</h5>
       </div>
       <div class="card-body">
-        <div class="row">
-          <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-            <a href="{{route('easyLanguageUserDatas', 'english')}}" class="text-decoration-none quick-access-link">
-              <div class="text-center p-3 rounded" style="background-color: rgba(33, 150, 243, 0.1); border: 2px solid rgba(33, 150, 243, 0.3); transition: all 0.3s;" onmouseover="this.style.backgroundColor='rgba(33, 150, 243, 0.2)'; this.style.borderColor='rgba(33, 150, 243, 0.5)'" onmouseout="this.style.backgroundColor='rgba(33, 150, 243, 0.1)'; this.style.borderColor='rgba(33, 150, 243, 0.3)'">
-                <img src="{{asset('public/img/easyenglish.png')}}" style="width: 40px;height:40px" class="mb-2"/>
-                <div class="fw-bold">Easy English</div>
-                <div class="text-muted">{{number_format($english_user_count)}}</div>
+        <div class="row g-3">
+          <div class="col-xl-2 col-md-4 col-sm-6">
+            <a href="{{route('easyLanguageUserDatas', 'english')}}" class="quick-access-card quick-access-english">
+              <div class="quick-access-icon">
+                <img src="{{asset('public/img/easyenglish.png')}}" alt="Easy English"/>
               </div>
+              <div class="quick-access-title">Easy English</div>
+              <div class="quick-access-count">{{number_format($english_user_count)}} users</div>
             </a>
           </div>
-          <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-            <a href="{{route('easyLanguageUserDatas', 'korean')}}" class="text-decoration-none quick-access-link">
-              <div class="text-center p-3 rounded" style="background-color: rgba(255, 152, 0, 0.1); border: 2px solid rgba(255, 152, 0, 0.3); transition: all 0.3s;" onmouseover="this.style.backgroundColor='rgba(255, 152, 0, 0.2)'; this.style.borderColor='rgba(255, 152, 0, 0.5)'" onmouseout="this.style.backgroundColor='rgba(255, 152, 0, 0.1)'; this.style.borderColor='rgba(255, 152, 0, 0.3)'">
-                <img src="{{asset('public/img/easykorean.png')}}" style="width: 40px;height:40px" class="mb-2"/>
-                <div class="fw-bold">Easy Korean</div>
-                <div class="text-muted">{{number_format($koeran_user_count)}}</div>
+          <div class="col-xl-2 col-md-4 col-sm-6">
+            <a href="{{route('easyLanguageUserDatas', 'korean')}}" class="quick-access-card quick-access-korean">
+              <div class="quick-access-icon">
+                <img src="{{asset('public/img/easykorean.png')}}" alt="Easy Korean"/>
               </div>
+              <div class="quick-access-title">Easy Korean</div>
+              <div class="quick-access-count">{{number_format($koeran_user_count)}} users</div>
             </a>
           </div>
-          <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-            <a href="{{route('easyLanguageUserDatas', 'chinese')}}" class="text-decoration-none quick-access-link">
-              <div class="text-center p-3 rounded" style="background-color: rgba(244, 67, 54, 0.1); border: 2px solid rgba(244, 67, 54, 0.3); transition: all 0.3s;" onmouseover="this.style.backgroundColor='rgba(244, 67, 54, 0.2)'; this.style.borderColor='rgba(244, 67, 54, 0.5)'" onmouseout="this.style.backgroundColor='rgba(244, 67, 54, 0.1)'; this.style.borderColor='rgba(244, 67, 54, 0.3)'">
-                <img src="{{asset('public/img/easychinese.png')}}" style="width: 40px;height:40px" class="mb-2"/>
-                <div class="fw-bold">Easy Chinese</div>
-                <div class="text-muted">{{number_format($chinese_user_count)}}</div>
+          <div class="col-xl-2 col-md-4 col-sm-6">
+            <a href="{{route('easyLanguageUserDatas', 'chinese')}}" class="quick-access-card quick-access-chinese">
+              <div class="quick-access-icon">
+                <img src="{{asset('public/img/easychinese.png')}}" alt="Easy Chinese"/>
               </div>
+              <div class="quick-access-title">Easy Chinese</div>
+              <div class="quick-access-count">{{number_format($chinese_user_count)}} users</div>
             </a>
           </div>
-          <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-            <a href="{{route('easyLanguageUserDatas', 'japanese')}}" class="text-decoration-none quick-access-link">
-              <div class="text-center p-3 rounded" style="background-color: rgba(156, 39, 176, 0.1); border: 2px solid rgba(156, 39, 176, 0.3); transition: all 0.3s;" onmouseover="this.style.backgroundColor='rgba(156, 39, 176, 0.2)'; this.style.borderColor='rgba(156, 39, 176, 0.5)'" onmouseout="this.style.backgroundColor='rgba(156, 39, 176, 0.1)'; this.style.borderColor='rgba(156, 39, 176, 0.3)'">
-                <img src="{{asset('public/img/easyjapanese.png')}}" style="width: 40px;height:40px" class="mb-2"/>
-                <div class="fw-bold">Easy Japanese</div>
-                <div class="text-muted">{{number_format($japanese_user_count)}}</div>
+          <div class="col-xl-2 col-md-4 col-sm-6">
+            <a href="{{route('easyLanguageUserDatas', 'japanese')}}" class="quick-access-card quick-access-japanese">
+              <div class="quick-access-icon">
+                <img src="{{asset('public/img/easyjapanese.png')}}" alt="Easy Japanese"/>
               </div>
+              <div class="quick-access-title">Easy Japanese</div>
+              <div class="quick-access-count">{{number_format($japanese_user_count)}} users</div>
             </a>
           </div>
-          <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-            <a href="{{route('easyLanguageUserDatas', 'russian')}}" class="text-decoration-none quick-access-link">
-              <div class="text-center p-3 rounded" style="background-color: rgba(76, 175, 80, 0.1); border: 2px solid rgba(76, 175, 80, 0.3); transition: all 0.3s;" onmouseover="this.style.backgroundColor='rgba(76, 175, 80, 0.2)'; this.style.borderColor='rgba(76, 175, 80, 0.5)'" onmouseout="this.style.backgroundColor='rgba(76, 175, 80, 0.1)'; this.style.borderColor='rgba(76, 175, 80, 0.3)'">
-                <img src="{{asset('public/img/easyrussian.png')}}" style="width: 40px;height:40px" class="mb-2"/>
-                <div class="fw-bold">Easy Russian</div>
-                <div class="text-muted">{{number_format($russian_user_count)}}</div>
+          <div class="col-xl-2 col-md-4 col-sm-6">
+            <a href="{{route('easyLanguageUserDatas', 'russian')}}" class="quick-access-card quick-access-russian">
+              <div class="quick-access-icon">
+                <img src="{{asset('public/img/easyrussian.png')}}" alt="Easy Russian"/>
               </div>
+              <div class="quick-access-title">Easy Russian</div>
+              <div class="quick-access-count">{{number_format($russian_user_count)}} users</div>
             </a>
           </div>
         </div>
@@ -190,7 +190,6 @@
       <div class="d-flex align-items-center gap-3">
         <form action="{{ route('getUser') }}" method="GET" class="d-flex align-items-center search-form">
           <div class="search-input-wrapper">
-            <i class="fas fa-search search-icon"></i>
             <input type="text" 
                    name="search" 
                    class="form-control modern-search-input" 
@@ -203,11 +202,12 @@
               </a>
             @endif
           </div>
-          <button type="submit" class="btn btn-search ms-2">
-            <i class="fas fa-search me-1"></i>Search
+          <button type="submit" class="btn-primary btn-sm" title="Search" style="margin-left: 5px;">
+            <i class="fas fa-search"></i>
+            <span>Search</span>
           </button>
         </form>
-        <span class="badge modern-badge">{{number_format($learner_count)}} Total</span>
+        <span class="badge modern-badge" style="color: #fff;">{{number_format($learner_count)}} Total</span>
       </div>
     </div>
   </div>
@@ -263,7 +263,7 @@
             </td>
             <td class="table-actions">
               <a href="{{route('detail')}}?phone={{$learner->learner_phone}}" 
-                 class="btn-action" 
+                 class="btn-action-primary" 
                  title="View Details">
                 <i class="fas fa-eye"></i>
               </a>

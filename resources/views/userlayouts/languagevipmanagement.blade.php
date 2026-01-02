@@ -95,8 +95,7 @@
                 </div>
               </div>
               <div class="form-check form-switch">
-                <input class="form-check-input" 
-                       type="checkbox" 
+                <input type="checkbox" 
                        name="{{ $vipField }}" 
                        id="vipToggle"
                        {{ $userData->is_vip == 1 ? 'checked' : '' }}>
@@ -114,8 +113,7 @@
                 </div>
               </div>
               <div class="form-check form-switch">
-                <input class="form-check-input" 
-                       type="checkbox" 
+                <input type="checkbox" 
                        name="gold_plan" 
                        id="goldPlanToggle"
                        {{ $userData->gold_plan == 1 ? 'checked' : '' }}>
@@ -143,8 +141,7 @@
                   <div class="col-md-6 col-lg-4">
                     <div class="course-item" style="background: {{ in_array($course->course_id, $vipCourses) ? 'rgba(' . $primaryRgb . ', 0.08)' : 'var(--input-bg)' }}; border: 1px solid {{ in_array($course->course_id, $vipCourses) ? $colors['primary'] : 'var(--border-color)' }}; border-radius: 8px; padding: 12px; transition: all 0.2s ease;">
                       <div class="form-check d-flex align-items-center">
-                        <input class="form-check-input" 
-                               type="checkbox" 
+                        <input type="checkbox" 
                                name="{{ $course->course_id }}" 
                                id="course_{{ $course->course_id }}"
                                {{ in_array($course->course_id, $vipCourses) ? 'checked' : '' }}
@@ -215,12 +212,12 @@
   border-color: {{ $colors['primary'] }};
 }
 
-.form-check-input:checked {
+input[type="checkbox"]:checked {
   background-color: {{ $colors['primary'] }};
   border-color: {{ $colors['primary'] }};
 }
 
-.form-check-input:focus {
+input[type="checkbox"]:focus {
   box-shadow: 0 0 0 3px rgba({{ $primaryRgb }}, 0.25);
   border-color: {{ $colors['primary'] }};
 }

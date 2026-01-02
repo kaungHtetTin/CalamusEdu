@@ -356,22 +356,6 @@ body.light-theme .image-upload-area:hover {
     border-bottom: none !important;
 }
 
-/* Ensure Material Design Bootstrap checkbox checkmark displays correctly */
-.form-section .[type="checkbox"]:checked:after {
-    content: '' !important;
-    position: absolute !important;
-    display: block !important;
-    width: 0.375rem !important;
-    height: 0.8125rem !important;
-    border: 0.125rem solid #fff !important;
-    border-top: 0 !important;
-    border-left: 0 !important;
-    transform: rotate(45deg) !important;
-    margin-left: 0.25rem !important;
-    margin-top: -1px !important;
-    background-color: transparent !important;
-}
-
 </style>
 @endpush
 

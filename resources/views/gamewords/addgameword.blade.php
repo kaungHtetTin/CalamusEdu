@@ -32,9 +32,9 @@
                       
                       <input type="hidden" value="1" name="category"/>
                       
-                      <input class="form-check-input" type="radio" name="ans" value="a"/>  a &nbsp;&nbsp;&nbsp;&nbsp;
-                      <input class="form-check-input" type="radio" name="ans" value="b"/>  b &nbsp;&nbsp;&nbsp;&nbsp;
-                      <input class="form-check-input" type="radio" name="ans" value="c"/>  c 
+                      <input type="radio" name="ans" value="a"/>  a &nbsp;&nbsp;&nbsp;&nbsp;
+                      <input type="radio" name="ans" value="b"/>  b &nbsp;&nbsp;&nbsp;&nbsp;
+                      <input type="radio" name="ans" value="c"/>  c 
                       <p class="text-danger" style="font-size: 12px;">{{$errors->first('ans')}}</p>
                         <br><br>
                       <input type="submit"  class="btn-primary rounded" value="Add" style="width: 150px; margin:auto"/>
@@ -60,9 +60,9 @@
                          <input type="file"  value="Choose Image"  name="myfile">
                      
                         <br><br>
-                        <input class="form-check-input" type="radio" name="ans" value="a"/>  a &nbsp;&nbsp;&nbsp;&nbsp;
-                        <input class="form-check-input" type="radio" name="ans" value="b"/>  b &nbsp;&nbsp;&nbsp;&nbsp;
-                        <input class="form-check-input" type="radio" name="ans" value="c"/>  c 
+                        <input type="radio" name="ans" value="a"/>  a &nbsp;&nbsp;&nbsp;&nbsp;
+                        <input type="radio" name="ans" value="b"/>  b &nbsp;&nbsp;&nbsp;&nbsp;
+                        <input type="radio" name="ans" value="c"/>  c 
                         <p class="text-danger" style="font-size: 12px;">{{$errors->first('ans')}}</p>
                         <br><br>
                       <input type="submit"  class="btn-primary rounded" value="Add" style="width: 150px; margin:auto"/>
@@ -86,9 +86,9 @@
                         <input type="file" value="Choose Image"  name="myfile">
                       
                         <br><br>
-                        <input class="form-check-input" type="radio" name="ans" value="a"/>  a &nbsp;&nbsp;&nbsp;&nbsp;
-                        <input class="form-check-input" type="radio" name="ans" value="b"/>  b &nbsp;&nbsp;&nbsp;&nbsp;
-                        <input class="form-check-input" type="radio" name="ans" value="c"/>  c 
+                        <input type="radio" name="ans" value="a"/>  a &nbsp;&nbsp;&nbsp;&nbsp;
+                        <input type="radio" name="ans" value="b"/>  b &nbsp;&nbsp;&nbsp;&nbsp;
+                        <input type="radio" name="ans" value="c"/>  c 
                         <p class="text-danger" style="font-size: 12px;">{{$errors->first('ans')}}</p>
                         <br><br>
                       <input type="submit"  class="btn-primary rounded" value="Add" style="width: 150px; margin:auto"/>

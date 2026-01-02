@@ -2,66 +2,70 @@
 
 @section('content')
 
-{{-- Statistics Cards --}}
-<div class="row mb-4">
-  <div class="col-xl-3 col-md-6 mb-4">
-    <div class="card stats-card" style="border-radius: 12px; border-left: 4px solid #9c27b0;">
+{{-- Statistics Cards - Vimeo Style --}}
+<div class="row mb-3">
+  <div class="col-xl-3 col-md-6 mb-3">
+    <div class="card activity-stat-card">
       <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex justify-content-between align-items-start">
           <div>
-            <h6 class="text-muted mb-2" style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">Total Courses</h6>
-            <h3 class="mb-0" style="font-weight: 600; color: var(--text-primary);">{{number_format($total_courses)}}</h3>
+            <div class="activity-stat-label">Total Courses</div>
+            <div class="activity-stat-value">{{number_format($total_courses)}}</div>
+            <div class="activity-stat-subtext">All courses</div>
           </div>
-          <div class="stats-icon" style="width: 56px; height: 56px; border-radius: 12px; background: rgba(156, 39, 176, 0.1); display: flex; align-items: center; justify-content: center;">
-            <i class="fas fa-book fa-2x" style="color: #9c27b0;"></i>
+          <div class="activity-stat-icon learns">
+            <i class="fas fa-book"></i>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="col-xl-3 col-md-6 mb-4">
-    <div class="card stats-card" style="border-radius: 12px; border-left: 4px solid #4caf50;">
+  <div class="col-xl-3 col-md-6 mb-3">
+    <div class="card activity-stat-card">
       <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex justify-content-between align-items-start">
           <div>
-            <h6 class="text-muted mb-2" style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">Total Enrollments</h6>
-            <h3 class="mb-0" style="font-weight: 600; color: var(--text-primary);">{{number_format($total_enrollments)}}</h3>
+            <div class="activity-stat-label">Total Enrollments</div>
+            <div class="activity-stat-value">{{number_format($total_enrollments)}}</div>
+            <div class="activity-stat-subtext">All enrollments</div>
           </div>
-          <div class="stats-icon" style="width: 56px; height: 56px; border-radius: 12px; background: rgba(76, 175, 80, 0.1); display: flex; align-items: center; justify-content: center;">
-            <i class="fas fa-users fa-2x" style="color: #4caf50;"></i>
+          <div class="activity-stat-icon active-users-30">
+            <i class="fas fa-users"></i>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="col-xl-3 col-md-6 mb-4">
-    <div class="card stats-card" style="border-radius: 12px; border-left: 4px solid #ff9800;">
+  <div class="col-xl-3 col-md-6 mb-3">
+    <div class="card activity-stat-card">
       <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex justify-content-between align-items-start">
           <div>
-            <h6 class="text-muted mb-2" style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">Total Lessons</h6>
-            <h3 class="mb-0" style="font-weight: 600; color: var(--text-primary);">{{number_format($total_lessons_in_courses)}}</h3>
+            <div class="activity-stat-label">Total Lessons</div>
+            <div class="activity-stat-value">{{number_format($total_lessons_in_courses)}}</div>
+            <div class="activity-stat-subtext">In all courses</div>
           </div>
-          <div class="stats-icon" style="width: 56px; height: 56px; border-radius: 12px; background: rgba(255, 152, 0, 0.1); display: flex; align-items: center; justify-content: center;">
-            <i class="fas fa-graduation-cap fa-2x" style="color: #ff9800;"></i>
+          <div class="activity-stat-icon new-users">
+            <i class="fas fa-graduation-cap"></i>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="col-xl-3 col-md-6 mb-4">
-    <div class="card stats-card" style="border-radius: 12px; border-left: 4px solid #2196F3;">
+  <div class="col-xl-3 col-md-6 mb-3">
+    <div class="card activity-stat-card">
       <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex justify-content-between align-items-start">
           <div>
-            <h6 class="text-muted mb-2" style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">Average Rating</h6>
-            <h3 class="mb-0" style="font-weight: 600; color: var(--text-primary);">{{$avg_rating}} <small style="font-size: 14px; color: #ff9800;"><i class="fas fa-star"></i></small></h3>
+            <div class="activity-stat-label">Average Rating</div>
+            <div class="activity-stat-value">{{$avg_rating}} <small style="font-size: 14px; color: #ff9800;"><i class="fas fa-star"></i></small></div>
+            <div class="activity-stat-subtext">Overall rating</div>
           </div>
-          <div class="stats-icon" style="width: 56px; height: 56px; border-radius: 12px; background: rgba(33, 150, 243, 0.1); display: flex; align-items: center; justify-content: center;">
-            <i class="fas fa-star fa-2x" style="color: #2196F3;"></i>
+          <div class="activity-stat-icon active-users">
+            <i class="fas fa-star"></i>
           </div>
         </div>
       </div>
@@ -69,12 +73,12 @@
   </div>
 </div>
 
-<div class="row">
+<div class="row mb-3">
   {{-- Bar Chart - Courses by Language --}}
-  <div class="col-xl-8 col-md-12 mb-4">
-    <div class="card" style="border-radius: 12px;">
-      <div class="card-header" style="background: rgba(156, 39, 176, 0.05); border-bottom: 1px solid rgba(156, 39, 176, 0.1);">
-        <h5 class="mb-0" style="font-weight: 600;">Courses by Language</h5>
+  <div class="col-xl-8 col-md-12 mb-3">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">Courses by Language</h5>
       </div>
       <div class="card-body">
         <canvas id="courseBarChart" height="100"></canvas>
@@ -83,10 +87,10 @@
   </div>
 
   {{-- Doughnut Chart - VIP vs Regular --}}
-  <div class="col-xl-4 col-md-12 mb-4">
-    <div class="card" style="border-radius: 12px;">
-      <div class="card-header" style="background: rgba(156, 39, 176, 0.05); border-bottom: 1px solid rgba(156, 39, 176, 0.1);">
-        <h5 class="mb-0" style="font-weight: 600;">Course Types</h5>
+  <div class="col-xl-4 col-md-12 mb-3">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">Course Types</h5>
       </div>
       <div class="card-body">
         <canvas id="courseTypeChart"></canvas>
@@ -121,62 +125,62 @@
   </div>
 </div>
 
-<div class="row">
-  {{-- Language Cards --}}
-  <div class="col-xl-12 col-md-12 mb-4">
-    <div class="card" style="border-radius: 12px;">
-      <div class="card-header" style="background: rgba(156, 39, 176, 0.05); border-bottom: 1px solid rgba(156, 39, 176, 0.1);">
-        <h5 class="mb-0" style="font-weight: 600;">Quick Access</h5>
+<div class="row mb-3">
+  {{-- Language Cards - Vimeo Style --}}
+  <div class="col-xl-12 col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">Quick Access</h5>
       </div>
       <div class="card-body">
-        <div class="row">
-          <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-            <a href="{{route('courses.byLanguage', 'english')}}" class="text-decoration-none quick-access-link">
-              <div class="text-center p-3 rounded course-card" style="background-color: rgba(33, 150, 243, 0.1); border: 2px solid rgba(33, 150, 243, 0.3); transition: all 0.3s;" onmouseover="this.style.backgroundColor='rgba(33, 150, 243, 0.2)'; this.style.borderColor='rgba(33, 150, 243, 0.5)'" onmouseout="this.style.backgroundColor='rgba(33, 150, 243, 0.1)'; this.style.borderColor='rgba(33, 150, 243, 0.3)'">
-                <img src="{{asset('public/img/easyenglish.png')}}" style="width: 50px;height:50px" class="mb-2"/>
-                <div class="fw-bold">Easy English</div>
-                <small class="text-muted">{{$english_courses}} courses</small>
+        <div class="row g-3">
+          <div class="col-xl-2 col-md-4 col-sm-6">
+            <a href="{{route('courses.byLanguage', 'english')}}" class="quick-access-card quick-access-english">
+              <div class="quick-access-icon">
+                <img src="{{asset('public/img/easyenglish.png')}}" alt="Easy English"/>
               </div>
+              <div class="quick-access-title">Easy English</div>
+              <div class="quick-access-count">{{$english_courses}} courses</div>
             </a>
           </div>
 
-          <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-            <a href="{{route('courses.byLanguage', 'korea')}}" class="text-decoration-none quick-access-link">
-              <div class="text-center p-3 rounded course-card" style="background-color: rgba(255, 152, 0, 0.1); border: 2px solid rgba(255, 152, 0, 0.3); transition: all 0.3s;" onmouseover="this.style.backgroundColor='rgba(255, 152, 0, 0.2)'; this.style.borderColor='rgba(255, 152, 0, 0.5)'" onmouseout="this.style.backgroundColor='rgba(255, 152, 0, 0.1)'; this.style.borderColor='rgba(255, 152, 0, 0.3)'">
-                <img src="{{asset('public/img/easykorean.png')}}" style="width: 50px;height:50px" class="mb-2"/>
-                <div class="fw-bold">Easy Korean</div>
-                <small class="text-muted">{{$korean_courses}} courses</small>
+          <div class="col-xl-2 col-md-4 col-sm-6">
+            <a href="{{route('courses.byLanguage', 'korea')}}" class="quick-access-card quick-access-korean">
+              <div class="quick-access-icon">
+                <img src="{{asset('public/img/easykorean.png')}}" alt="Easy Korean"/>
               </div>
+              <div class="quick-access-title">Easy Korean</div>
+              <div class="quick-access-count">{{$korean_courses}} courses</div>
             </a>
           </div>
 
-          <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-            <a href="{{route('courses.byLanguage', 'chinese')}}" class="text-decoration-none quick-access-link">
-              <div class="text-center p-3 rounded course-card" style="background-color: rgba(244, 67, 54, 0.1); border: 2px solid rgba(244, 67, 54, 0.3); transition: all 0.3s;" onmouseover="this.style.backgroundColor='rgba(244, 67, 54, 0.2)'; this.style.borderColor='rgba(244, 67, 54, 0.5)'" onmouseout="this.style.backgroundColor='rgba(244, 67, 54, 0.1)'; this.style.borderColor='rgba(244, 67, 54, 0.3)'">
-                <img src="{{asset('public/img/easychinese.png')}}" style="width: 50px;height:50px" class="mb-2"/>
-                <div class="fw-bold">Easy Chinese</div>
-                <small class="text-muted">{{$chinese_courses}} courses</small>
+          <div class="col-xl-2 col-md-4 col-sm-6">
+            <a href="{{route('courses.byLanguage', 'chinese')}}" class="quick-access-card quick-access-chinese">
+              <div class="quick-access-icon">
+                <img src="{{asset('public/img/easychinese.png')}}" alt="Easy Chinese"/>
               </div>
+              <div class="quick-access-title">Easy Chinese</div>
+              <div class="quick-access-count">{{$chinese_courses}} courses</div>
             </a>
           </div>
 
-          <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-            <a href="{{route('courses.byLanguage', 'japanese')}}" class="text-decoration-none quick-access-link">
-              <div class="text-center p-3 rounded course-card" style="background-color: rgba(156, 39, 176, 0.1); border: 2px solid rgba(156, 39, 176, 0.3); transition: all 0.3s;" onmouseover="this.style.backgroundColor='rgba(156, 39, 176, 0.2)'; this.style.borderColor='rgba(156, 39, 176, 0.5)'" onmouseout="this.style.backgroundColor='rgba(156, 39, 176, 0.1)'; this.style.borderColor='rgba(156, 39, 176, 0.3)'">
-                <img src="{{asset('public/img/easyjapanese.png')}}" style="width: 50px;height:50px" class="mb-2"/>
-                <div class="fw-bold">Easy Japanese</div>
-                <small class="text-muted">{{$japanese_courses}} courses</small>
+          <div class="col-xl-2 col-md-4 col-sm-6">
+            <a href="{{route('courses.byLanguage', 'japanese')}}" class="quick-access-card quick-access-japanese">
+              <div class="quick-access-icon">
+                <img src="{{asset('public/img/easyjapanese.png')}}" alt="Easy Japanese"/>
               </div>
+              <div class="quick-access-title">Easy Japanese</div>
+              <div class="quick-access-count">{{$japanese_courses}} courses</div>
             </a>
           </div>
 
-          <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-            <a href="{{route('courses.byLanguage', 'russian')}}" class="text-decoration-none quick-access-link">
-              <div class="text-center p-3 rounded course-card" style="background-color: rgba(76, 175, 80, 0.1); border: 2px solid rgba(76, 175, 80, 0.3); transition: all 0.3s;" onmouseover="this.style.backgroundColor='rgba(76, 175, 80, 0.2)'; this.style.borderColor='rgba(76, 175, 80, 0.5)'" onmouseout="this.style.backgroundColor='rgba(76, 175, 80, 0.1)'; this.style.borderColor='rgba(76, 175, 80, 0.3)'">
-                <img src="{{asset('public/img/easyrussian.png')}}" style="width: 50px;height:50px" class="mb-2"/>
-                <div class="fw-bold">Easy Russian</div>
-                <small class="text-muted">{{$russian_courses}} courses</small>
+          <div class="col-xl-2 col-md-4 col-sm-6">
+            <a href="{{route('courses.byLanguage', 'russian')}}" class="quick-access-card quick-access-russian">
+              <div class="quick-access-icon">
+                <img src="{{asset('public/img/easyrussian.png')}}" alt="Easy Russian"/>
               </div>
+              <div class="quick-access-title">Easy Russian</div>
+              <div class="quick-access-count">{{$russian_courses}} courses</div>
             </a>
           </div>
         </div>

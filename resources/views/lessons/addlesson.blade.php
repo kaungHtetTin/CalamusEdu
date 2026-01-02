@@ -53,7 +53,7 @@
                         @endphp
 
                           <div class="form-check"  style="margin-bottom:5px">
-                            <input class="form-check-input" type="radio" name="cate" id="{{$category_id}}" value="{{$category_id}}"/>
+                            <input type="radio" name="cate" id="{{$category_id}}" value="{{$category_id}}"/>
                             <label class="form-check-label" for="{{$category_id}}">{{$category}}</label>
                           </div>
                         @endforeach
@@ -65,24 +65,24 @@
 
                       <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                         <div class="form-check"  style="margin-bottom:5px">
-                          <input class="form-check-input" type="checkbox" name="isVideo" id="isVideo" checked/>
+                          <input type="checkbox" name="isVideo" id="isVideo" checked/>
                           <label class="form-check-label" for="isVideo">Video Lesson</label>
                         </div>
                         <br>
                         <div class="form-check"  style="margin-bottom:5px">
-                          <input class="form-check-input" type="checkbox" name="isChannel" id="isChannel" @if ($course=='Video Channel')
+                          <input type="checkbox" name="isChannel" id="isChannel" @if ($course=='Video Channel')
                               checked
                           @endif/>
                           <label class="form-check-label" for="isChannel">Is Channel?</label>
                         </div>
                         <br>
                         <div class="form-check"  style="margin-bottom:5px">
-                          <input class="form-check-input" type="checkbox" name="isVip" id="isVip"/>
+                          <input type="checkbox" name="isVip" id="isVip"/>
                           <label class="form-check-label" for="isVip">VIP Lesson</label>
                         </div>
                         <br>
                         <div class="form-check"  style="margin-bottom:5px">
-                          <input class="form-check-input" type="checkbox" name="add_to_discuss" id="add_to_discuss" />
+                          <input type="checkbox" name="add_to_discuss" id="add_to_discuss" />
                           <label class="form-check-label" for="add_to_discuss">Add to discussion room</label>
                         </div>
                         
