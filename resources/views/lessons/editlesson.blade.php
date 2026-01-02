@@ -38,17 +38,14 @@
 <div class="row">
   <div class="col-xl-12 col-md-12 mb-4">
     <div class="card course-form-card">
-      <div class="course-title-header">
-        <div class="d-flex align-items-center justify-content-between">
-          <div class="d-flex align-items-center">
-            <i class="fas fa-edit me-3" style="font-size: 24px; color: #32cd32;"></i>
-            <h4 class="mb-0">Edit Lesson - {{$course}} ({{$lesson->major}})</h4>
-          </div>
-          <a href="{{route('lessons.list', $lesson->category_id)}}" class="btn-back btn-sm">
-            <i class="fas fa-arrow-left"></i>
-            <span>Back</span>
-          </a>
-        </div>
+      <div class="language-data-header d-flex align-items-center justify-content-between flex-wrap gap-3" style="border-left: 3px solid #32cd32;">
+        <h5 class="language-data-title mb-0" style="color: #32cd32;">
+          <i class="fas fa-edit me-2"></i>Edit Lesson - {{$course}} ({{$lesson->major}})
+        </h5>
+        <a href="{{route('lessons.list', $lesson->category_id)}}" class="btn-back btn-sm">
+          <i class="fas fa-arrow-left"></i>
+          <span>Back</span>
+        </a>
       </div>
       <div class="card-body course-form-body">
         <form action="{{route('lessons.update', $lesson->id)}}" method="POST" enctype="multipart/form-data">

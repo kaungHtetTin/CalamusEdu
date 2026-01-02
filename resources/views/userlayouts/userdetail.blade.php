@@ -111,10 +111,22 @@
   <div class="row mb-3">
     <div class="col-12">
       <div class="card language-data-card">
-        <div class="language-data-header" style="border-left: 3px solid {{ $lang['color'] }};">
-          <h5 class="language-data-title" style="color: {{ $lang['color'] }};">
+        <div class="language-data-header d-flex align-items-center justify-content-between flex-wrap gap-3" style="border-left: 3px solid {{ $lang['color'] }};">
+          <h5 class="language-data-title mb-0" style="color: {{ $lang['color'] }};">
             <i class="fas {{ $lang['icon'] }} me-2"></i>Easy {{ $lang['name'] }} Data
           </h5>
+          <div class="d-flex gap-2 flex-wrap">
+            <a href="{{ route('userPerformance', ['phone' => $learner->learner_phone, 'language' => strtolower($lang['name'])]) }}" 
+               class="btn-secondary btn-sm" title="View Performance">
+              <i class="fas fa-chart-line"></i>
+              <span>View Performance</span>
+            </a>
+            <a href="{{ route('languageVipManagement', ['phone' => $learner->learner_phone, 'language' => strtolower($lang['name'])]) }}" 
+               class="btn-warning btn-sm" title="Manage VIP">
+              <i class="fas fa-crown"></i>
+              <span>Manage VIP</span>
+            </a>
+          </div>
         </div>
         <div class="language-data-body">
           <div class="row g-3">
@@ -153,20 +165,6 @@
                   {{ $lang['data']->last_active ? date('M d, Y', strtotime($lang['data']->last_active)) : 'N/A' }}
                 </div>
               </div>
-            </div>
-          </div>
-          <div class="language-data-footer">
-            <div class="d-flex justify-content-end gap-2 flex-wrap">
-              <a href="{{ route('userPerformance', ['phone' => $learner->learner_phone, 'language' => strtolower($lang['name'])]) }}" 
-                 class="btn-secondary btn-sm">
-                <i class="fas fa-chart-line"></i>
-                <span>View Performance</span>
-              </a>
-              <a href="{{ route('languageVipManagement', ['phone' => $learner->learner_phone, 'language' => strtolower($lang['name'])]) }}" 
-                 class="btn-warning btn-sm">
-                <i class="fas fa-crown"></i>
-                <span>Manage VIP</span>
-              </a>
             </div>
           </div>
         </div>

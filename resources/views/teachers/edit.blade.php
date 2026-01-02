@@ -15,10 +15,17 @@
 
 <div class="row">
     <div class="col-xl-12 col-md-12 mb-4">
-        <div class="card">
-            <div class="card-body">
-                <span class="h4 align-self-center">Edit Teacher: {{$teacher->name}}</span>
-                <hr>
+        <div class="card course-form-card">
+            <div class="language-data-header d-flex align-items-center justify-content-between flex-wrap gap-3" style="border-left: 3px solid #2196F3;">
+              <h5 class="language-data-title mb-0" style="color: #2196F3;">
+                <i class="fas fa-edit me-2"></i>Edit Teacher: {{$teacher->name}}
+              </h5>
+              <a href="{{route('teachers.index')}}" class="btn-back btn-sm">
+                <i class="fas fa-arrow-left"></i>
+                <span>Back to Teachers</span>
+              </a>
+            </div>
+            <div class="card-body course-form-body">
                 <div class="row">
                     <div class="col-xl-12 col-sm-12 col-12 mb-2 rounded" style="padding: 20px;">
                         <form action="{{route('teachers.update', $teacher->id)}}" method="POST" enctype="multipart/form-data">

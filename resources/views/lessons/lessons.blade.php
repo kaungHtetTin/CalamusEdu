@@ -99,79 +99,42 @@
 </div>
 
 {{-- Courses and Categories --}}
-<div class="row mb-4">
-  <div class="col-12">
-    <div class="card" style="border-radius: 12px; overflow: hidden;">
-      <div class="card-header" style="background: linear-gradient(135deg, rgba(156, 39, 176, 0.1) 0%, rgba(156, 39, 176, 0.05) 100%); border-bottom: 1px solid rgba(156, 39, 176, 0.2); padding: 20px 24px;">
-        <div class="d-flex align-items-center justify-content-between flex-wrap">
-          <div class="d-flex align-items-center">
-            <div class="header-icon-wrapper" style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%); display: flex; align-items: center; justify-content: center; margin-right: 16px; color: white; font-size: 20px;">
-              <i class="fas fa-book"></i>
-            </div>
-            <div>
-              <h5 class="mb-0" style="font-weight: 600;">{{$languageName}} Courses</h5>
-              <p class="mb-0 text-muted" style="font-size: 14px;">Manage and view courses for {{$languageName}}</p>
-            </div>
-          </div>
-          <div class="d-flex gap-2">
-            <a href="{{route('lessons.addCourse', $language)}}" class="new-category-btn" title="New Course">
-              <i class="fas fa-plus"></i>
-              <span>New Course</span>
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
 @foreach ($myCourses as $myCourse)
 @php
     session()->put($myCourse['title'], $myCourse['data']);
     session()->put('major', $major);
+    
+    // Define course colors based on course title or use default
+    $courseColors = [
+      'English' => '#2196F3',
+      'Korean' => '#FF9800',
+      'Chinese' => '#F44336',
+      'Japanese' => '#9C27B0',
+      'Russian' => '#4CAF50',
+    ];
+    $courseColor = $courseColors[$languageName] ?? '#9C27B0';
 @endphp
      
-<div class="row mb-4">
+<div class="row mb-3">
   <div class="col-xl-12 col-md-12">
-    <div class="card course-section-card">
-      {{-- Course Title Header --}}
-      <div class="card-header course-title-header">
-        <div class="d-flex align-items-center justify-content-between flex-wrap">
-          <div class="d-flex align-items-center flex-wrap" style="gap: 8px;">
-            <h4 class="mb-0">{{$myCourse['title']}}</h4>
-            <div class="course-statistics-legend">
-              <div class="legend-item">
-                <i class="fas fa-book"></i>
-                <span class="legend-label">Total:</span>
-                <span class="legend-value">{{number_format($myCourse['total_lessons'])}}</span>
-              </div>
-              <div class="legend-item">
-                <i class="fas fa-video"></i>
-                <span class="legend-label">Video:</span>
-                <span class="legend-value">{{number_format($myCourse['video_lessons'])}}</span>
-              </div>
-              <div class="legend-item">
-                <i class="fas fa-file-alt"></i>
-                <span class="legend-label">Document:</span>
-                <span class="legend-value">{{number_format($myCourse['document_lessons'])}}</span>
-              </div>
-            </div>
-          </div>
-          <div class="course-header-actions">
-            <a href="{{route('lessons.sortCategories', ['course' => $myCourse['course_id'], 'language' => $language])}}" class="btn-back btn-sm me-2" title="Sort Categories">
-              <i class="fas fa-sort"></i>
-              <span>Sort</span>
-            </a>
-            <a href="{{route('lessons.addCategory', ['course' => $myCourse['course_id'], 'language' => $language])}}" class="new-category-btn" title="New Category">
-              <i class="fas fa-plus"></i>
-              <span>New Category</span>
-            </a>
-          </div>
+    <div class="card language-data-card">
+      <div class="language-data-header d-flex align-items-center justify-content-between flex-wrap gap-3" style="border-left: 3px solid {{ $courseColor }};">
+        <h5 class="language-data-title mb-0" style="color: {{ $courseColor }};">
+          <i class="fas fa-graduation-cap me-2"></i>{{$myCourse['title']}}
+        </h5>
+        <div class="d-flex gap-2 flex-wrap">
+          <a href="{{route('lessons.sortCategories', ['course' => $myCourse['course_id'], 'language' => $language])}}" class="btn-secondary btn-sm" title="Sort Categories">
+            <i class="fas fa-sort"></i>
+            <span>Sort</span>
+          </a>
+          <a href="{{route('lessons.addCategory', ['course' => $myCourse['course_id'], 'language' => $language])}}" class="btn-primary btn-sm" title="New Category">
+            <i class="fas fa-plus"></i>
+            <span>New Category</span>
+          </a>
         </div>
       </div>
       
-      <div class="card-body">
-
+      <div class="language-data-body">
         {{-- Category Tabs --}}
         <div class="category-tabs-container">
           <div class="category-tabs">
@@ -192,6 +155,25 @@
               </a>
             </div>
             @endforeach
+          </div>
+        </div>
+        
+        {{-- Statistics Legend --}}
+        <div class="course-statistics-legend mt-3">
+          <div class="legend-item">
+            <i class="fas fa-book"></i>
+            <span class="legend-label">Total:</span>
+            <span class="legend-value">{{number_format($myCourse['total_lessons'])}}</span>
+          </div>
+          <div class="legend-item">
+            <i class="fas fa-video"></i>
+            <span class="legend-label">Video:</span>
+            <span class="legend-value">{{number_format($myCourse['video_lessons'])}}</span>
+          </div>
+          <div class="legend-item">
+            <i class="fas fa-file-alt"></i>
+            <span class="legend-label">Document:</span>
+            <span class="legend-value">{{number_format($myCourse['document_lessons'])}}</span>
           </div>
         </div>
       </div>

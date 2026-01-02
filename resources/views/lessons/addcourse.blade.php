@@ -31,11 +31,14 @@
 <div class="row">
   <div class="col-xl-12 col-md-12 mb-4">
     <div class="card course-form-card">
-      <div class="course-title-header">
-        <div class="d-flex align-items-center">
-          <i class="fas fa-graduation-cap me-3" style="font-size: 24px; color: #32cd32;"></i>
-          <h4 class="mb-0">Add New Course - {{$languageName}}</h4>
-        </div>
+      <div class="language-data-header d-flex align-items-center justify-content-between flex-wrap gap-3" style="border-left: 3px solid #32cd32;">
+        <h5 class="language-data-title mb-0" style="color: #32cd32;">
+          <i class="fas fa-graduation-cap me-2"></i>Add New Course - {{$languageName}}
+        </h5>
+        <a href="{{route('lessons.byLanguage', $language)}}" class="btn-back btn-sm">
+          <i class="fas fa-arrow-left"></i>
+          <span>Back to Courses</span>
+        </a>
       </div>
       <div class="card-body course-form-body">
         <form action="{{route('lessons.storeCourse', $language)}}" method="POST" enctype="multipart/form-data">

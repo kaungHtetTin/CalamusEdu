@@ -31,49 +31,54 @@
 <div class="row">
   <div class="col-xl-12 col-md-12 mb-4">
     <div class="card course-form-card">
-      <div class="course-title-header">
-        <div class="d-flex align-items-center">
-          <i class="fas fa-folder me-3" style="font-size: 24px; color: #32cd32;"></i>
-          <h4 class="mb-0">Add New Category - {{$course_title}} ({{$languageName}})</h4>
-        </div>
+      <div class="language-data-header d-flex align-items-center justify-content-between flex-wrap gap-3" style="border-left: 3px solid #32cd32;">
+        <h5 class="language-data-title mb-0" style="color: #32cd32;">
+          <i class="fas fa-folder me-2"></i>Add New Category - {{$course_title}} ({{$languageName}})
+        </h5>
+        <a href="{{route('lessons.byLanguage', $language)}}" class="btn-back btn-sm">
+          <i class="fas fa-arrow-left"></i>
+          <span>Back</span>
+        </a>
       </div>
       <div class="card-body course-form-body">
         <form action="{{route('lessons.storeCategory', ['language' => $language, 'course' => $course_id])}}" method="POST" enctype="multipart/form-data">
           @csrf
           
-          <div class="form-section">
-            <h6 class="form-section-title">
-              <i class="fas fa-info-circle me-2"></i>Category Information
-            </h6>
-            <div class="row">
-              <div class="col-md-12 mb-3">
-                <label for="category_title" class="form-label">Category Title <span class="text-danger">*</span></label>
-                <input type="text" class="form-control modern-input" id="category_title" name="category_title" value="{{old('category_title')}}" required maxlength="128" placeholder="Enter category title">
-                <small class="text-muted">This is the display name for the category</small>
+          <div class="row">
+            <div class="form-section col-lg-6 col-md-6">
+              <h6 class="form-section-title">
+                <i class="fas fa-info-circle me-2"></i>Category Information
+              </h6>
+              <div class="row">
+                <div class="col-md-12 mb-3">
+                  <label for="category_title" class="form-label">Category Title <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control modern-input" id="category_title" name="category_title" value="{{old('category_title')}}" required maxlength="128" placeholder="Enter category title">
+                  <small class="text-muted">This is the display name for the category</small>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div class="form-section">
-            <h6 class="form-section-title">
-              <i class="fas fa-image me-2"></i>Category Image
-            </h6>
-            <div class="row">
-              <div class="col-md-12 mb-4">
-                <label for="category_image" class="form-label">Category Image</label>
-                <div class="image-upload-wrapper">
-                  <div class="image-upload-area" id="category_upload_area">
-                    <input type="file" class="d-none" id="category_image" name="category_image" accept="image/*">
-                    <div class="upload-placeholder" id="category_placeholder">
-                      <i class="fas fa-cloud-upload-alt fa-3x mb-3" style="color: #9c27b0;"></i>
-                      <p class="mb-2">Click to upload category image</p>
-                      <small class="text-muted">PNG, JPG, GIF, WEBP (Max 5MB)</small>
-                    </div>
-                    <div class="image-preview d-none" id="category_preview">
-                      <img id="category_preview_img" src="" alt="Category Preview">
-                      <button type="button" class="btn-remove-image" id="category_remove_btn" title="Remove image">
-                        <i class="fas fa-times"></i>
-                      </button>
+            <div class="form-section col-lg-6 col-md-6">
+              <h6 class="form-section-title">
+                <i class="fas fa-image me-2"></i>Category Image
+              </h6>
+              <div class="row">
+                <div class="col-md-12 mb-4">
+                  <label for="category_image" class="form-label">Category Image</label>
+                  <div class="image-upload-wrapper">
+                    <div class="image-upload-area" id="category_upload_area">
+                      <input type="file" class="d-none" id="category_image" name="category_image" accept="image/*">
+                      <div class="upload-placeholder" id="category_placeholder">
+                        <i class="fas fa-cloud-upload-alt fa-3x mb-3" style="color: #9c27b0;"></i>
+                        <p class="mb-2">Click to upload category image</p>
+                        <small class="text-muted">PNG, JPG, GIF, WEBP (Max 5MB)</small>
+                      </div>
+                      <div class="image-preview d-none" id="category_preview">
+                        <img id="category_preview_img" src="" alt="Category Preview">
+                        <button type="button" class="btn-remove-image" id="category_remove_btn" title="Remove image">
+                          <i class="fas fa-times"></i>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -159,8 +164,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 /* Category Image - Square Aspect Ratio */
 #category_upload_area {
-    width: 200px;
-    height: 200px;
+    width: 150px;
+    height: 150px;
 }
 
 .image-upload-area:hover {
@@ -170,12 +175,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
 .upload-placeholder {
     text-align: center;
-    padding: 2rem;
+    padding: 10px;
     color: #6c757d;
 }
 
 .upload-placeholder i {
     opacity: 0.6;
+    font-size: 2rem !important;
+}
+
+.upload-placeholder p {
+    font-size: 12px;
+    margin-bottom: 4px !important;
+}
+
+.upload-placeholder small {
+    font-size: 10px;
 }
 
 .image-preview {
