@@ -9,6 +9,7 @@ use App\Models\mylike;
 use App\Models\Studyplan;
 use App\Models\Notification;
 use App\Models\LessonCategory;
+use App\Services\LanguageService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -65,9 +66,8 @@ class LessonController extends Controller
 
 
     public function showLessonCategory($language){
-        // Validate language parameter
-        $validLanguages = ['english', 'korea', 'chinese', 'japanese', 'russian'];
-        if (!in_array($language, $validLanguages)) {
+        // Validate language parameter using LanguageService
+        if (!LanguageService::isValidCode($language)) {
             abort(404, 'Invalid language');
         }
 
@@ -122,15 +122,8 @@ class LessonController extends Controller
             ->count();
         $total_courses = count($myCourses);
 
-        // Language display name mapping
-        $languageNames = [
-            'english' => 'Easy English',
-            'korea' => 'Easy Korean',
-            'chinese' => 'Easy Chinese',
-            'japanese' => 'Easy Japanese',
-            'russian' => 'Easy Russian'
-        ];
-        $languageName = $languageNames[$language] ?? ucfirst($language);
+        // Get language display name from LanguageService
+        $languageName = LanguageService::getDisplayName($language);
         
         return view('lessons.lessons', [
             'language' => $language,
@@ -148,21 +141,13 @@ class LessonController extends Controller
     }
 
     public function showAddCourse($language){
-        // Validate language parameter
-        $validLanguages = ['english', 'korea', 'chinese', 'japanese', 'russian'];
-        if (!in_array($language, $validLanguages)) {
+        // Validate language parameter using LanguageService
+        if (!LanguageService::isValidCode($language)) {
             abort(404, 'Invalid language');
         }
 
-        // Language display name mapping
-        $languageNames = [
-            'english' => 'Easy English',
-            'korea' => 'Easy Korean',
-            'chinese' => 'Easy Chinese',
-            'japanese' => 'Easy Japanese',
-            'russian' => 'Easy Russian'
-        ];
-        $languageName = $languageNames[$language] ?? ucfirst($language);
+        // Get language display name from LanguageService
+        $languageName = LanguageService::getDisplayName($language);
 
         // Get teachers for dropdown
         $teachers = DB::table('teachers')->select('id', 'name')->get();
@@ -176,9 +161,8 @@ class LessonController extends Controller
     }
 
     public function addCourse(Request $req, $language){
-        // Validate language parameter
-        $validLanguages = ['english', 'korea', 'chinese', 'japanese', 'russian'];
-        if (!in_array($language, $validLanguages)) {
+        // Validate language parameter using LanguageService
+        if (!LanguageService::isValidCode($language)) {
             abort(404, 'Invalid language');
         }
 
@@ -250,9 +234,8 @@ class LessonController extends Controller
     }
 
     public function showAddCategory($language, $course){
-        // Validate language parameter
-        $validLanguages = ['english', 'korea', 'chinese', 'japanese', 'russian'];
-        if (!in_array($language, $validLanguages)) {
+        // Validate language parameter using LanguageService
+        if (!LanguageService::isValidCode($language)) {
             abort(404, 'Invalid language');
         }
 
@@ -262,15 +245,8 @@ class LessonController extends Controller
             abort(404, 'Course not found');
         }
 
-        // Language display name mapping
-        $languageNames = [
-            'english' => 'Easy English',
-            'korea' => 'Easy Korean',
-            'chinese' => 'Easy Chinese',
-            'japanese' => 'Easy Japanese',
-            'russian' => 'Easy Russian'
-        ];
-        $languageName = $languageNames[$language] ?? ucfirst($language);
+        // Get language display name from LanguageService
+        $languageName = LanguageService::getDisplayName($language);
 
         return view('lessons.addcategory', [
             'language' => $language,
@@ -282,9 +258,8 @@ class LessonController extends Controller
     }
 
     public function addCategory(Request $req, $language, $course){
-        // Validate language parameter
-        $validLanguages = ['english', 'korea', 'chinese', 'japanese', 'russian'];
-        if (!in_array($language, $validLanguages)) {
+        // Validate language parameter using LanguageService
+        if (!LanguageService::isValidCode($language)) {
             abort(404, 'Invalid language');
         }
 
@@ -337,15 +312,8 @@ class LessonController extends Controller
             abort(404, 'Course not found');
         }
 
-        // Language display name mapping
-        $languageNames = [
-            'english' => 'Easy English',
-            'korea' => 'Easy Korean',
-            'chinese' => 'Easy Chinese',
-            'japanese' => 'Easy Japanese',
-            'russian' => 'Easy Russian'
-        ];
-        $languageName = $languageNames[$category->major] ?? ucfirst($category->major);
+        // Get language display name from LanguageService
+        $languageName = LanguageService::getDisplayName($category->major);
 
         return view('lessons.editcategory', [
             'category' => $category,
@@ -401,9 +369,8 @@ class LessonController extends Controller
     }
 
     public function showSortCategories($language, $course){
-        // Validate language parameter
-        $validLanguages = ['english', 'korea', 'chinese', 'japanese', 'russian'];
-        if (!in_array($language, $validLanguages)) {
+        // Validate language parameter using LanguageService
+        if (!LanguageService::isValidCode($language)) {
             abort(404, 'Invalid language');
         }
 
@@ -420,15 +387,8 @@ class LessonController extends Controller
             ->orderBy('sort_order')
             ->get();
 
-        // Language display name mapping
-        $languageNames = [
-            'english' => 'Easy English',
-            'korea' => 'Easy Korean',
-            'chinese' => 'Easy Chinese',
-            'japanese' => 'Easy Japanese',
-            'russian' => 'Easy Russian'
-        ];
-        $languageName = $languageNames[$language] ?? ucfirst($language);
+        // Get language display name from LanguageService
+        $languageName = LanguageService::getDisplayName($language);
 
         return view('lessons.sortcategories', [
             'language' => $language,
@@ -441,9 +401,8 @@ class LessonController extends Controller
     }
 
     public function updateSortCategories(Request $req, $language, $course){
-        // Validate language parameter
-        $validLanguages = ['english', 'korea', 'chinese', 'japanese', 'russian'];
-        if (!in_array($language, $validLanguages)) {
+        // Validate language parameter using LanguageService
+        if (!LanguageService::isValidCode($language)) {
             abort(404, 'Invalid language');
         }
 
@@ -804,15 +763,8 @@ class LessonController extends Controller
         }
   
     
-        if($major=='korea'){
-            $noti_owner="1001";
-        }else if($major=='english'){
-            $noti_owner="1002";
-        }else if($major=='chinese'){
-            $noti_owner="1003";
-        }else if($major=="japanese"){
-            $noti_owner="1004";
-        }
+        // Get notification owner ID from LanguageService
+        $noti_owner = LanguageService::getNotificationOwnerId($major) ?? '1000';
     
     
         $lesson=new lesson;
@@ -856,14 +808,12 @@ class LessonController extends Controller
         $notification->seen=2;
         $notification->save();
 
-        if($req->major=="korea"){
-            $topic="koreaUsers";
-        }else if($req->major=="english"){
-            $topic="englishUsers";
-        }else if($req->major=="chinese"){
-            $topic="chineseUsers";
-        }else if($req->major=="japanese"){
-            $topic="japaneseUsers";
+        // Get Firebase topic from LanguageService
+        $topic = LanguageService::getFirebaseTopic($req->major);
+        
+        if (!$topic) {
+            // Fallback: generate topic name from major
+            $topic = $req->major . "Users";
         }
         
         $payload = array();

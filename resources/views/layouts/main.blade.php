@@ -130,6 +130,10 @@
           <i class="fas fa-chalkboard-teacher"></i>
           <span>Teachers</span>
         </a>
+        <a href="{{ route('languages.index') }}" class="admin-nav-item {{ request()->routeIs('languages.*') ? 'active' : '' }}">
+          <i class="fas fa-globe"></i>
+          <span>Languages</span>
+        </a>
         <a href="{{ route('showWordOfTheDayMain') }}" class="admin-nav-item {{ request()->routeIs('showWordOfTheDayMain') ? 'active' : '' }}">
           <i class="fas fa-calendar-day"></i>
           <span>Word of the Day</span>

@@ -14,6 +14,7 @@ use App\Http\Controllers\SpeakingTrainerController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\LanguageController;
 use Illuminate\Http\Request;
 /*
 |--------------------------------------------------------------------------
@@ -67,7 +68,7 @@ Route::post('/wordsofday/add/{major}',[WordOfTheDayController::class,'addWordDay
 
 //lessons controlling routes
 Route::get('/lessons/main',[LessonController::class,'showLessonMain'])->name('lessons.main');
-Route::get('/lessons/{language}',[LessonController::class,'showLessonCategory'])->name('lessons.byLanguage');
+Route::get('/lessons/{language}',[LessonController::class,'showLessonCategory'])->name('lessons.byLanguage')->where('language', '[a-z]+');
 Route::get('/lessons/{language}/add-course',[LessonController::class,'showAddCourse'])->name('lessons.addCourse');
 Route::post('/lessons/{language}/add-course',[LessonController::class,'addCourse'])->name('lessons.storeCourse');
 Route::get('/lessons/{language}/add-category/{course}',[LessonController::class,'showAddCategory'])->name('lessons.addCategory');
@@ -151,6 +152,9 @@ Route::get('/teachers/{id}',[TeacherController::class,'show'])->name('teachers.s
 Route::get('/teachers/{id}/edit',[TeacherController::class,'edit'])->name('teachers.edit');
 Route::put('/teachers/{id}',[TeacherController::class,'update'])->name('teachers.update');
 Route::delete('/teachers/{id}',[TeacherController::class,'destroy'])->name('teachers.destroy');
+
+//language management routes
+Route::resource('languages', LanguageController::class);
 
 Route::get('/demo',function(){
     return view('layouts.demo');
