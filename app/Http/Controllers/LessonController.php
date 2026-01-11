@@ -10,6 +10,7 @@ use App\Models\Studyplan;
 use App\Models\Notification;
 use App\Models\LessonCategory;
 use App\Services\LanguageService;
+use App\Services\VimeoService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -553,26 +554,13 @@ class LessonController extends Controller
            abort(404, 'Course not found');
        }
 
-       // Get all categories for this course (for category selection)
-       $categories = DB::table('lessons_categories')
-           ->where('course_id', $courseInfo->course_id)
-           ->where('major', $category->major)
-           ->orderBy('sort_order')
-           ->get();
-
-       // Store categories in session for the view
-       $lessonArr = [];
-       foreach($categories as $cat) {
-           $lessonArr[] = (object)[
-               'id' => $cat->id,
-               'category_title' => $cat->category_title
-           ];
-       }
-       session()->put($courseInfo->title, $lessonArr);
+       // Store major in session for the view
        session()->put('major', $category->major);
 
        return view('lessons.addvideolesson',[
-           'course'=>$courseInfo->title
+           'course'=>$courseInfo->title,
+           'category_id'=>$category->id,
+           'category_title'=>$category->category_title
        ]);
    }
 
@@ -590,34 +578,40 @@ class LessonController extends Controller
            abort(404, 'Course not found');
        }
 
-       // Get all categories for this course (for category selection)
-       $categories = DB::table('lessons_categories')
-           ->where('course_id', $courseInfo->course_id)
-           ->where('major', $category->major)
-           ->orderBy('sort_order')
-           ->get();
-
-       // Store categories in session for the view
-       $lessonArr = [];
-       foreach($categories as $cat) {
-           $lessonArr[] = (object)[
-               'id' => $cat->id,
-               'category_title' => $cat->category_title
-           ];
-       }
-       session()->put($courseInfo->title, $lessonArr);
+       // Store major in session for the view
        session()->put('major', $category->major);
 
        return view('lessons.adddocumentlesson',[
-           'course'=>$courseInfo->title
+           'course'=>$courseInfo->title,
+           'category_id'=>$category->id,
+           'category_title'=>$category->category_title
        ]);
    }
 
    public function showEditLesson($id){
+       // Redirect to appropriate edit page based on lesson type
        $lesson = lesson::find($id);
        
        if (!$lesson) {
            abort(404, 'Lesson not found');
+       }
+
+       if ($lesson->isVideo == 1) {
+           return redirect()->route('lessons.editVideo', $id);
+       } else {
+           return redirect()->route('lessons.editDocument', $id);
+       }
+   }
+
+   public function showEditVideoLesson($id){
+       $lesson = lesson::find($id);
+       
+       if (!$lesson) {
+           abort(404, 'Lesson not found');
+       }
+
+       if ($lesson->isVideo != 1) {
+           abort(404, 'This is not a video lesson');
        }
 
        // Get category info
@@ -626,7 +620,7 @@ class LessonController extends Controller
            abort(404, 'Category not found');
        }
 
-       // Get course info to get categories list
+       // Get course info
        $courseInfo = DB::table('courses')
            ->select('courses.*')
            ->join('lessons_categories', 'lessons_categories.course_id', '=', 'courses.course_id')
@@ -647,18 +641,54 @@ class LessonController extends Controller
        // Get post data
        $post = DB::table('posts')->where('post_id', $lesson->date)->first();
 
-       // Store categories in session for the view (like in showAddLesson)
-       $lessonArr = [];
-       foreach($categories as $cat) {
-           $lessonArr[] = (object)[
-               'id' => $cat->id,
-               'category_title' => $cat->category_title
-           ];
-       }
-       session()->put($courseInfo->title, $lessonArr);
-       session()->put('major', $lesson->major);
+       return view('lessons.editvideolesson', [
+           'lesson' => $lesson,
+           'post' => $post,
+           'category' => $category,
+           'course' => $courseInfo->title,
+           'categories' => $categories,
+       ]);
+   }
 
-       return view('lessons.editlesson', [
+   public function showEditDocumentLesson($id){
+       $lesson = lesson::find($id);
+       
+       if (!$lesson) {
+           abort(404, 'Lesson not found');
+       }
+
+       if ($lesson->isVideo == 1) {
+           abort(404, 'This is not a document lesson');
+       }
+
+       // Get category info
+       $category = LessonCategory::where('id', $lesson->category_id)->first();
+       if (!$category) {
+           abort(404, 'Category not found');
+       }
+
+       // Get course info
+       $courseInfo = DB::table('courses')
+           ->select('courses.*')
+           ->join('lessons_categories', 'lessons_categories.course_id', '=', 'courses.course_id')
+           ->where('lessons_categories.id', $lesson->category_id)
+           ->first();
+
+       if (!$courseInfo) {
+           abort(404, 'Course not found');
+       }
+
+       // Get all categories for this course (for category selection)
+       $categories = DB::table('lessons_categories')
+           ->where('course_id', $courseInfo->course_id)
+           ->where('major', $lesson->major)
+           ->orderBy('sort_order')
+           ->get();
+
+       // Get post data
+       $post = DB::table('posts')->where('post_id', $lesson->date)->first();
+
+       return view('lessons.editdocumentlesson', [
            'lesson' => $lesson,
            'post' => $post,
            'category' => $category,
@@ -674,17 +704,29 @@ class LessonController extends Controller
             abort(404, 'Lesson not found');
         }
 
-        $req->validate([
+        // For video lessons, link is not required
+        $isVideo = isset($req->isVideo);
+        $validationRules = [
             'title_mini' => 'required',
             'title' => 'required',
-            'link' => 'required',
             'post' => 'required',
             'cate' => 'required'
-        ]);
+        ];
+        
+        // Video file validation (optional for editing - only if uploading new video)
+        if ($isVideo) {
+            $validationRules['video_file'] = 'nullable|file|mimes:mp4,mov,avi,mkv,wmv,flv,webm|max:51200'; // Max 50GB
+        }
+        
+        // Link is only required for document lessons (non-video)
+        if (!$isVideo) {
+            $validationRules['link'] = 'required';
+        }
+        
+        $req->validate($validationRules);
 
         $title_mini = $req->title_mini;
         $title = $req->title;
-        $link = $req->link;
         $body = $req->post;
         $categoryId = $req->cate;
         $isVideo = (isset($req->isVideo)) ? 1 : 0;
@@ -692,16 +734,22 @@ class LessonController extends Controller
         $isVip = (isset($req->isVip)) ? 1 : 0;
         $add_to_discuss = (isset($req->add_to_discuss)) ? 0 : 1;
         $major = $req->major;
+        $link = ""; // Initialize link variable
 
+        // Get post data for current values
+        $post = DB::table('posts')->where('post_id', $lesson->date)->first();
+        
         $imagePath = $lesson->thumbnail;
-        $vimeo = "";
+        $vimeo = $post->vimeo ?? "";
+        $videoUrl = $post->video_url ?? "";
         $isVideoLesson = $lesson->isVideo;
         $isVideoPost = 0;
 
         if(isset($req->isVideo)){
             $isVideoLesson = 1;
-            $vimeo = $req->vimeo ?? "";
             $myPath = "https://www.calamuseducation.com/uploads/";
+            
+            // Handle thumbnail upload
             $file = $req->file('myfile');
             if(!empty($req->myfile)){
                 // Delete old thumbnail if exists
@@ -714,6 +762,66 @@ class LessonController extends Controller
                 $result = Storage::disk('calamusPost')->put('posts', $file);
                 $imagePath = $myPath . $result;
             }
+            
+            // Handle video file upload (replace video)
+            $videoFile = $req->file('video_file');
+            if ($videoFile) {
+                try {
+                    // Get category and course info for Vimeo folder structure
+                    $category = LessonCategory::where('id', $categoryId)->first();
+                    if (!$category) {
+                        return back()->with('error', 'Category not found')->withInput();
+                    }
+
+                    $courseInfo = DB::table('courses')
+                        ->select('courses.*')
+                        ->join('lessons_categories', 'lessons_categories.course_id', '=', 'courses.course_id')
+                        ->where('lessons_categories.id', $categoryId)
+                        ->first();
+
+                    if (!$courseInfo) {
+                        return back()->with('error', 'Course not found')->withInput();
+                    }
+
+                    // 1. Delete old video from Vimeo if exists
+                    if ($vimeo) {
+                        try {
+                            $vimeoService = new VimeoService();
+                            $vimeoService->deleteVideo($vimeo);
+                        } catch (\Exception $e) {
+                            \Log::warning('Failed to delete old Vimeo video: ' . $e->getMessage());
+                            // Continue with upload even if delete fails
+                        }
+                    }
+                    
+                    // 2. Upload new video to Vimeo with folder structure: Language->Course->Category
+                    $vimeoService = new VimeoService();
+                    $vimeo = $vimeoService->uploadVideo(
+                        $videoFile,
+                        $title,
+                        [$major, $courseInfo->title, $category->category_title]
+                    );
+                    
+                    // 3. Delete old video from local server if exists
+                    if ($videoUrl) {
+                        $oldVideoPath = str_replace($myPath, '', $videoUrl);
+                        if (Storage::disk('calamusPost')->exists($oldVideoPath)) {
+                            Storage::disk('calamusPost')->delete($oldVideoPath);
+                        }
+                    }
+                    
+                    // 3. Upload to local server
+                    $videoResult = Storage::disk('calamusPost')->put('videos', $videoFile);
+                    $videoUrl = $myPath . $videoResult;
+                    
+                } catch (\Exception $e) {
+                    \Log::error('Video upload error: ' . $e->getMessage());
+                    return back()->with('error', 'Video upload failed: ' . $e->getMessage())->withInput();
+                }
+            }
+            
+            // For video lessons, link is empty
+            $link = "";
             
             // For post: isVideo = 0 if VIP, otherwise 1
             $isVideoPost = ($isVip == 1) ? 0 : 1;
@@ -757,6 +865,11 @@ class LessonController extends Controller
             'hide' => $add_to_discuss,
         ];
         
+        // Update video_url if video was uploaded
+        if (isset($req->isVideo) && $req->hasFile('video_file')) {
+            $postUpdateData['video_url'] = $videoUrl;
+        }
+        
         DB::table('posts')->where('post_id', $lesson->date)->update($postUpdateData);
 
         return redirect()->route('lessons.list', $categoryId)->with('msgLesson', 'Lesson was successfully updated');
@@ -764,13 +877,26 @@ class LessonController extends Controller
 
     public function addLesson(Request $req,$course){
 
-        $req->validate([
+        // For video lessons, link is not required
+        $isVideo = isset($req->isVideo);
+        $validationRules = [
             'title_mini'=>'required',
             'title'=>'required',
-            'link'=>'required',
             'post'=>'required',
             'cate'=>'required'
-        ]);
+        ];
+        
+        // Video file is required for video lessons
+        if ($isVideo) {
+            $validationRules['video_file'] = 'required|file|mimes:mp4,mov,avi,mkv,wmv,flv,webm|max:51200'; // Max 50GB
+        }
+        
+        // Link is only required for document lessons (non-video)
+        if (!$isVideo) {
+            $validationRules['link'] = 'required';
+        }
+        
+        $req->validate($validationRules);
         
        
         $title_mini=$req->title_mini;
@@ -790,35 +916,65 @@ class LessonController extends Controller
         }
  
         
-        $course=DB::table('courses')
-            ->selectRaw("courses.course_id,courses.title,courses.background_color")
-            ->join("lessons_categories","courses.course_id","=","lessons_categories.course_id")
-            ->join("lessons","lessons_categories.id","=","lessons.category_id")
-            ->where("lessons.category_id",$categoryId)->limit(1)->get();
-            
-        if(count($course)==1){
-            $course_id= $course[0]->course_id;
-            
-            DB::table('courses')->where('course_id',$course_id)->update([
-                'lessons_count'=>DB::raw("lessons_count+1")
-            ]);
-                   
-        } 
-            
+        // Get course and category info
+        $category = LessonCategory::where('id', $categoryId)->first();
+        if (!$category) {
+            return $req->ajax() ? response()->json(['success' => false, 'message' => 'Category not found'], 404) 
+                                 : back()->with('error', 'Category not found')->withInput();
+        }
+
+        $courseInfo = DB::table('courses')->where('course_id', $category->course_id)->first();
+        if (!$courseInfo) {
+            return $req->ajax() ? response()->json(['success' => false, 'message' => 'Course not found'], 404) 
+                                 : back()->with('error', 'Course not found')->withInput();
+        }
+
+        $course_id = $courseInfo->course_id;
+        $course_title = $courseInfo->title;
+        $category_title = $category->category_title;
             
         $imagePath="";
         $vimeo="";
+        $videoUrl="";
+        $link=""; // Initialize link variable
     
         $isVideoLesson=0;
         
         if(isset($req->isVideo)){
-            $vimeo=$req->vimeo;
             $myPath="https://www.calamuseducation.com/uploads/";
+            
+            // Handle thumbnail upload
             $file=$req->file('myfile');
             if(!empty($req->myfile)){
                 $result=Storage::disk('calamusPost')->put('posts',$file);
                 $imagePath=$myPath.$result;
             }
+            
+            // Handle video upload
+            $videoFile = $req->file('video_file');
+            if ($videoFile) {
+                try {
+                    // 1. Upload to Vimeo with folder structure: Language->Course->Category
+                    $vimeoService = new VimeoService();
+                    $vimeo = $vimeoService->uploadVideo(
+                        $videoFile,
+                        $title,
+                        [$major, $course_title, $category_title]
+                    );
+                    
+                    // 2. Upload to local server
+                    $videoResult = Storage::disk('calamusPost')->put('videos', $videoFile);
+                    $videoUrl = $myPath . $videoResult;
+                    
+                } catch (\Exception $e) {
+                    \Log::error('Video upload error: ' . $e->getMessage());
+                    return $req->ajax() 
+                        ? response()->json(['success' => false, 'message' => 'Video upload failed: ' . $e->getMessage()], 500)
+                        : back()->with('error', 'Video upload failed: ' . $e->getMessage())->withInput();
+                }
+            }
+            
+            $link=""; // For video lessons, link is empty
             
             if($isVip==1){
                 $isVideo=0; // for post
@@ -833,13 +989,15 @@ class LessonController extends Controller
             $blogId=substr($templink,0,19);
             $blogPostId=substr($templink,20);
             $link="https://www.blogger.com/feeds/".$blogId."/posts/default/".$blogPostId."?alt=json";
-            
         }
   
+        // Update course lessons count
+        DB::table('courses')->where('course_id',$course_id)->update([
+            'lessons_count'=>DB::raw("lessons_count+1")
+        ]);
     
         // Get notification owner ID from LanguageService
         $noti_owner = LanguageService::getNotificationOwnerId($major) ?? '1000';
-    
     
         $lesson=new lesson;
         $lesson->cate="";
@@ -862,15 +1020,13 @@ class LessonController extends Controller
         $post->post_like=0;
         $post->comments=0;
         $post->image=$imagePath;
-        $post->video_url="";
+        $post->video_url=$videoUrl;
         $post->has_video=$isVideo;
         $post->vimeo=$vimeo;
         $post->view_count=0;
         $post->major=$major;
         $post->hide=$add_to_discuss;
         $post->save();
-        
-        
     
         $notification=new Notification;
         $notification->post_id=$date;
@@ -883,21 +1039,30 @@ class LessonController extends Controller
         $notification->save();
 
         // Get Firebase topic from LanguageService
-        $topic = LanguageService::getFirebaseTopic($req->major);
+        $topic = LanguageService::getFirebaseTopic($major);
         
         if (!$topic) {
             // Fallback: generate topic name from major
-            $topic = $req->major . "Users";
+            $topic = $major . "Users";
         }
         
         $payload = array();
         $payload['team'] = 'Calamus';
         $payload['go'] = "new_lesson";
         $payload['course_id']=$course_id;
-        $payload['course_title']=$course[0]->title;
-        $payload['theme_color']=$course[0]->background_color;
+        $payload['course_title']=$course_title;
+        $payload['theme_color']=$courseInfo->background_color;
 
         FirebaseNotiPushController::pushNotificationToTopic($topic,"New Lesson",$body,$payload);
+        
+        // Return JSON response for AJAX requests
+        if ($req->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Lesson was successfully added',
+                'redirect' => route('lessons.list', $categoryId)
+            ]);
+        }
         
         return back()->with('msgLesson','Lesson was successfully added');
 

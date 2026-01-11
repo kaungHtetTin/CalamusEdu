@@ -22,7 +22,6 @@
 @endif
 
 @php
-    $lessonArr=session($course) ?? [];
     $isChannel=($course=='Video Channel')?1 : 0;
 @endphp
 
@@ -43,6 +42,8 @@
           @csrf
           <input type="hidden" name="isVideo" value="1"/>
           <input type="hidden" name="major" value="{{session('major')}}"/>
+          <input type="hidden" name="link" value="">
+          <input type="hidden" name="vimeo" value="">
           
           <div class="form-section">
             <h6 class="form-section-title">
@@ -60,19 +61,6 @@
               </div>
             </div>
 
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label for="link" class="form-label">YouTube ID <span class="text-danger">*</span></label>
-                <input type="text" class="form-control modern-input" id="link" name="link" value="{{old('link')}}" required placeholder="Enter YouTube ID">
-                <small class="form-text text-muted">Enter the YouTube video ID only</small>
-              </div>
-
-              <div class="col-md-6 mb-3">
-                <label for="vimeo" class="form-label">Vimeo Link</label>
-                <input type="text" class="form-control modern-input" id="vimeo" name="vimeo" value="{{old('vimeo')}}" placeholder="Enter Vimeo link">
-              </div>
-            </div>
-
             <div class="mb-3">
               <label for="post" class="form-label">Post Content <span class="text-danger">*</span></label>
               <textarea class="form-control modern-input" id="post" name="post" rows="4" required placeholder="Enter post content">{{old('post')}}</textarea>
@@ -81,34 +69,28 @@
 
           <div class="form-section">
             <h6 class="form-section-title">
-              <i class="fas fa-folder me-2"></i>Category Selection
+              <i class="fas fa-folder me-2"></i>Category Information
             </h6>
             <div class="row">
               <div class="col-md-6 mb-3">
-                <label class="form-label">Category <span class="text-danger">*</span></label>
-                <div class="category-radio-group">
-                  @if(count($lessonArr) > 0)
-                    @foreach ($lessonArr as $arr)
-                    @php
-                        $category=$arr->category_title;
-                        $category_id=$arr->id;
-                    @endphp
-                      <div class="form-check">
-                        <input class="form-check-input" type="radio" name="cate" id="cate_{{$category_id}}" value="{{$category_id}}" {{old('cate') == $category_id ? 'checked' : ''}} required>
-                        <label class="form-check-label" for="cate_{{$category_id}}">
-                          {{$category}}
-                        </label>
-                      </div>
-                    @endforeach
-                  @else
-                    <div class="alert alert-warning">
-                      <i class="fas fa-exclamation-triangle me-2"></i>No categories found. Please go back and try again.
-                    </div>
-                  @endif
+                <label class="form-label">Category</label>
+                <div class="form-control modern-input" style="background-color: var(--bg-secondary); color: var(--text-secondary);">
+                  <i class="fas fa-folder me-2"></i>{{$category_title}}
                 </div>
-                @error('cate')
-                  <div class="text-danger" style="font-size: 12px;">{{$message}}</div>
-                @enderror
+                <input type="hidden" name="cate" value="{{$category_id}}" required>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h6 class="form-section-title">
+              <i class="fas fa-video me-2"></i>Video Upload
+            </h6>
+            <div class="row">
+              <div class="col-md-12 mb-4">
+                <label for="video_file" class="form-label">Video File <span class="text-danger">*</span></label>
+                <input type="file" class="form-control modern-input" id="video_file" name="video_file" accept="video/*" required>
+                <small class="form-text text-muted">Upload video file (MP4, MOV, AVI, etc.)</small>
               </div>
             </div>
           </div>
@@ -145,16 +127,10 @@
               <i class="fas fa-cog me-2"></i>Lesson Settings
             </h6>
             <div class="row">
+              <input type="hidden" name="isChannel" value="{{$isChannel == 1 ? '1' : '0'}}">
               <div class="col-md-6 mb-3">
                 <div class="form-check">
-                  <input class="form-check-input" type="checkbox" name="isChannel" id="isChannel" value="1" {{$isChannel == 1 ? 'checked' : ''}}>
-                  <label class="form-check-label" for="isChannel">Is Channel?</label>
-                </div>
-              </div>
-
-              <div class="col-md-6 mb-3">
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" name="isVip" id="isVip" value="1" {{old('isVip') ? 'checked' : ''}}>
+                  <input class="" type="checkbox" name="isVip" id="isVip" value="1" {{old('isVip') ? 'checked' : ''}}>
                   <label class="form-check-label" for="isVip">VIP Lesson</label>
                 </div>
               </div>
@@ -163,19 +139,50 @@
             <div class="row">
               <div class="col-md-6 mb-3">
                 <div class="form-check">
-                  <input class="form-check-input" type="checkbox" name="add_to_discuss" id="add_to_discuss" value="1" {{old('add_to_discuss') ? 'checked' : ''}}>
+                  <input class="" type="checkbox" name="add_to_discuss" id="add_to_discuss" value="1" {{old('add_to_discuss') ? 'checked' : ''}}>
                   <label class="form-check-label" for="add_to_discuss">Add to discussion room</label>
                 </div>
               </div>
             </div>
           </div>
 
+          {{-- Upload Progress Section --}}
+          <div id="upload-progress-section" class="form-section d-none">
+            <h6 class="form-section-title">
+              <i class="fas fa-upload me-2"></i>Upload Progress
+            </h6>
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <div class="upload-progress-item">
+                  <div class="d-flex justify-content-between mb-2">
+                    <span><i class="fas fa-cloud me-2"></i>Uploading to Vimeo...</span>
+                    <span id="vimeo-progress-text" class="text-muted">0%</span>
+                  </div>
+                  <div class="progress" style="height: 25px;">
+                    <div id="vimeo-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%">0%</div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-12 mb-3">
+                <div class="upload-progress-item">
+                  <div class="d-flex justify-content-between mb-2">
+                    <span><i class="fas fa-server me-2"></i>Uploading to Server...</span>
+                    <span id="server-progress-text" class="text-muted">0%</span>
+                  </div>
+                  <div class="progress" style="height: 25px;">
+                    <div id="server-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 0%">0%</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="form-actions">
-            <a href="javascript:history.back()" class="btn-back btn-sm">
+            <a href="javascript:history.back()" class="btn-back btn-sm" id="cancel-btn">
               <i class="fas fa-arrow-left"></i>
               <span>Cancel</span>
             </a>
-            <button type="submit" class="new-category-btn">
+            <button type="submit" class="new-category-btn" id="submit-btn">
               <i class="fas fa-save"></i>
               <span>Add Video Lesson</span>
             </button>
@@ -228,6 +235,123 @@ document.addEventListener('DOMContentLoaded', function() {
                 thumbnailPreviewImg.src = '';
             });
         }
+    }
+
+    // Video upload with progress tracking
+    const form = document.querySelector('form');
+    const submitBtn = document.getElementById('submit-btn');
+    const cancelBtn = document.getElementById('cancel-btn');
+    const progressSection = document.getElementById('upload-progress-section');
+    const vimeoProgressBar = document.getElementById('vimeo-progress-bar');
+    const vimeoProgressText = document.getElementById('vimeo-progress-text');
+    const serverProgressBar = document.getElementById('server-progress-bar');
+    const serverProgressText = document.getElementById('server-progress-text');
+
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(form);
+            const videoFile = document.getElementById('video_file').files[0];
+            
+            if (!videoFile) {
+                alert('Please select a video file');
+                return;
+            }
+
+            // Show progress section
+            progressSection.classList.remove('d-none');
+            submitBtn.disabled = true;
+            cancelBtn.style.pointerEvents = 'none';
+            cancelBtn.style.opacity = '0.5';
+
+            // Reset progress bars
+            updateProgress('vimeo', 0, 'Starting upload...');
+            updateProgress('server', 0, 'Waiting...');
+
+            // Create XMLHttpRequest for progress tracking
+            const xhr = new XMLHttpRequest();
+
+            // Track upload progress for local server upload
+            xhr.upload.addEventListener('progress', function(e) {
+                if (e.lengthComputable) {
+                    const percentComplete = Math.round((e.loaded / e.total) * 100);
+                    // Show progress for server upload (this is the form data upload progress)
+                    updateProgress('server', percentComplete, percentComplete + '%');
+                }
+            });
+
+            // Handle response
+            xhr.addEventListener('load', function() {
+                if (xhr.status === 200) {
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        if (response.success) {
+                            updateProgress('vimeo', 100, 'Complete');
+                            updateProgress('server', 100, 'Complete');
+                            setTimeout(function() {
+                                if (response.redirect) {
+                                    window.location.href = response.redirect;
+                                } else {
+                                    window.location.reload();
+                                }
+                            }, 1000);
+                        } else {
+                            handleError(response.message || 'Upload failed');
+                        }
+                    } catch (e) {
+                        // If response is HTML (redirect), just follow it
+                        window.location.reload();
+                    }
+                } else {
+                    handleError('Upload failed with status: ' + xhr.status);
+                }
+            });
+
+            xhr.addEventListener('error', function() {
+                handleError('Network error occurred');
+            });
+
+            // Simulate Vimeo upload progress (since it happens server-side)
+            let vimeoProgress = 0;
+            const vimeoInterval = setInterval(function() {
+                if (vimeoProgress < 90) {
+                    vimeoProgress += Math.random() * 15;
+                    if (vimeoProgress > 90) vimeoProgress = 90;
+                    updateProgress('vimeo', Math.round(vimeoProgress), Math.round(vimeoProgress) + '%');
+                }
+            }, 500);
+
+            // Submit form
+            xhr.open('POST', form.action);
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            xhr.send(formData);
+
+            // Clear interval when done
+            xhr.addEventListener('loadend', function() {
+                clearInterval(vimeoInterval);
+            });
+        });
+    }
+
+    function updateProgress(type, percent, text) {
+        if (type === 'vimeo') {
+            vimeoProgressBar.style.width = percent + '%';
+            vimeoProgressBar.textContent = percent + '%';
+            vimeoProgressText.textContent = text;
+        } else if (type === 'server') {
+            serverProgressBar.style.width = percent + '%';
+            serverProgressBar.textContent = percent + '%';
+            serverProgressText.textContent = text;
+        }
+    }
+
+    function handleError(message) {
+        alert('Error: ' + message);
+        submitBtn.disabled = false;
+        cancelBtn.style.pointerEvents = 'auto';
+        cancelBtn.style.opacity = '1';
+        progressSection.classList.add('d-none');
     }
 });
 </script>
@@ -309,12 +433,6 @@ document.addEventListener('DOMContentLoaded', function() {
     transform: scale(1.1);
 }
 
-.category-radio-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
 .form-section {
     border-bottom: none !important;
     margin-bottom: 2rem;
@@ -325,6 +443,21 @@ document.addEventListener('DOMContentLoaded', function() {
     margin-bottom: 1rem;
     font-weight: 600;
     color: var(--text-primary);
+}
+
+.upload-progress-item {
+    margin-bottom: 1rem;
+}
+
+.upload-progress-item .progress {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.upload-progress-item .progress-bar {
+    transition: width 0.3s ease;
+    font-size: 0.875rem;
+    font-weight: 500;
 }
 
 body.dark-theme .image-upload-area {

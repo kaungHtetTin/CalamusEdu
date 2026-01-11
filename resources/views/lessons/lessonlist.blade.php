@@ -72,7 +72,7 @@
                 <a href="{{$viewLesson}}" class="btn-action-primary" title="View Details">
                   <i class="fas fa-eye"></i>
                 </a>
-                <a href="{{route('lessons.edit', $lesson->id)}}" class="btn-action-warning" title="Edit Lesson">
+                <a href="{{$lesson->isVideo == 1 ? route('lessons.editVideo', $lesson->id) : route('lessons.editDocument', $lesson->id)}}" class="btn-action-warning" title="Edit Lesson">
                   <i class="fas fa-edit"></i>
                 </a>
               </div>

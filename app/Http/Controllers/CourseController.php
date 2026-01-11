@@ -229,9 +229,7 @@ class CourseController extends Controller
                     $playerUrl = $vimeoService->uploadVideo(
                         $req->file('preview_file'),
                         $course->title . ' - Preview',
-                        $course->major,
-                        $course->title,
-                        'Preview'
+                        [$course->major, $course->title, 'Preview']
                     );
                     $updateData['preview'] = $playerUrl;
                 } catch (\Exception $e) {
