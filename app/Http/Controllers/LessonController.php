@@ -539,6 +539,80 @@ class LessonController extends Controller
        ]);
    }
 
+   public function showAddVideoLesson($course){
+       // $course is actually a category_id when called from the modal
+       $category = LessonCategory::where('id', $course)->first();
+       
+       if (!$category) {
+           abort(404, 'Category not found');
+       }
+
+       // Get course info
+       $courseInfo = DB::table('courses')->where('course_id', $category->course_id)->first();
+       if (!$courseInfo) {
+           abort(404, 'Course not found');
+       }
+
+       // Get all categories for this course (for category selection)
+       $categories = DB::table('lessons_categories')
+           ->where('course_id', $courseInfo->course_id)
+           ->where('major', $category->major)
+           ->orderBy('sort_order')
+           ->get();
+
+       // Store categories in session for the view
+       $lessonArr = [];
+       foreach($categories as $cat) {
+           $lessonArr[] = (object)[
+               'id' => $cat->id,
+               'category_title' => $cat->category_title
+           ];
+       }
+       session()->put($courseInfo->title, $lessonArr);
+       session()->put('major', $category->major);
+
+       return view('lessons.addvideolesson',[
+           'course'=>$courseInfo->title
+       ]);
+   }
+
+   public function showAddDocumentLesson($course){
+       // $course is actually a category_id when called from the modal
+       $category = LessonCategory::where('id', $course)->first();
+       
+       if (!$category) {
+           abort(404, 'Category not found');
+       }
+
+       // Get course info
+       $courseInfo = DB::table('courses')->where('course_id', $category->course_id)->first();
+       if (!$courseInfo) {
+           abort(404, 'Course not found');
+       }
+
+       // Get all categories for this course (for category selection)
+       $categories = DB::table('lessons_categories')
+           ->where('course_id', $courseInfo->course_id)
+           ->where('major', $category->major)
+           ->orderBy('sort_order')
+           ->get();
+
+       // Store categories in session for the view
+       $lessonArr = [];
+       foreach($categories as $cat) {
+           $lessonArr[] = (object)[
+               'id' => $cat->id,
+               'category_title' => $cat->category_title
+           ];
+       }
+       session()->put($courseInfo->title, $lessonArr);
+       session()->put('major', $category->major);
+
+       return view('lessons.adddocumentlesson',[
+           'course'=>$courseInfo->title
+       ]);
+   }
+
    public function showEditLesson($id){
        $lesson = lesson::find($id);
        

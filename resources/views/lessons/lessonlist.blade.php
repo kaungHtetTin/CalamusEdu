@@ -97,7 +97,7 @@
       </div>
       <div class="language-data-body">
         <div class="lesson-list-container">
-          <a href="{{route('showAddLesson', $cate)}}?type=video" class="lesson-item-card" style="text-decoration: none; display: block;">
+          <a href="{{route('showAddVideoLesson', $category_id)}}" class="lesson-item-card" style="text-decoration: none; display: block;">
             <div class="lesson-item-content">
               <div class="lesson-thumbnail">
                 <div style="width: 100%; height: 100%; background: rgba(33, 150, 243, 0.1); display: flex; align-items: center; justify-content: center; border-radius: 8px;">
@@ -114,7 +114,7 @@
               </div>
             </div>
           </a>
-          <a href="{{route('showAddLesson', $cate)}}?type=document" class="lesson-item-card" style="text-decoration: none; display: block;">
+          <a href="{{route('showAddDocumentLesson', $category_id)}}" class="lesson-item-card" style="text-decoration: none; display: block;">
             <div class="lesson-item-content">
               <div class="lesson-thumbnail">
                 <div style="width: 100%; height: 100%; background: rgba(255, 152, 0, 0.1); display: flex; align-items: center; justify-content: center; border-radius: 8px;">

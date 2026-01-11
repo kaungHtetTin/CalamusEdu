@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\course;
 use App\Models\VipUser;
+use App\Services\LanguageService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
@@ -78,9 +79,8 @@ class CourseController extends Controller
     }
 
     public function showCoursesByLanguage($language){
-        // Validate language parameter
-        $validLanguages = ['english', 'korea', 'chinese', 'japanese', 'russian'];
-        if (!in_array($language, $validLanguages)) {
+        // Validate language parameter using LanguageService
+        if (!LanguageService::isValidCode($language)) {
             abort(404, 'Invalid language');
         }
 
@@ -108,16 +108,8 @@ class CourseController extends Controller
         $avg_rating = $courses->avg('rating');
         $avg_rating = $avg_rating ? round($avg_rating, 2) : 0;
 
-        // Language display name mapping
-        $languageNames = [
-            'english' => 'Easy English',
-            'korea' => 'Easy Korean',
-            'chinese' => 'Easy Chinese',
-            'japanese' => 'Easy Japanese',
-            'russian' => 'Easy Russian'
-        ];
-
-        $languageName = $languageNames[$major] ?? ucfirst($major);
+        // Get language display name from LanguageService
+        $languageName = LanguageService::getDisplayName($major);
 
         return view('courses.coursesbylanguage', [
             'courses' => $courses,
@@ -139,16 +131,8 @@ class CourseController extends Controller
             abort(404, 'Course not found');
         }
 
-        // Language display name mapping
-        $languageNames = [
-            'english' => 'Easy English',
-            'korea' => 'Easy Korean',
-            'chinese' => 'Easy Chinese',
-            'japanese' => 'Easy Japanese',
-            'russian' => 'Easy Russian'
-        ];
-
-        $languageName = $languageNames[$course->major] ?? ucfirst($course->major);
+        // Get language display name from LanguageService
+        $languageName = LanguageService::getDisplayName($course->major);
 
         // Get teachers for dropdown
         $teachers = DB::table('teachers')->select('id', 'name')->get();

@@ -81,6 +81,8 @@ Route::get('/lessons/showlists/{code}',[LessonController::class,'showLessonList'
 Route::get('/lessons/video/{id}',[LessonController::class,'viewVideoLesson'])->name('viewVideoLesson');
 Route::get('/lessons/blog/{id}',[LessonController::class,'viewBlogLesson'])->name('viewBlogLesson');
 Route::get('/lessons/add/{course}',[LessonController::class,'showAddLesson'])->name('showAddLesson');
+Route::get('/lessons/add-video/{course}',[LessonController::class,'showAddVideoLesson'])->name('showAddVideoLesson');
+Route::get('/lessons/add-document/{course}',[LessonController::class,'showAddDocumentLesson'])->name('showAddDocumentLesson');
 Route::post('/lessons/add/{course}',[LessonController::class,'addLesson'])->name('addLesson');
 Route::get('/lessons/{id}/edit',[LessonController::class,'showEditLesson'])->name('lessons.edit');
 Route::post('/lessons/{id}/update',[LessonController::class,'updateLesson'])->name('lessons.update');

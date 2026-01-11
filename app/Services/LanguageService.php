@@ -202,5 +202,54 @@ class LanguageService
             'is_active' => $language->is_active,
         ];
     }
+
+    /**
+     * Get user data model class for a language code
+     * Returns the model class name based on language code
+     */
+    public static function getUserDataModelClass($code)
+    {
+        $modelMap = [
+            'english' => \App\Models\EasyEnglishUserData::class,
+            'korea' => \App\Models\EasyKoreanUserData::class,
+            'korean' => \App\Models\EasyKoreanUserData::class,
+            'chinese' => \App\Models\EasyChineseUserData::class,
+            'japanese' => \App\Models\EasyJapaneseUserData::class,
+            'russian' => \App\Models\EasyRussianUserData::class,
+        ];
+
+        return $modelMap[$code] ?? null;
+    }
+
+    /**
+     * Get complete language mapping including model classes
+     * This is a helper for controllers that need model mappings
+     */
+    public static function getLanguageMappingWithModels($code)
+    {
+        $language = self::findByCode($code);
+        
+        if (!$language) {
+            return null;
+        }
+
+        $modelClass = self::getUserDataModelClass($code);
+
+        return [
+            'code' => $language->code,
+            'name' => $language->name,
+            'display_name' => $language->display_name,
+            'module_code' => $language->module_code,
+            'major' => $language->code, // For backward compatibility
+            'table' => $language->getUserDataTableName(),
+            'table_prefix' => $language->user_data_table_prefix,
+            'model' => $modelClass,
+            'primaryColor' => $language->primary_color,
+            'secondaryColor' => $language->secondary_color,
+            'image_path' => $language->image_path,
+            'notification_owner_id' => $language->notification_owner_id,
+            'firebase_topic' => $language->firebase_topic,
+        ];
+    }
 }
 
