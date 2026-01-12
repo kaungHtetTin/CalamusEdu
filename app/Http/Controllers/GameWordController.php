@@ -13,7 +13,22 @@ use Illuminate\Support\Facades\Storage;
 class GameWordController extends Controller
 {
     public function showGameWordMain(){
-        return view('gamewords.gamewordmain');
+        // Get statistics
+        $english_words = GameWordEnglish::count();
+        $korean_words = GameWordKorea::count();
+        $chinese_words = GameWordChinese::count();
+        $japanese_words = GameWordJapanese::count();
+        $russian_words = GameWordRussian::count();
+        $total_words = $english_words + $korean_words + $chinese_words + $japanese_words + $russian_words;
+        
+        return view('gamewords.gamewordmain', [
+            'english_words' => $english_words,
+            'korean_words' => $korean_words,
+            'chinese_words' => $chinese_words,
+            'japanese_words' => $japanese_words,
+            'russian_words' => $russian_words,
+            'total_words' => $total_words
+        ]);
     }
 
     public function showGameWord($major){

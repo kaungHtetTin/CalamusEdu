@@ -719,9 +719,9 @@ class LessonController extends Controller
             $validationRules['video_file'] = 'nullable|file|mimes:mp4,mov,avi,mkv,wmv,flv,webm|max:51200'; // Max 50GB
         }
         
-        // Link is only required for document lessons (non-video)
+        // HTML file validation for document lessons (non-video)
         if (!$isVideo) {
-            $validationRules['link'] = 'required';
+            $validationRules['html_file'] = 'nullable|file|mimes:html,htm|max:10240'; // Max 10MB
         }
         
         $req->validate($validationRules);
@@ -827,20 +827,65 @@ class LessonController extends Controller
             // For post: isVideo = 0 if VIP, otherwise 1
             $isVideoPost = ($isVip == 1) ? 0 : 1;
         } else {
+            // Document lesson handling
             $isVideoLesson = 0;
             $imagePath = "";
-            $templink = $req->link;
-            // Parse blog link if it contains "edit/"
-            if(strpos($templink, "edit/") !== false) {
-                $templink = substr($templink, strpos($templink, "edit/") + 5);
-                $blogId = substr($templink, 0, 19);
-                $blogPostId = substr($templink, 20);
-                $link = "https://www.blogger.com/feeds/" . $blogId . "/posts/default/" . $blogPostId . "?alt=json";
-            } else {
-                // Link is already in correct format (JSON feed URL)
-                $link = $req->link;
-            }
+            // Use existing link from lesson
+            $link = $lesson->link;
             $isVideoPost = 0;
+            
+            // Handle HTML file upload for document lessons
+            $htmlFile = $req->file('html_file');
+            if ($htmlFile) {
+                try {
+                    // Get category and course info
+                    $category = LessonCategory::where('id', $categoryId)->first();
+                    if (!$category) {
+                        return back()->with('error', 'Category not found')->withInput();
+                    }
+                    
+                    $courseInfo = DB::table('courses')
+                        ->select('courses.*')
+                        ->join('lessons_categories', 'lessons_categories.course_id', '=', 'courses.course_id')
+                        ->where('lessons_categories.id', $categoryId)
+                        ->first();
+                    
+                    if (!$courseInfo) {
+                        return back()->with('error', 'Course not found')->withInput();
+                    }
+                    
+                    // Read HTML content from file
+                    $htmlContent = file_get_contents($htmlFile->getRealPath());
+                    
+                    // Extract post ID from Blogger feed URL
+                    $bloggerPostId = null;
+                    if (preg_match('/feeds\/[^\/]+\/posts\/default\/([^?]+)/', $link, $matches)) {
+                        $bloggerPostId = $matches[1];
+                    }
+                    
+                    if ($bloggerPostId) {
+                        // Update Blogger post
+                        $bloggerService = new BloggerService();
+                        $bloggerResult = $bloggerService->updatePost($bloggerPostId, $title, $htmlContent, [$category->category_title]);
+                        $link = $bloggerResult['feedUrl']; // Use updated feed URL
+                    } else {
+                        throw new \Exception('Could not extract Blogger post ID from existing link. Please ensure the lesson has a valid Blogger link.');
+                    }
+                    
+                    // Update HTML file on local server
+                    try {
+                        $htmlFileName = $lesson->id . '.html';
+                        Storage::disk('calamusPost')->put('lessons/html/' . $htmlFileName, $htmlContent);
+                    } catch (\Exception $e) {
+                        \Log::warning('Failed to save HTML file to server: ' . $e->getMessage());
+                        // Don't fail the entire operation if HTML file save fails
+                    }
+                    
+                } catch (\Exception $e) {
+                    \Log::error('HTML upload/Blogger post update error: ' . $e->getMessage());
+                    return back()->with('error', 'HTML upload/Blogger post update failed: ' . $e->getMessage())->withInput();
+                }
+            }
         }
 
         // Update lesson
@@ -892,13 +937,9 @@ class LessonController extends Controller
             $validationRules['video_file'] = 'required|file|mimes:mp4,mov,avi,mkv,wmv,flv,webm|max:51200'; // Max 50GB
         }
         
-        // For document lessons: HTML file OR link (one of them is required)
+        // For document lessons: HTML file is required
         if (!$isVideo) {
-            $validationRules['html_file'] = 'nullable|file|mimes:html,htm|max:10240'; // Max 10MB
-            // Link is only required if HTML file is not provided
-            if (!$req->hasFile('html_file')) {
-                $validationRules['link'] = 'required';
-            }
+            $validationRules['html_file'] = 'required|file|mimes:html,htm|max:10240'; // Max 10MB
         }
         
         $req->validate($validationRules);
@@ -994,36 +1035,21 @@ class LessonController extends Controller
             
             // Handle HTML file upload for document lessons
             $htmlFile = $req->file('html_file');
-            $htmlContent = null;
             
-            if ($htmlFile) {
-                try {
-                    // Read HTML content from file
-                    $htmlContent = file_get_contents($htmlFile->getRealPath());
-                    
-                    // Post HTML content to Blogger first with category as label
-                    $bloggerService = new BloggerService();
-                    $bloggerResult = $bloggerService->createPost($title, $htmlContent, true, [$category_title]);
-                    $link = $bloggerResult['feedUrl'];
-                    
-                } catch (\Exception $e) {
-                    \Log::error('HTML upload/Blogger post error: ' . $e->getMessage());
-                    return $req->ajax() 
-                        ? response()->json(['success' => false, 'message' => 'HTML upload/Blogger post failed: ' . $e->getMessage()], 500)
-                        : back()->with('error', 'HTML upload/Blogger post failed: ' . $e->getMessage())->withInput();
-                }
-            } else {
-                // Fallback: Use manual Blogger link (existing behavior)
-                $templink = $req->link;
-                if (strpos($templink, "edit/") !== false) {
-                    $templink = substr($templink, strpos($templink, "edit/") + 5);
-                    $blogId = substr($templink, 0, 19);
-                    $blogPostId = substr($templink, 20);
-                    $link = "https://www.blogger.com/feeds/" . $blogId . "/posts/default/" . $blogPostId . "?alt=json";
-                } else {
-                    // Link is already in correct format (JSON feed URL)
-                    $link = $req->link;
-                }
+            try {
+                // Read HTML content from file
+                $htmlContent = file_get_contents($htmlFile->getRealPath());
+                
+                // Post HTML content to Blogger first with category as label
+                $bloggerService = new BloggerService();
+                $bloggerResult = $bloggerService->createPost($title, $htmlContent, true, [$category_title]);
+                $link = $bloggerResult['feedUrl'];
+                
+            } catch (\Exception $e) {
+                \Log::error('HTML upload/Blogger post error: ' . $e->getMessage());
+                return $req->ajax() 
+                    ? response()->json(['success' => false, 'message' => 'HTML upload/Blogger post failed: ' . $e->getMessage()], 500)
+                    : back()->with('error', 'HTML upload/Blogger post failed: ' . $e->getMessage())->withInput();
             }
         }
   

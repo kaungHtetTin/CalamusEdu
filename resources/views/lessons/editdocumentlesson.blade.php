@@ -37,16 +37,6 @@
 
 @php
     $isChannel = $lesson->isChannel;
-    // Parse blog link back to edit format if needed
-    $blogLink = $lesson->link;
-    if (strpos($blogLink, 'blogger.com/feeds/') !== false) {
-        // Extract blog ID and post ID from JSON feed URL
-        if (preg_match('/feeds\/([^\/]+)\/posts\/default\/([^?]+)/', $blogLink, $matches)) {
-            $blogId = $matches[1];
-            $postId = $matches[2];
-            $blogLink = "https://www.blogger.com/blogger.g?blogID=" . $blogId . "#editor/target=post;postID=" . $postId;
-        }
-    }
 @endphp
 
 <div class="row">
@@ -84,9 +74,9 @@
 
             <div class="row">
               <div class="col-md-12 mb-3">
-                <label for="link" class="form-label">Blog Link <span class="text-danger">*</span></label>
-                <input type="text" class="form-control modern-input" id="link" name="link" value="{{old('link', $blogLink)}}" required placeholder="Enter Blogger edit link">
-                <small class="form-text text-muted">Enter the full Blogger edit URL (e.g., https://www.blogger.com/blogger.g?blogID=...&postID=...)</small>
+                <label for="html_file" class="form-label">HTML File (Update Blogger Post)</label>
+                <input type="file" class="form-control modern-input" id="html_file" name="html_file" accept=".html,.htm" value="{{old('html_file')}}">
+                <small class="form-text text-muted">Upload new HTML file to update the Blogger post and server storage. Leave empty to keep existing content.</small>
               </div>
             </div>
 

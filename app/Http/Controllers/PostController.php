@@ -10,11 +10,167 @@ use App\Models\Comment;
 use App\Models\Notification;
 use App\Models\Report;
 use App\Models\mylike;
+use App\Models\CommentLike;
+use Illuminate\Support\Facades\Validator;
 
 class PostController extends Controller
 {
     public function showMainPostControllerView(){
-        return view ('posts.postmain');
+        // Get total posts by language
+        $english_posts = post::where('major', 'english')->count();
+        $korean_posts = post::where('major', 'korea')->count();
+        $chinese_posts = post::where('major', 'chinese')->count();
+        $japanese_posts = post::where('major', 'japanese')->count();
+        $russian_posts = post::where('major', 'russian')->count();
+        $total_posts = $english_posts + $korean_posts + $chinese_posts + $japanese_posts + $russian_posts;
+
+        // Get posts with media
+        $posts_with_images = post::where('image', '!=', '')->where('has_video', 0)->count();
+        $posts_with_videos = post::where('has_video', 1)->count();
+        $posts_text_only = post::where('image', '')->where('has_video', 0)->count();
+
+        // Get engagement metrics
+        $total_likes = post::sum('post_like');
+        $total_comments = post::sum('comments');
+        $total_views = post::sum('view_count');
+        $total_shares = post::sum('share_count');
+
+        // Get top posts
+        $top_liked_posts = DB::table('posts')
+            ->select('posts.post_id', 'posts.body', 'posts.post_like', 'posts.major', 'learners.learner_name')
+            ->join('learners', 'learners.learner_phone', '=', 'posts.learner_id')
+            ->orderBy('posts.post_like', 'desc')
+            ->limit(5)
+            ->get();
+
+        $top_commented_posts = DB::table('posts')
+            ->select('posts.post_id', 'posts.body', 'posts.comments', 'posts.major', 'learners.learner_name')
+            ->join('learners', 'learners.learner_phone', '=', 'posts.learner_id')
+            ->orderBy('posts.comments', 'desc')
+            ->limit(5)
+            ->get();
+
+        $top_viewed_posts = DB::table('posts')
+            ->select('posts.post_id', 'posts.body', 'posts.view_count', 'posts.major', 'learners.learner_name')
+            ->join('learners', 'learners.learner_phone', '=', 'posts.learner_id')
+            ->where('posts.has_video', 1)
+            ->orderBy('posts.view_count', 'desc')
+            ->limit(5)
+            ->get();
+
+        // Get posts over time (last 30 days)
+        $posts_over_time = [];
+        for ($i = 29; $i >= 0; $i--) {
+            $date = date('Y-m-d', strtotime("-$i days"));
+            $start_timestamp = strtotime($date . ' 00:00:00') * 1000;
+            $end_timestamp = strtotime($date . ' 23:59:59') * 1000;
+            $count = post::whereBetween('post_id', [$start_timestamp, $end_timestamp])->count();
+            $posts_over_time[] = [
+                'date' => date('M d', strtotime("-$i days")),
+                'count' => $count
+            ];
+        }
+
+        return view('posts.postmain', [
+            'english_posts' => $english_posts,
+            'korean_posts' => $korean_posts,
+            'chinese_posts' => $chinese_posts,
+            'japanese_posts' => $japanese_posts,
+            'russian_posts' => $russian_posts,
+            'total_posts' => $total_posts,
+            'posts_with_images' => $posts_with_images,
+            'posts_with_videos' => $posts_with_videos,
+            'posts_text_only' => $posts_text_only,
+            'total_likes' => $total_likes,
+            'total_comments' => $total_comments,
+            'total_views' => $total_views,
+            'total_shares' => $total_shares,
+            'top_liked_posts' => $top_liked_posts,
+            'top_commented_posts' => $top_commented_posts,
+            'top_viewed_posts' => $top_viewed_posts,
+            'posts_over_time' => $posts_over_time
+        ]);
+    }
+
+    public function showPostStatistics(){
+        // Get total posts by language
+        $english_posts = post::where('major', 'english')->count();
+        $korean_posts = post::where('major', 'korea')->count();
+        $chinese_posts = post::where('major', 'chinese')->count();
+        $japanese_posts = post::where('major', 'japanese')->count();
+        $russian_posts = post::where('major', 'russian')->count();
+        $total_posts = $english_posts + $korean_posts + $chinese_posts + $japanese_posts + $russian_posts;
+
+        // Get posts with media
+        $posts_with_images = post::where('image', '!=', '')->where('has_video', 0)->count();
+        $posts_with_videos = post::where('has_video', 1)->count();
+        $posts_text_only = post::where('image', '')->where('has_video', 0)->count();
+
+        // Get engagement metrics
+        $total_likes = post::sum('post_like');
+        $total_comments = post::sum('comments');
+        $total_views = post::sum('view_count');
+        $total_shares = post::sum('share_count');
+
+        // Get top posts
+        $top_liked_posts = DB::table('posts')
+            ->select('posts.post_id', 'posts.body', 'posts.post_like', 'posts.major', 'learners.learner_name')
+            ->join('learners', 'learners.learner_phone', '=', 'posts.learner_id')
+            ->orderBy('posts.post_like', 'desc')
+            ->limit(5)
+            ->get();
+
+        $top_commented_posts = DB::table('posts')
+            ->select('posts.post_id', 'posts.body', 'posts.comments', 'posts.major', 'learners.learner_name')
+            ->join('learners', 'learners.learner_phone', '=', 'posts.learner_id')
+            ->orderBy('posts.comments', 'desc')
+            ->limit(5)
+            ->get();
+
+        $top_viewed_posts = DB::table('posts')
+            ->select('posts.post_id', 'posts.body', 'posts.view_count', 'posts.major', 'learners.learner_name')
+            ->join('learners', 'learners.learner_phone', '=', 'posts.learner_id')
+            ->where('posts.has_video', 1)
+            ->orderBy('posts.view_count', 'desc')
+            ->limit(5)
+            ->get();
+
+        // Get posts over time (last 30 days)
+        $posts_over_time = [];
+        for ($i = 29; $i >= 0; $i--) {
+            $date = date('Y-m-d', strtotime("-$i days"));
+            $start_timestamp = strtotime($date . ' 00:00:00') * 1000;
+            $end_timestamp = strtotime($date . ' 23:59:59') * 1000;
+            $count = post::whereBetween('post_id', [$start_timestamp, $end_timestamp])->count();
+            $posts_over_time[] = [
+                'date' => date('M d', strtotime("-$i days")),
+                'count' => $count
+            ];
+        }
+
+        return view('posts.poststatistics', [
+            'english_posts' => $english_posts,
+            'korean_posts' => $korean_posts,
+            'chinese_posts' => $chinese_posts,
+            'japanese_posts' => $japanese_posts,
+            'russian_posts' => $russian_posts,
+            'total_posts' => $total_posts,
+            'posts_with_images' => $posts_with_images,
+            'posts_with_videos' => $posts_with_videos,
+            'posts_text_only' => $posts_text_only,
+            'total_likes' => $total_likes,
+            'total_comments' => $total_comments,
+            'total_views' => $total_views,
+            'total_shares' => $total_shares,
+            'top_liked_posts' => $top_liked_posts,
+            'top_commented_posts' => $top_commented_posts,
+            'top_viewed_posts' => $top_viewed_posts,
+            'posts_over_time' => $posts_over_time
+        ]);
+    }
+
+    public function showPostQuickAccess(){
+        return view('posts.postquickaccess');
     }
 
     public function showTimeline(Request $req,$major){
@@ -243,5 +399,708 @@ class PostController extends Controller
         
         return $arr;
         
+    }
+
+    // ==================== POST CRUD API ====================
+
+    /**
+     * Create a new post
+     * POST /api/posts
+     */
+    public function createPost(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'learner_id' => 'required|integer',
+            'body' => 'nullable|string',
+            'major' => 'required|string|in:english,korea,chinese,japanese,russian',
+            'myfile' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            $post = new post();
+            $post->post_id = round(microtime(true) * 1000);
+            $post->learner_id = $request->learner_id;
+            $post->body = $request->body ?? '';
+            $post->major = $request->major;
+            $post->post_like = 0;
+            $post->comments = 0;
+            $post->has_video = 0;
+            $post->view_count = 0;
+            $post->share_count = 0;
+            $post->vimeo = '';
+            $post->video_url = '';
+            $post->image = '';
+            $post->show_on_blog = 0;
+            $post->hide = 0;
+
+            // Handle image upload
+            if ($request->hasFile('myfile')) {
+                $result = Storage::disk('calamusPost')->put('posts', $request->file('myfile'));
+                $post->image = 'https://www.calamuseducation.com/uploads/' . $result;
+            }
+
+            $post->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Post created successfully',
+                'data' => [
+                    'post_id' => $post->post_id,
+                    'body' => $post->body,
+                    'image' => $post->image,
+                    'major' => $post->major,
+                    'created_at' => $post->post_id
+                ]
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to create post',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get a single post by ID
+     * GET /api/posts/{postId}
+     */
+    public function getPost($postId)
+    {
+        try {
+            $post = post::where('post_id', $postId)->first();
+
+            if (!$post) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Post not found'
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => $post
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch post',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Update a post
+     * PUT /api/posts/{postId} or POST /api/posts/{postId} (with _method=PUT)
+     */
+    public function updatePost(Request $request, $postId)
+    {
+        $validator = Validator::make($request->all(), [
+            'body' => 'nullable|string',
+            'myfile' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
+            '_method' => 'nullable|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            $post = post::where('post_id', $postId)->first();
+
+            if (!$post) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Post not found'
+                ], 404);
+            }
+
+            if ($request->has('body') || $request->body !== null) {
+                $post->body = $request->body ?? '';
+            }
+
+            // Handle image removal
+            if ($request->has('remove_image') && $request->remove_image == '1') {
+                if ($post->image != '') {
+                    $oldImage = basename($post->image);
+                    $file = $_SERVER['DOCUMENT_ROOT'] . '/uploads/posts/' . $oldImage;
+                    if (file_exists($file)) {
+                        unlink($file);
+                    }
+                }
+                $post->image = '';
+            }
+            // Handle image upload
+            elseif ($request->hasFile('myfile')) {
+                // Delete old image if exists
+                if ($post->image != '') {
+                    $oldImage = basename($post->image);
+                    $file = $_SERVER['DOCUMENT_ROOT'] . '/uploads/posts/' . $oldImage;
+                    if (file_exists($file)) {
+                        unlink($file);
+                    }
+                }
+
+                $result = Storage::disk('calamusPost')->put('posts', $request->file('myfile'));
+                $post->image = 'https://www.calamuseducation.com/uploads/' . $result;
+            }
+
+            $post->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Post updated successfully',
+                'data' => $post
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update post',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Delete a post
+     * DELETE /api/posts/{postId}
+     */
+    public function deletePostApi($postId)
+    {
+        try {
+            $post = post::where('post_id', $postId)->first();
+
+            if (!$post) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Post not found'
+                ], 404);
+            }
+
+            // Delete associated image
+            if ($post->image != '') {
+                $image = basename($post->image);
+                $file = $_SERVER['DOCUMENT_ROOT'] . '/uploads/posts/' . $image;
+                if (file_exists($file)) {
+                    unlink($file);
+                }
+            }
+
+            // Delete associated data
+            mylike::where('content_id', $postId)->delete();
+            Notification::where('post_id', $postId)->delete();
+            Comment::where('post_id', $postId)->delete();
+            Report::where('post_id', $postId)->delete();
+            $post->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Post deleted successfully'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete post',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // ==================== POST LIKE API ====================
+
+    /**
+     * Like or unlike a post
+     * POST /api/posts/like
+     */
+    public function likePost(Request $request)
+    {
+        
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required|integer',
+            'post_id' => 'required|numeric', // Changed from integer to numeric to handle bigint values
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            $userId = (int)$request->user_id;
+            $postId = (string)$request->post_id; // Convert to string for bigint comparison
+
+            // Find post by post_id column (not id column)
+            // post_id is bigint(20) which can be very large (timestamp in milliseconds)
+            // Convert to string for proper bigint comparison
+            $post = post::where('post_id', (string)$postId)->first();
+
+           
+            if (!$post) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Post not found'
+                ], 404);
+            }
+
+            // Check if like record exists - content_id in mylike table matches post_id from posts table
+            $likeRecord = mylike::where('content_id', $postId)->first();
+
+            if ($likeRecord) {
+                $likesArr = json_decode($likeRecord->likes, true) ?? [];
+                $userIds = array_column($likesArr, 'user_id');
+                $userIndex = array_search($userId, $userIds);
+
+                if ($userIndex !== false) {
+                    // Unlike: Remove user from likes array
+                    unset($likesArr[$userIndex]);
+                    $likesArr = array_values($likesArr); // Re-index array
+                    $post->post_like = max(0, $post->post_like - 1);
+                    $isLiked = false;
+                } else {
+                    // Like: Add user to likes array
+                    $likesArr[] = ['user_id' => $userId];
+                    $post->post_like = $post->post_like + 1;
+                    $isLiked = true;
+                }
+
+                $likeRecord->likes = json_encode($likesArr);
+                $likeRecord->save();
+            } else {
+                // Create new like record
+                $likeRecord = new mylike();
+                $likeRecord->content_id = $postId;
+                $likeRecord->likes = json_encode([['user_id' => $userId]]);
+                $likeRecord->rowNo = 0;
+                $likeRecord->save();
+                $post->post_like = $post->post_like + 1;
+                $isLiked = true;
+            }
+
+            $post->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => $isLiked ? 'Post liked' : 'Post unliked',
+                'data' => [
+                    'count' => $post->post_like,
+                    'isLike' => $isLiked
+                ]
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to like/unlike post',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // ==================== COMMENT CRUD API ====================
+
+    /**
+     * Get comments for a post
+     * GET /api/comments/{major}
+     */
+    public function getComments(Request $request, $major)
+    {
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required|integer',
+            'post_id' => 'required|integer',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            $postId = $request->post_id;
+            $userId = $request->user_id;
+
+            // Normalize major
+            if ($major == 'korea') {
+                $major = 'korean';
+            }
+
+            $post = post::where('post_id', $postId)->first();
+            if (!$post) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Post not found'
+                ], 404);
+            }
+
+            // Get top-level comments
+            $comments = DB::table('comment')
+                ->selectRaw("
+                    comment.id,
+                    comment.post_id,
+                    comment.writer_id,
+                    comment.body,
+                    comment.image as commentImage,
+                    comment.time,
+                    comment.parent,
+                    comment.likes,
+                    learners.learner_name as userName,
+                    learners.learner_image as userImage
+                ")
+                ->where('comment.post_id', $postId)
+                ->where('comment.parent', 0) // Only top-level comments
+                ->join('learners', 'learners.learner_phone', '=', 'comment.writer_id')
+                ->orderBy('comment.time', 'asc')
+                ->get();
+
+            // Get replies for each comment
+            foreach ($comments as $comment) {
+                $comment->is_liked = 0;
+                $commentLike = CommentLike::where('comment_id', $comment->time)
+                    ->where('user_id', $userId)
+                    ->first();
+                if ($commentLike) {
+                    $comment->is_liked = 1;
+                }
+                
+                // Fetch replies for this comment
+                $replies = DB::table('comment')
+                    ->selectRaw("
+                        comment.id,
+                        comment.post_id,
+                        comment.writer_id,
+                        comment.body,
+                        comment.image as commentImage,
+                        comment.time,
+                        comment.parent,
+                        comment.likes,
+                        learners.learner_name as userName,
+                        learners.learner_image as userImage
+                    ")
+                    ->where('comment.post_id', $postId)
+                    ->where('comment.parent', $comment->time) // Replies have parent = parent comment's time
+                    ->join('learners', 'learners.learner_phone', '=', 'comment.writer_id')
+                    ->orderBy('comment.time', 'asc')
+                    ->get();
+                
+                // Check if user liked each reply
+                foreach ($replies as $reply) {
+                    $reply->is_liked = 0;
+                    $replyLike = CommentLike::where('comment_id', $reply->time)
+                        ->where('user_id', $userId)
+                        ->first();
+                    if ($replyLike) {
+                        $reply->is_liked = 1;
+                    }
+                }
+                
+                $comment->replies = $replies;
+            }
+
+            return response()->json([
+                'success' => true,
+                'post' => [[
+                    'postId' => $post->post_id,
+                    'userId' => $post->learner_id
+                ]],
+                'comments' => $comments
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch comments',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Create a new comment
+     * POST /api/comments
+     */
+    public function createComment(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'writer_id' => 'required|integer',
+            'post_id' => 'required|integer',
+            'body' => 'required|string',
+            'owner_id' => 'nullable|integer',
+            'action' => 'nullable|integer',
+            'myfile' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            $post = post::where('post_id', $request->post_id)->first();
+            if (!$post) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Post not found'
+                ], 404);
+            }
+
+            $comment = new Comment();
+            $comment->post_id = $request->post_id;
+            $comment->writer_id = $request->writer_id;
+            $comment->body = $request->body;
+            $comment->time = round(microtime(true) * 1000);
+            $comment->parent = $request->action ?? 0;
+            $comment->likes = 0;
+            $comment->image = '';
+
+            // Handle image upload
+            if ($request->hasFile('myfile')) {
+                $result = Storage::disk('calamusPost')->put('comments', $request->file('myfile'));
+                $comment->image = 'https://www.calamuseducation.com/uploads/' . $result;
+            }
+
+            $comment->save();
+
+            // Update post comment count
+            $post->comments = $post->comments + 1;
+            $post->save();
+
+            // Create notification if owner_id is different from writer_id
+            if ($request->owner_id && $request->owner_id != $request->writer_id) {
+                $notification = new Notification();
+                $notification->post_id = $request->post_id;
+                $notification->user_id = $request->owner_id;
+                $notification->action_user_id = $request->writer_id;
+                $notification->action = 'comment';
+                $notification->time = round(microtime(true) * 1000);
+                $notification->save();
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Comment created successfully',
+                'data' => [
+                    'id' => $comment->id,
+                    'post_id' => $comment->post_id,
+                    'body' => $comment->body,
+                    'time' => $comment->time
+                ]
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to create comment',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Update a comment
+     * PUT /api/comments/{commentId}
+     */
+    public function updateComment(Request $request, $commentId)
+    {
+        $validator = Validator::make($request->all(), [
+            'body' => 'required|string',
+            'myfile' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            $comment = Comment::find($commentId);
+            if (!$comment) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Comment not found'
+                ], 404);
+            }
+
+            $comment->body = $request->body;
+
+            // Handle image upload
+            if ($request->hasFile('myfile')) {
+                // Delete old image if exists
+                if ($comment->image != '') {
+                    $oldImage = basename($comment->image);
+                    $file = $_SERVER['DOCUMENT_ROOT'] . '/uploads/comments/' . $oldImage;
+                    if (file_exists($file)) {
+                        unlink($file);
+                    }
+                }
+
+                $result = Storage::disk('calamusPost')->put('comments', $request->file('myfile'));
+                $comment->image = 'https://www.calamuseducation.com/uploads/' . $result;
+            }
+
+            $comment->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Comment updated successfully',
+                'data' => $comment
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update comment',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Delete a comment
+     * DELETE /api/comments/{commentId}
+     */
+    public function deleteComment($commentId)
+    {
+        try {
+            // Comment ID is the time field (timestamp)
+            $comment = Comment::where('time', $commentId)->first();
+            if (!$comment) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Comment not found'
+                ], 404);
+            }
+
+            $postId = $comment->post_id;
+
+            // Delete comment image if exists
+            if ($comment->image != '') {
+                $image = basename($comment->image);
+                $file = $_SERVER['DOCUMENT_ROOT'] . '/uploads/comments/' . $image;
+                if (file_exists($file)) {
+                    unlink($file);
+                }
+            }
+
+            // Delete comment likes (comment_id in comment_likes table is the comment's time field)
+            CommentLike::where('comment_id', $comment->time)->delete();
+
+            // Delete child comments (replies) if this is a parent comment
+            Comment::where('parent', $comment->time)->delete();
+
+            // Delete the comment
+            $comment->delete();
+
+            // Update post comment count (count all remaining comments for this post)
+            $post = post::where('post_id', $postId)->first();
+            if ($post) {
+                $remainingComments = Comment::where('post_id', $postId)->count();
+                $post->comments = $remainingComments;
+                $post->save();
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Comment deleted successfully'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete comment',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // ==================== COMMENT LIKE API ====================
+
+    /**
+     * Like or unlike a comment
+     * POST /api/comments/like
+     */
+    public function likeComment(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required|integer',
+            'post_id' => 'required|integer',
+            'comment_id' => 'required|integer',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            $userId = $request->user_id;
+            $commentId = $request->comment_id; // This is the comment's time field
+
+            $comment = Comment::where('time', $commentId)->first();
+            if (!$comment) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Comment not found'
+                ], 404);
+            }
+
+            // Check if user already liked this comment
+            $commentLike = CommentLike::where('comment_id', $commentId)
+                ->where('user_id', $userId)
+                ->first();
+
+            if ($commentLike) {
+                // Unlike: Delete the like record
+                $commentLike->delete();
+                $comment->likes = max(0, $comment->likes - 1);
+                $isLiked = false;
+            } else {
+                // Like: Create new like record
+                $commentLike = new CommentLike();
+                $commentLike->comment_id = $commentId;
+                $commentLike->user_id = $userId;
+                $commentLike->save();
+                $comment->likes = $comment->likes + 1;
+                $isLiked = true;
+            }
+
+            $comment->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => $isLiked ? 'Comment liked' : 'Comment unliked',
+                'data' => [
+                    'count' => $comment->likes,
+                    'isLike' => $isLiked
+                ]
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to like/unlike comment',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }

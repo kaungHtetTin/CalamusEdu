@@ -14,7 +14,22 @@ class WordOfTheDayController extends Controller
 
 
     public function showWordOfTheDayMain(){
-        return view('wordoftheday.wordmain');
+        // Get statistics
+        $english_words = WordOfTheDayEnglish::count();
+        $korean_words = WordOfTheDayKorea::count();
+        $chinese_words = WordOfTheDayChinese::count();
+        $japanese_words = WordOfTheDayJapanese::count();
+        $russian_words = WordOfTheDayRussian::count();
+        $total_words = $english_words + $korean_words + $chinese_words + $japanese_words + $russian_words;
+        
+        return view('wordoftheday.wordmain', [
+            'english_words' => $english_words,
+            'korean_words' => $korean_words,
+            'chinese_words' => $chinese_words,
+            'japanese_words' => $japanese_words,
+            'russian_words' => $russian_words,
+            'total_words' => $total_words
+        ]);
     }
 
     public function showWordOfTheDay($major){

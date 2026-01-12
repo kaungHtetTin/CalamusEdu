@@ -40,3 +40,20 @@ Route::get('/payments/pending',[PaymentController::class,'getPendingPayment']);
 //Save Reply
 Route::apiResource('/save-replies',SaveReplyController::class);
 
+// ==================== POST API ROUTES ====================
+Route::post('/posts', [PostController::class, 'createPost']);
+Route::post('/posts/like', [PostController::class, 'likePost']);
+Route::get('/posts/{postId}', [PostController::class, 'getPost']);
+Route::put('/posts/{postId}', [PostController::class, 'updatePost']);
+Route::post('/posts/{postId}', [PostController::class, 'updatePost']); // For FormData support
+Route::delete('/posts/{postId}', [PostController::class, 'deletePostApi']);
+
+
+// ==================== COMMENT API ROUTES ====================
+Route::post('/comments/like', [PostController::class, 'likeComment']);
+Route::get('/comments/{major}', [PostController::class, 'getComments']);
+Route::post('/comments', [PostController::class, 'createComment']);
+Route::put('/comments/{commentId}', [PostController::class, 'updateComment']);
+Route::delete('/comments/{commentId}', [PostController::class, 'deleteComment']);
+
+

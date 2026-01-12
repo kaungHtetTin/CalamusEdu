@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class post extends Model
+class CommentLike extends Model
 {
     use HasFactory;
-    protected $table = 'posts';
+    protected $table = 'comment_likes';
     public $timestamps = false;
 }

@@ -12,7 +12,27 @@ use Illuminate\Support\Facades\Storage;
 class SongController extends Controller
 {
     public function showSongMain(){
-        return view('songs.songmain');
+        // Get statistics
+        $english_songs = song::where('type', 'english')->count();
+        $korean_songs = song::where('type', 'korea')->count();
+        $chinese_songs = song::where('type', 'chinese')->count();
+        $japanese_songs = song::where('type', 'japanese')->count();
+        $russian_songs = song::where('type', 'russian')->count();
+        $total_songs = $english_songs + $korean_songs + $chinese_songs + $japanese_songs + $russian_songs;
+        
+        $total_artists = artist::count();
+        $total_requested = requestedsong::count();
+        
+        return view('songs.songmain', [
+            'english_songs' => $english_songs,
+            'korean_songs' => $korean_songs,
+            'chinese_songs' => $chinese_songs,
+            'japanese_songs' => $japanese_songs,
+            'russian_songs' => $russian_songs,
+            'total_songs' => $total_songs,
+            'total_artists' => $total_artists,
+            'total_requested' => $total_requested
+        ]);
     }
 
     public function showSongs($major){

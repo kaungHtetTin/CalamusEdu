@@ -125,6 +125,8 @@ Route::get('/courses/{language}',[CourseController::class,'showCoursesByLanguage
 
 //posts controlling routes
 Route::get('/posts',[PostController::class,'showMainPostControllerView'])->name('showMainPostControllerView');
+Route::get('/posts/statistics',[PostController::class,'showPostStatistics'])->name('postStatistics');
+Route::get('/posts/quick-access',[PostController::class,'showPostQuickAccess'])->name('postQuickAccess');
 Route::get('/posts/{major}',[PostController::class,'showTimeline'])->name('showTimeline');
 Route::get('/posts/create/{major}',[PostController::class,'showCreatePost'])->name('showCreatePost');
 Route::post('/posts/create/{major}',[PostController::class,'addPost'])->name('addPost');

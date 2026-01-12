@@ -61,16 +61,8 @@
             <div class="row">
               <div class="col-md-12 mb-3">
                 <label for="html_file" class="form-label">HTML File <span class="text-danger">*</span></label>
-                <input type="file" class="form-control modern-input" id="html_file" name="html_file" accept=".html,.htm" value="{{old('html_file')}}">
-                <small class="form-text text-muted">Upload HTML file to automatically post to Blogger, or provide Blog Link below</small>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-md-12 mb-3">
-                <label for="link" class="form-label">Blog Link (Alternative)</label>
-                <input type="text" class="form-control modern-input" id="link" name="link" value="{{old('link')}}" placeholder="Enter Blogger edit link (if not uploading HTML file)">
-                <small class="form-text text-muted">Enter the full Blogger edit URL (e.g., https://www.blogger.com/blogger.g?blogID=...&postID=...) - Only required if not uploading HTML file</small>
+                <input type="file" class="form-control modern-input" id="html_file" name="html_file" accept=".html,.htm" value="{{old('html_file')}}" required>
+                <small class="form-text text-muted">Upload HTML file to automatically post to Blogger</small>
               </div>
             </div>
 

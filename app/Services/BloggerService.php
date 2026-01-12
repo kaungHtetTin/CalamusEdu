@@ -350,16 +350,22 @@ class BloggerService
      * @param string $postId Post ID
      * @param string $title Post title
      * @param string $htmlContent HTML content of the post
+     * @param array|null $labels Optional array of labels (tags) for the post
      * @return array Array containing 'postId', 'url', and 'feedUrl'
      * @throws \Exception
      */
-    public function updatePost(string $postId, string $title, string $htmlContent): array
+    public function updatePost(string $postId, string $title, string $htmlContent, ?array $labels = null): array
     {
         try {
             $blogger = new \Google\Service\Blogger($this->client);
             $post = $blogger->posts->get($this->blogId, $postId);
             $post->setTitle($title);
             $post->setContent($htmlContent);
+            
+            // Set labels if provided
+            if ($labels !== null && !empty($labels)) {
+                $post->setLabels($labels);
+            }
 
             $updatedPost = $blogger->posts->update($this->blogId, $postId, $post);
 
