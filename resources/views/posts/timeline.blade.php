@@ -1746,7 +1746,7 @@ body.dark-theme .instagram-delete-post-cancel:hover {
                 @elseif($major=='korea')
                     <img class="instagram-create-avatar" src="{{asset('public/img/easykorean.png')}}" alt="Easy Korean">
                 @elseif($major=='chinese')
-                    <img class="instagram-create-avatar" src="{{asset('public/img/easychineselogo.webp')}}" alt="Easy Chinese">
+                    <img class="instagram-create-avatar" src="{{asset('public/img/easychinese.png')}}" alt="Easy Chinese">
                 @elseif($major=='japanese')
                     <img class="instagram-create-avatar" src="{{asset('public/img/easyjapanese.png')}}" alt="Easy Japanese">
                 @elseif($major=='russian')
@@ -1834,7 +1834,7 @@ body.dark-theme .instagram-delete-post-cancel:hover {
                         @elseif ($major=='korea')
                             <img class="instagram-comment-avatar" src="{{asset('public/img/easykorean.png')}}" alt="Easy Korean">
                         @elseif ($major=='chinese')
-                            <img class="instagram-comment-avatar" src="{{asset('public/img/easychineselogo.webp')}}" alt="Easy Chinese">
+                            <img class="instagram-comment-avatar" src="{{asset('public/img/easychinese.png')}}" alt="Easy Chinese">
                         @elseif ($major=='japanese')
                             <img class="instagram-comment-avatar" src="{{asset('public/img/easyjapanese.png')}}" alt="Easy Japanese">
                         @elseif ($major=='russian')
@@ -2018,7 +2018,7 @@ body.dark-theme .instagram-delete-post-cancel:hover {
                     @elseif ($major=='korea')
                         <img class="instagram-comment-footer-avatar" src="{{asset('public/img/easykorean.png')}}" alt="Easy Korean">
                     @elseif ($major=='chinese')
-                        <img class="instagram-comment-footer-avatar" src="{{asset('public/img/easychineselogo.webp')}}" alt="Easy Chinese">
+                        <img class="instagram-comment-footer-avatar" src="{{asset('public/img/easychinese.png')}}" alt="Easy Chinese">
                     @elseif ($major=='japanese')
                         <img class="instagram-comment-footer-avatar" src="{{asset('public/img/easyjapanese.png')}}" alt="Easy Japanese">
                     @elseif ($major=='russian')
@@ -2168,7 +2168,7 @@ body.dark-theme .instagram-delete-post-cancel:hover {
        } else if(major == 'korea'){
            return "<img class='instagram-comment-avatar' src='{{asset('public/img/easykorean.png')}}' alt='Easy Korean'>";
        } else if(major == 'chinese'){
-           return "<img class='instagram-comment-avatar' src='{{asset('public/img/easychineselogo.webp')}}' alt='Easy Chinese'>";
+           return "<img class='instagram-comment-avatar' src='{{asset('public/img/easychinese.png')}}' alt='Easy Chinese'>";
        } else if(major == 'japanese'){
            return "<img class='instagram-comment-avatar' src='{{asset('public/img/easyjapanese.png')}}' alt='Easy Japanese'>";
        } else if(major == 'russian'){
@@ -2184,7 +2184,7 @@ body.dark-theme .instagram-delete-post-cancel:hover {
        } else if(major == 'korea'){
            return "<img class='instagram-comment-reply-avatar' src='{{asset('public/img/easykorean.png')}}' alt='Easy Korean'>";
        } else if(major == 'chinese'){
-           return "<img class='instagram-comment-reply-avatar' src='{{asset('public/img/easychineselogo.webp')}}' alt='Easy Chinese'>";
+           return "<img class='instagram-comment-reply-avatar' src='{{asset('public/img/easychinese.png')}}' alt='Easy Chinese'>";
        } else if(major == 'japanese'){
            return "<img class='instagram-comment-reply-avatar' src='{{asset('public/img/easyjapanese.png')}}' alt='Easy Japanese'>";
        } else if(major == 'russian'){
