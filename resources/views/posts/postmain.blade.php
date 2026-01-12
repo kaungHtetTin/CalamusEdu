@@ -74,6 +74,49 @@
 </div>
 
 <div class="row mb-3">
+  <div class="col-xl-3 col-md-6 mb-3">
+    <a href="{{ route('showReportedPostsTimeline') }}" style="text-decoration: none; color: inherit; display: block;">
+      <div class="card activity-stat-card" style="cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.1)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <div class="activity-stat-label">Reported Posts</div>
+              <div class="activity-stat-value">{{number_format($total_reported_posts ?? 0)}}</div>
+              <div class="activity-stat-subtext">Needs review</div>
+            </div>
+            <div class="activity-stat-icon" style="background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);">
+              <i class="fas fa-flag"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </a>
+  </div>
+
+  <div class="col-xl-3 col-md-6 mb-3">
+    <a href="{{ route('showAdminNotifications') }}" style="text-decoration: none; color: inherit; display: block;">
+      <div class="card activity-stat-card" style="cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.1)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <div class="activity-stat-label">Comments & Replies</div>
+              <div class="activity-stat-value">{{number_format($unreadNotificationsCount ?? 0)}}</div>
+              <div class="activity-stat-subtext">Unread notifications</div>
+            </div>
+            <div class="activity-stat-icon" style="background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%); position: relative;">
+              <i class="fas fa-bell"></i>
+              @if(($unreadNotificationsCount ?? 0) > 0)
+                <span class="badge badge-danger" style="position: absolute; top: -5px; right: -5px; background: #f44336; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold;">{{ $unreadNotificationsCount > 99 ? '99+' : $unreadNotificationsCount }}</span>
+              @endif
+            </div>
+          </div>
+        </div>
+      </div>
+    </a>
+  </div>
+</div>
+
+<div class="row mb-3">
   {{-- Bar Chart - Posts by Language --}}
   <div class="col-xl-8 col-md-12 mb-3">
     <div class="card">

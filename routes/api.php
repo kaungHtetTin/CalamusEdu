@@ -56,4 +56,11 @@ Route::post('/comments', [PostController::class, 'createComment']);
 Route::put('/comments/{commentId}', [PostController::class, 'updateComment']);
 Route::delete('/comments/{commentId}', [PostController::class, 'deleteComment']);
 
+// ==================== REPORT API ROUTES ====================
+Route::post('/reports/approve', [PostController::class, 'approveReport']);
+Route::post('/reports/delete-post', [PostController::class, 'deleteReportedPost']);
+
+// ==================== NOTIFICATION API ROUTES ====================
+Route::post('/notifications/mark-read', [PostController::class, 'markNotificationAsRead']);
+
 

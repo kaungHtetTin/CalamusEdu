@@ -34,6 +34,46 @@ class PostController extends Controller
         $total_comments = post::sum('comments');
         $total_views = post::sum('view_count');
         $total_shares = post::sum('share_count');
+        
+        // Get reported posts count (distinct post_ids in report table)
+        $total_reported_posts = Report::distinct('post_id')->count('post_id');
+        
+        // Get notifications for admin (user_id 10000) related to comments and replies
+        // Action codes: typically 1=comment, 2=reply (adjust based on your notification_action table)
+        $adminNotifications = DB::table('notification')
+            ->selectRaw("
+                notification.id,
+                notification.post_id,
+                notification.comment_id,
+                notification.owner_id,
+                notification.writer_id,
+                notification.action,
+                notification.time,
+                notification.seen,
+                notification_action.action_name,
+                posts.body as post_body,
+                posts.image as post_image,
+                posts.major,
+                comment.body as comment_body,
+                comment.parent as comment_parent,
+                learners.learner_name as writer_name,
+                learners.learner_image as writer_image
+            ")
+            ->where('notification.owner_id', 10000)
+            ->where('notification.action', '<', 5) // Comments and replies (based on NotificationController pattern)
+            ->leftJoin('posts', 'posts.post_id', '=', 'notification.post_id')
+            ->leftJoin('comment', 'comment.time', '=', 'notification.comment_id')
+            ->leftJoin('learners', 'learners.learner_phone', '=', 'notification.writer_id')
+            ->leftJoin('notification_action', 'notification_action.action', '=', 'notification.action')
+            ->orderBy('notification.time', 'desc')
+            ->limit(20)
+            ->get();
+        
+        $unreadNotificationsCount = DB::table('notification')
+            ->where('owner_id', 10000)
+            ->where('seen', 0)
+            ->where('action', '<', 5)
+            ->count();
 
         // Get top posts
         $top_liked_posts = DB::table('posts')
@@ -85,6 +125,9 @@ class PostController extends Controller
             'total_comments' => $total_comments,
             'total_views' => $total_views,
             'total_shares' => $total_shares,
+            'total_reported_posts' => $total_reported_posts,
+            'adminNotifications' => $adminNotifications,
+            'unreadNotificationsCount' => $unreadNotificationsCount,
             'top_liked_posts' => $top_liked_posts,
             'top_commented_posts' => $top_commented_posts,
             'top_viewed_posts' => $top_viewed_posts,
@@ -92,86 +135,6 @@ class PostController extends Controller
         ]);
     }
 
-    public function showPostStatistics(){
-        // Get total posts by language
-        $english_posts = post::where('major', 'english')->count();
-        $korean_posts = post::where('major', 'korea')->count();
-        $chinese_posts = post::where('major', 'chinese')->count();
-        $japanese_posts = post::where('major', 'japanese')->count();
-        $russian_posts = post::where('major', 'russian')->count();
-        $total_posts = $english_posts + $korean_posts + $chinese_posts + $japanese_posts + $russian_posts;
-
-        // Get posts with media
-        $posts_with_images = post::where('image', '!=', '')->where('has_video', 0)->count();
-        $posts_with_videos = post::where('has_video', 1)->count();
-        $posts_text_only = post::where('image', '')->where('has_video', 0)->count();
-
-        // Get engagement metrics
-        $total_likes = post::sum('post_like');
-        $total_comments = post::sum('comments');
-        $total_views = post::sum('view_count');
-        $total_shares = post::sum('share_count');
-
-        // Get top posts
-        $top_liked_posts = DB::table('posts')
-            ->select('posts.post_id', 'posts.body', 'posts.post_like', 'posts.major', 'learners.learner_name')
-            ->join('learners', 'learners.learner_phone', '=', 'posts.learner_id')
-            ->orderBy('posts.post_like', 'desc')
-            ->limit(5)
-            ->get();
-
-        $top_commented_posts = DB::table('posts')
-            ->select('posts.post_id', 'posts.body', 'posts.comments', 'posts.major', 'learners.learner_name')
-            ->join('learners', 'learners.learner_phone', '=', 'posts.learner_id')
-            ->orderBy('posts.comments', 'desc')
-            ->limit(5)
-            ->get();
-
-        $top_viewed_posts = DB::table('posts')
-            ->select('posts.post_id', 'posts.body', 'posts.view_count', 'posts.major', 'learners.learner_name')
-            ->join('learners', 'learners.learner_phone', '=', 'posts.learner_id')
-            ->where('posts.has_video', 1)
-            ->orderBy('posts.view_count', 'desc')
-            ->limit(5)
-            ->get();
-
-        // Get posts over time (last 30 days)
-        $posts_over_time = [];
-        for ($i = 29; $i >= 0; $i--) {
-            $date = date('Y-m-d', strtotime("-$i days"));
-            $start_timestamp = strtotime($date . ' 00:00:00') * 1000;
-            $end_timestamp = strtotime($date . ' 23:59:59') * 1000;
-            $count = post::whereBetween('post_id', [$start_timestamp, $end_timestamp])->count();
-            $posts_over_time[] = [
-                'date' => date('M d', strtotime("-$i days")),
-                'count' => $count
-            ];
-        }
-
-        return view('posts.poststatistics', [
-            'english_posts' => $english_posts,
-            'korean_posts' => $korean_posts,
-            'chinese_posts' => $chinese_posts,
-            'japanese_posts' => $japanese_posts,
-            'russian_posts' => $russian_posts,
-            'total_posts' => $total_posts,
-            'posts_with_images' => $posts_with_images,
-            'posts_with_videos' => $posts_with_videos,
-            'posts_text_only' => $posts_text_only,
-            'total_likes' => $total_likes,
-            'total_comments' => $total_comments,
-            'total_views' => $total_views,
-            'total_shares' => $total_shares,
-            'top_liked_posts' => $top_liked_posts,
-            'top_commented_posts' => $top_commented_posts,
-            'top_viewed_posts' => $top_viewed_posts,
-            'posts_over_time' => $posts_over_time
-        ]);
-    }
-
-    public function showPostQuickAccess(){
-        return view('posts.postquickaccess');
-    }
 
     public function showTimeline(Request $req,$major){
 
@@ -330,6 +293,227 @@ class PostController extends Controller
         $post=post::where('post_id',$postId)->delete();
        
         return back()->with('msg','Successfully deleted');
+    }
+
+    public function showReportedPostsTimeline(Request $req){
+        $page = $req->page ?? 1;
+        $limit = 10;
+        $count = ($page - 1) * $limit;
+
+        // Get distinct reported post IDs with count
+        $reportedPostIds = DB::table('report')
+            ->select('post_id', DB::raw('COUNT(*) as report_count'))
+            ->groupBy('post_id')
+            ->orderBy(DB::raw('MAX(id)'), 'desc')
+            ->offset($count)
+            ->limit($limit)
+            ->get();
+
+        $reportedPosts = [];
+        
+        foreach ($reportedPostIds as $reportedPostId) {
+            $post = DB::table('posts')
+                ->selectRaw("
+                    posts.post_id as postId,
+                    posts.body,
+                    posts.image as postImage,
+                    posts.post_like as postLikes,
+                    posts.comments,
+                    posts.view_count as viewCount,
+                    posts.has_video,
+                    posts.vimeo,
+                    posts.major,
+                    learners.learner_name as userName,
+                    learners.learner_phone as userId,
+                    learners.learner_image as userImage
+                ")
+                ->join('learners', 'learners.learner_phone', '=', 'posts.learner_id')
+                ->where('posts.post_id', $reportedPostId->post_id)
+                ->first();
+
+            if ($post) {
+                $post->report_count = $reportedPostId->report_count;
+                $reportedPosts[] = $post;
+            }
+        }
+
+        $totalReported = Report::distinct('post_id')->count('post_id');
+        $totalPages = ceil($totalReported / $limit);
+
+        return view('posts.reportedtimeline', [
+            'reportedPosts' => $reportedPosts,
+            'page' => $page,
+            'totalPages' => $totalPages,
+            'totalReported' => $totalReported
+        ]);
+    }
+
+    public function approveReport(Request $request){
+        $validator = Validator::make($request->all(), [
+            'post_id' => 'required|numeric'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid post ID'
+            ], 400);
+        }
+
+        $postId = $request->post_id;
+        
+        // Remove all reports for this post
+        $deleted = Report::where('post_id', $postId)->delete();
+
+        if ($deleted) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Report approved. Post is now visible.'
+            ], 200);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to approve report'
+        ], 500);
+    }
+
+    public function deleteReportedPost(Request $request){
+        $validator = Validator::make($request->all(), [
+            'post_id' => 'required|numeric'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid post ID'
+            ], 400);
+        }
+
+        $postId = $request->post_id;
+
+        // Get post image for deletion
+        $post = post::where('post_id', $postId)->first();
+        
+        if (!$post) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Post not found'
+            ], 404);
+        }
+
+        // Delete image file if exists
+        if (!empty($post->image)) {
+            $image = basename($post->image);
+            $file = $_SERVER['DOCUMENT_ROOT'] . '/uploads/posts/' . $image;
+            if (file_exists($file)) {
+                unlink($file);
+            }
+        }
+
+        // Delete related data
+        mylike::where('content_id', $postId)->delete();
+        Notification::where('post_id', $postId)->delete();
+        Comment::where('post_id', $postId)->delete();
+        Report::where('post_id', $postId)->delete();
+        post::where('post_id', $postId)->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Post deleted successfully'
+        ], 200);
+    }
+
+    public function showAdminNotifications(Request $request){
+        $page = $request->page ?? 1;
+        $limit = 20;
+        $count = ($page - 1) * $limit;
+
+        // Get notifications for admin (user_id 10000) related to comments and replies
+        $adminNotifications = DB::table('notification')
+            ->selectRaw("
+                notification.id,
+                notification.post_id,
+                notification.comment_id,
+                notification.owner_id,
+                notification.writer_id,
+                notification.action,
+                notification.time,
+                notification.seen,
+                notification_action.action_name,
+                posts.body as post_body,
+                posts.image as post_image,
+                posts.major,
+                comment.body as comment_body,
+                comment.parent as comment_parent,
+                learners.learner_name as writer_name,
+                learners.learner_image as writer_image
+            ")
+            ->where('notification.owner_id', 10000)
+            ->where('notification.action', '<', 5) // Comments and replies
+            ->leftJoin('posts', 'posts.post_id', '=', 'notification.post_id')
+            ->leftJoin('comment', 'comment.time', '=', 'notification.comment_id')
+            ->leftJoin('learners', 'learners.learner_phone', '=', 'notification.writer_id')
+            ->leftJoin('notification_action', 'notification_action.action', '=', 'notification.action')
+            ->orderBy('notification.time', 'desc')
+            ->offset($count)
+            ->limit($limit)
+            ->get();
+        
+        $totalNotifications = DB::table('notification')
+            ->where('owner_id', 10000)
+            ->where('action', '<', 5)
+            ->count();
+        
+        $unreadNotificationsCount = DB::table('notification')
+            ->where('owner_id', 10000)
+            ->where('seen', 0)
+            ->where('action', '<', 5)
+            ->count();
+        
+        $totalPages = ceil($totalNotifications / $limit);
+
+        return view('posts.adminnotifications', [
+            'adminNotifications' => $adminNotifications,
+            'unreadNotificationsCount' => $unreadNotificationsCount,
+            'totalNotifications' => $totalNotifications,
+            'page' => $page,
+            'totalPages' => $totalPages
+        ]);
+    }
+
+    public function markNotificationAsRead(Request $request){
+        $validator = Validator::make($request->all(), [
+            'notification_id' => 'required|integer'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid notification ID'
+            ], 400);
+        }
+
+        $notificationId = $request->notification_id;
+        
+        $notification = Notification::where('id', $notificationId)
+            ->where('owner_id', 10000)
+            ->first();
+
+        if (!$notification) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Notification not found'
+            ], 404);
+        }
+
+        $notification->seen = 1;
+        $notification->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Notification marked as read'
+        ], 200);
     }
 
 
@@ -694,6 +878,37 @@ class PostController extends Controller
 
             $post->save();
 
+            // Create notification for like (only when liking, not unliking)
+            if ($isLiked && $post->learner_id != $userId) {
+                // Check if notification already exists to avoid duplicates
+                $existingNotification = Notification::where('post_id', $postId)
+                    ->where('owner_id', $post->learner_id)
+                    ->where('writer_id', $userId)
+                    ->where('action', 0) // Action 0 = like
+                    ->where('comment_id', 0)
+                    ->first();
+
+                if (!$existingNotification) {
+                    $notification = new Notification();
+                    $notification->post_id = $postId;
+                    $notification->comment_id = 0; // No comment for likes
+                    $notification->owner_id = $post->learner_id; // Post owner receives notification
+                    $notification->writer_id = $userId; // User who liked
+                    $notification->action = 0; // Action 0 = like
+                    $notification->time = round(microtime(true) * 1000);
+                    $notification->seen = 0;
+                    $notification->save();
+                }
+            } elseif (!$isLiked) {
+                // Remove notification when unliking
+                Notification::where('post_id', $postId)
+                    ->where('owner_id', $post->learner_id)
+                    ->where('writer_id', $userId)
+                    ->where('action', 0)
+                    ->where('comment_id', 0)
+                    ->delete();
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => $isLiked ? 'Post liked' : 'Post unliked',
@@ -883,14 +1098,37 @@ class PostController extends Controller
             $post->comments = $post->comments + 1;
             $post->save();
 
-            // Create notification if owner_id is different from writer_id
-            if ($request->owner_id && $request->owner_id != $request->writer_id) {
+            // Determine if this is a reply or a comment
+            $isReply = $request->action && $request->action > 0;
+            $actionCode = $isReply ? 2 : 1; // 1 = comment, 2 = reply
+            
+            // For comments: notify the post owner
+            // For replies: notify the comment owner (parent comment writer)
+            $notificationOwnerId = null;
+            
+            if ($isReply) {
+                // This is a reply - notify the parent comment owner
+                $parentComment = Comment::where('time', $request->action)->first();
+                if ($parentComment && $parentComment->writer_id != $request->writer_id) {
+                    $notificationOwnerId = $parentComment->writer_id;
+                }
+            } else {
+                // This is a comment - notify the post owner
+                if ($post->learner_id != $request->writer_id) {
+                    $notificationOwnerId = $post->learner_id;
+                }
+            }
+
+            // Create notification for comment or reply
+            if ($notificationOwnerId) {
                 $notification = new Notification();
                 $notification->post_id = $request->post_id;
-                $notification->user_id = $request->owner_id;
-                $notification->action_user_id = $request->writer_id;
-                $notification->action = 'comment';
+                $notification->comment_id = $comment->time; // Use comment time as comment_id
+                $notification->owner_id = $notificationOwnerId; // Who receives the notification
+                $notification->writer_id = $request->writer_id; // Who wrote the comment/reply
+                $notification->action = $actionCode; // 1 = comment, 2 = reply
                 $notification->time = round(microtime(true) * 1000);
+                $notification->seen = 0;
                 $notification->save();
             }
 
