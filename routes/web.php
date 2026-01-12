@@ -94,6 +94,11 @@ Route::post('/lessons/video/add-lecture-note',[LessonController::class,'updateLe
 Route::post('/lessons/add-studyplan',[LessonController::class,'addLessonToStudyPlan'])->name('addLessonToStudyPlan');
 Route::post('/lessons/add-vimeo',[PostController::class,'uploadVimeo'])->name('uploadVimeo');
 
+// Blogger API testing routes
+Route::get('/blogger/verify',[App\Http\Controllers\BloggerTestController::class,'verifyCredentials'])->name('blogger.verify');
+Route::get('/blogger/auth-url',[App\Http\Controllers\BloggerTestController::class,'getAuthUrl'])->name('blogger.authUrl');
+Route::post('/blogger/exchange-code',[App\Http\Controllers\BloggerTestController::class,'exchangeCode'])->name('blogger.exchangeCode');
+
 //game controlling routes
 Route::get('/gameword',[GameWordController::class,'showGameWordMain'])->name('showGameWordMain');
 Route::get('/gameword/main/{major}',[GameWordController::class,'showGameWord'])->name('showGameWord');

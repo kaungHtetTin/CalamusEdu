@@ -11,6 +11,7 @@ use App\Models\Notification;
 use App\Models\LessonCategory;
 use App\Services\LanguageService;
 use App\Services\VimeoService;
+use App\Services\BloggerService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -891,9 +892,13 @@ class LessonController extends Controller
             $validationRules['video_file'] = 'required|file|mimes:mp4,mov,avi,mkv,wmv,flv,webm|max:51200'; // Max 50GB
         }
         
-        // Link is only required for document lessons (non-video)
+        // For document lessons: HTML file OR link (one of them is required)
         if (!$isVideo) {
-            $validationRules['link'] = 'required';
+            $validationRules['html_file'] = 'nullable|file|mimes:html,htm|max:10240'; // Max 10MB
+            // Link is only required if HTML file is not provided
+            if (!$req->hasFile('html_file')) {
+                $validationRules['link'] = 'required';
+            }
         }
         
         $req->validate($validationRules);
@@ -983,12 +988,43 @@ class LessonController extends Controller
              $isVideoLesson=1; // for lesson
             
         }else{
+            // Document lesson handling
             $imagePath="";
-            $templink=$req->link;
-            $templink=substr($templink,strpos($templink, "edit/")+5);
-            $blogId=substr($templink,0,19);
-            $blogPostId=substr($templink,20);
-            $link="https://www.blogger.com/feeds/".$blogId."/posts/default/".$blogPostId."?alt=json";
+            $myPath="https://www.calamuseducation.com/uploads/";
+            
+            // Handle HTML file upload for document lessons
+            $htmlFile = $req->file('html_file');
+            $htmlContent = null;
+            
+            if ($htmlFile) {
+                try {
+                    // Read HTML content from file
+                    $htmlContent = file_get_contents($htmlFile->getRealPath());
+                    
+                    // Post HTML content to Blogger first with category as label
+                    $bloggerService = new BloggerService();
+                    $bloggerResult = $bloggerService->createPost($title, $htmlContent, true, [$category_title]);
+                    $link = $bloggerResult['feedUrl'];
+                    
+                } catch (\Exception $e) {
+                    \Log::error('HTML upload/Blogger post error: ' . $e->getMessage());
+                    return $req->ajax() 
+                        ? response()->json(['success' => false, 'message' => 'HTML upload/Blogger post failed: ' . $e->getMessage()], 500)
+                        : back()->with('error', 'HTML upload/Blogger post failed: ' . $e->getMessage())->withInput();
+                }
+            } else {
+                // Fallback: Use manual Blogger link (existing behavior)
+                $templink = $req->link;
+                if (strpos($templink, "edit/") !== false) {
+                    $templink = substr($templink, strpos($templink, "edit/") + 5);
+                    $blogId = substr($templink, 0, 19);
+                    $blogPostId = substr($templink, 20);
+                    $link = "https://www.blogger.com/feeds/" . $blogId . "/posts/default/" . $blogPostId . "?alt=json";
+                } else {
+                    // Link is already in correct format (JSON feed URL)
+                    $link = $req->link;
+                }
+            }
         }
   
         // Update course lessons count
@@ -1012,6 +1048,17 @@ class LessonController extends Controller
         $lesson->major=$major;
         $lesson->thumbnail=$imagePath;
         $lesson->save();
+        
+        // If HTML file was uploaded, save it to server with name 'lesson_id.html'
+        if (isset($htmlContent) && $htmlContent && isset($htmlFile) && $htmlFile) {
+            try {
+                $htmlFileName = $lesson->id . '.html';
+                Storage::disk('calamusPost')->put('lessons/html/' . $htmlFileName, $htmlContent);
+            } catch (\Exception $e) {
+                \Log::warning('Failed to save HTML file to server: ' . $e->getMessage());
+                // Don't fail the entire operation if HTML file save fails
+            }
+        }
         
         $post=new post;
         $post->post_id=$date;

@@ -44,4 +44,20 @@ return [
         'access_token' => env('VIMEO_ACCESS_TOKEN'),
     ],
 
+    /*
+     * Blogger API Configuration
+     * 
+     * Add these to your .env file:
+     * BLOGGER_CLIENT_ID=your_client_id
+     * BLOGGER_CLIENT_SECRET=your_client_secret
+     * BLOGGER_REFRESH_TOKEN=your_refresh_token
+     * BLOGGER_BLOG_ID=your_blog_id
+     */
+    'blogger' => [
+        'client_id' => env('BLOGGER_CLIENT_ID'),
+        'client_secret' => env('BLOGGER_CLIENT_SECRET'),
+        'refresh_token' => env('BLOGGER_REFRESH_TOKEN'),
+        'blog_id' => env('BLOGGER_BLOG_ID'),
+    ],
+
 ];

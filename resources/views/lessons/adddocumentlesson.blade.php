@@ -49,7 +49,7 @@
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label for="title_mini" class="form-label">Title Mini <span class="text-danger">*</span></label>
-                <input type="text" class="form-control modern-input" id="title_mini" name="title_mini" value="{{old('title_mini')}}" required placeholder="Enter title mini">
+                <input type="text" class="form-control modern-input" id="title_mini" name="title_mini" value="{{old('title_mini', $category_title)}}" required placeholder="Enter title mini">
               </div>
 
               <div class="col-md-6 mb-3">
@@ -60,9 +60,17 @@
 
             <div class="row">
               <div class="col-md-12 mb-3">
-                <label for="link" class="form-label">Blog Link <span class="text-danger">*</span></label>
-                <input type="text" class="form-control modern-input" id="link" name="link" value="{{old('link')}}" required placeholder="Enter Blogger edit link">
-                <small class="form-text text-muted">Enter the full Blogger edit URL (e.g., https://www.blogger.com/blogger.g?blogID=...&postID=...)</small>
+                <label for="html_file" class="form-label">HTML File <span class="text-danger">*</span></label>
+                <input type="file" class="form-control modern-input" id="html_file" name="html_file" accept=".html,.htm" value="{{old('html_file')}}">
+                <small class="form-text text-muted">Upload HTML file to automatically post to Blogger, or provide Blog Link below</small>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="link" class="form-label">Blog Link (Alternative)</label>
+                <input type="text" class="form-control modern-input" id="link" name="link" value="{{old('link')}}" placeholder="Enter Blogger edit link (if not uploading HTML file)">
+                <small class="form-text text-muted">Enter the full Blogger edit URL (e.g., https://www.blogger.com/blogger.g?blogID=...&postID=...) - Only required if not uploading HTML file</small>
               </div>
             </div>
 

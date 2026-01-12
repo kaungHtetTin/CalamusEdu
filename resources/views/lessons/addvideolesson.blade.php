@@ -52,7 +52,7 @@
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label for="title_mini" class="form-label">Title Mini <span class="text-danger">*</span></label>
-                <input type="text" class="form-control modern-input" id="title_mini" name="title_mini" value="{{old('title_mini')}}" required placeholder="Enter title mini">
+                <input type="text" class="form-control modern-input" id="title_mini" name="title_mini" value="{{old('title_mini', $category_title)}}" required placeholder="Enter title mini">
               </div>
 
               <div class="col-md-6 mb-3">
