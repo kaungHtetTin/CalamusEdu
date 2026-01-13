@@ -23,6 +23,34 @@ class SongController extends Controller
         $total_artists = artist::count();
         $total_requested = requestedsong::count();
         
+        // Detect already uploaded requested songs for all languages
+        // Match by title and language only (not artist)
+        // Using COLLATE to fix collation mismatch between tables
+        $already_uploaded = DB::table('requestedsongs')
+            ->selectRaw("
+                requestedsongs.id as requested_id,
+                requestedsongs.name as requested_title,
+                requestedsongs.vote as vote,
+                artists.name as requested_artist,
+                artists.nation as language,
+                songs.id as song_id,
+                songs.title as song_title,
+                songs.artist as song_artist,
+                songs.url as song_url,
+                songs.type as song_type
+            ")
+            ->join('artists', 'requestedsongs.artist_id', '=', 'artists.id')
+            ->join('Songs as songs', function($join) {
+                $join->on(DB::raw('requestedsongs.name COLLATE utf8mb4_unicode_ci'), '=', DB::raw('songs.title COLLATE utf8mb4_unicode_ci'));
+            })
+            ->whereRaw("
+                (artists.nation COLLATE utf8mb4_unicode_ci = songs.type COLLATE utf8mb4_unicode_ci) OR 
+                (artists.nation COLLATE utf8mb4_unicode_ci = 'korean' AND songs.type COLLATE utf8mb4_unicode_ci = 'korea') OR
+                (artists.nation COLLATE utf8mb4_unicode_ci = 'korea' AND songs.type COLLATE utf8mb4_unicode_ci = 'korea')
+            ")
+            ->orderBy('requestedsongs.vote', 'desc')
+            ->get();
+        
         return view('songs.songmain', [
             'english_songs' => $english_songs,
             'korean_songs' => $korean_songs,
@@ -31,7 +59,8 @@ class SongController extends Controller
             'russian_songs' => $russian_songs,
             'total_songs' => $total_songs,
             'total_artists' => $total_artists,
-            'total_requested' => $total_requested
+            'total_requested' => $total_requested,
+            'already_uploaded' => $already_uploaded
         ]);
     }
 
@@ -185,9 +214,25 @@ class SongController extends Controller
     }
 
     public function deleteRequestedSong(Request $req){
-        $id=$req->id;
-        requestedsong::where('id',$id)->delete();
-        return back()->with('msgSongReq','Song was successfully deleted');
+        $id = $req->id;
+        
+        // Check if the requested song exists
+        $requestedSong = requestedsong::find($id);
+        
+        if (!$requestedSong) {
+            return back()->with('error', 'Requested song not found');
+        }
+        
+        // Delete the requested song
+        $requestedSong->delete();
+        
+        // Check if we're coming from songmain page (check referer or use a parameter)
+        $referer = $req->headers->get('referer');
+        if (strpos($referer, '/song') !== false && strpos($referer, '/song/list/') === false) {
+            return redirect()->route('showSongMain')->with('msgSongReq', 'Requested song was successfully deleted');
+        }
+        
+        return back()->with('msgSongReq', 'Requested song was successfully deleted');
     }
     
     public function showArtist($major){
