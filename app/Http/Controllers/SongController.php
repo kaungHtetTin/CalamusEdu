@@ -65,6 +65,12 @@ class SongController extends Controller
         $total_downloads = song::where('type',$major)->sum('download_count');
         $total_comments = song::where('type',$major)->sum('comment_count');
         $total_artists = artist::where('nation',$major)->count();
+        
+        // Calculate requested songs for this language
+        $total_requested = DB::table('requestedsongs')
+            ->join('artists', 'requestedsongs.artist_id', '=', 'artists.id')
+            ->where('artists.nation', $major)
+            ->count();
 
         // Get artists for filter dropdown
         $artists = artist::where('nation', $major)->orderBy('name', 'asc')->get();
@@ -77,6 +83,7 @@ class SongController extends Controller
             'total_downloads'=>$total_downloads,
             'total_comments'=>$total_comments,
             'total_artists'=>$total_artists,
+            'total_requested'=>$total_requested,
             'artists'=>$artists,
             'search'=>$search,
             'filter_artist'=>$filter_artist
@@ -138,22 +145,42 @@ class SongController extends Controller
         
     }
 
-    public function showRequestedSong($major){
-        $songs=DB::table('requestedsongs')
-        ->selectRaw("
-            requestedsongs.id as id,
-            requestedsongs.name as title,
-            requestedsongs.vote as vote,
-            artists.name as artist
-        ")
-        ->where('artists.nation',$major)
-        ->join('artists','requestedsongs.artist_id','=','artists.id')
-        ->orderBy('vote','desc')
-        ->simplepaginate(30);
+    public function showRequestedSong($major, Request $req){
+        $search = $req->get('search', '');
+        
+        // Build base query
+        $baseQuery = DB::table('requestedsongs')
+            ->selectRaw("
+                requestedsongs.id as id,
+                requestedsongs.name as title,
+                requestedsongs.vote as vote,
+                artists.name as artist
+            ")
+            ->where('artists.nation',$major)
+            ->join('artists','requestedsongs.artist_id','=','artists.id');
+        
+        // Apply search filter
+        if (!empty($search)) {
+            $baseQuery->where(function($q) use ($search) {
+                $q->where('requestedsongs.name', 'LIKE', '%' . $search . '%')
+                  ->orWhere('artists.name', 'LIKE', '%' . $search . '%');
+            });
+        }
+        
+        // Get total count (filtered if search is applied)
+        $total_requested = (clone $baseQuery)->count();
+        
+        // Get paginated songs
+        $songs = (clone $baseQuery)
+            ->orderBy('vote','desc')
+            ->simplepaginate(30)
+            ->withQueryString();
         
         return view('songs.requestedsongs',[
             'songs'=>$songs,
-            'major'=>$major
+            'major'=>$major,
+            'total_requested'=>$total_requested,
+            'search'=>$search
         ]);
     }
 
@@ -234,12 +261,13 @@ class SongController extends Controller
         $song = song::find($id);
         
         if (!$song) {
-            return redirect()->route('showSongMain')->with('error', 'Song not found');
+            return redirect()->route('showSongs', $major)->with('error', 'Song not found');
         }
         
-        // Placeholder - return to songs list for now
-        // TODO: Create song detail view
-        return redirect()->route('showSongs', $major)->with('info', 'Song detail view coming soon');
+        return view('songs.songdetail',[
+            'song'=>$song,
+            'major'=>$major
+        ]);
     }
 
     public function editSong($id, Request $req){
@@ -247,12 +275,66 @@ class SongController extends Controller
         $song = song::find($id);
         
         if (!$song) {
-            return redirect()->route('showSongMain')->with('error', 'Song not found');
+            return redirect()->route('showSongs', $major)->with('error', 'Song not found');
         }
         
-        // Placeholder - return to songs list for now
-        // TODO: Create song edit view
-        return redirect()->route('showSongs', $major)->with('info', 'Song edit view coming soon');
+        return view('songs.editsong',[
+            'song'=>$song,
+            'major'=>$major
+        ]);
+    }
+
+    public function updateSong(Request $req, $id){
+        $song = song::find($id);
+        
+        if (!$song) {
+            return redirect()->back()->with('error', 'Song not found');
+        }
+
+        $major = $req->major;
+        
+        $req->validate([
+            'title'=>'required',
+            'artist'=>'required'
+        ]);
+
+        $title = $req->title;
+        $artist = $req->artist;
+        if(empty($req->drama)){
+            $drama = "...";
+            $myFileName = $title."( ".$artist." )";
+        } else {
+            $drama = $req->drama;
+            $myFileName = $title."( ".$artist."_".$drama." )";
+        }
+        
+        $myFileName = str_replace(" ", "", $myFileName);
+        
+        // Update files only if new ones are provided
+        if($req->hasFile('audioFile')){
+            $req->audioFile->move('../uploads/songs/audio', $myFileName.".mp3");
+        }
+        
+        if($req->hasFile('lyricsFile')){
+            $req->lyricsFile->move('../uploads/songs/lyrics', $myFileName.".txt");
+        }
+        
+        if($req->hasFile('imageFile')){
+            $req->imageFile->move('../uploads/songs/image', $myFileName.".png");
+        }
+        
+        if($req->hasFile('imageFileWeb')){
+            $req->imageFileWeb->move('../uploads/songs/web', $myFileName.".png");
+        }
+        
+        // Update song data
+        $song->title = $title;
+        $song->artist = $artist;
+        $song->drama = $drama;
+        $song->url = $myFileName;
+        $song->save();
+
+        return redirect()->route('showSongs', $major)->with('msgSong', 'Song was successfully updated');
     }
    
    

@@ -114,6 +114,7 @@ Route::get('/song/add/{major}',[SongController::class,'showAddSong'])->name('sho
 Route::post('/song/add/{major}',[SongController::class,'addSong'])->name('addSong');
 Route::get('/song/detail/{id}',[SongController::class,'showSongDetail'])->name('showSongDetail');
 Route::get('/song/edit/{id}',[SongController::class,'editSong'])->name('editSong');
+Route::post('/song/update/{id}',[SongController::class,'updateSong'])->name('updateSong');
 Route::get('/song/artists/show/{major}',[SongController::class,'showArtist'])->name('showArtist');
 Route::get('/song/artists/addform/{major}',[SongController::class,'showAddArtist'])->name('showAddArtist');
 Route::post('/song/artists/add',[SongController::class,'addArtist'])->name('addArtist');

@@ -19,7 +19,7 @@
 
 {{-- Statistics Cards - Vimeo Style --}}
 <div class="row mb-3">
-  <div class="col-xl-3 col-md-6 mb-3">
+  <div class="col-xl-2-4 col-lg-4 col-md-6 mb-3">
     <div class="card activity-stat-card">
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-start">
@@ -36,7 +36,7 @@
     </div>
   </div>
 
-  <div class="col-xl-3 col-md-6 mb-3">
+  <div class="col-xl-2-4 col-lg-4 col-md-6 mb-3">
     <div class="card activity-stat-card">
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-start">
@@ -53,7 +53,7 @@
     </div>
   </div>
 
-  <div class="col-xl-3 col-md-6 mb-3">
+  <div class="col-xl-2-4 col-lg-4 col-md-6 mb-3">
     <div class="card activity-stat-card">
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-start">
@@ -70,7 +70,7 @@
     </div>
   </div>
 
-  <div class="col-xl-3 col-md-6 mb-3">
+  <div class="col-xl-2-4 col-lg-4 col-md-6 mb-3">
     <div class="card activity-stat-card">
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-start">
@@ -85,6 +85,25 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <div class="col-xl-2-4 col-lg-4 col-md-6 mb-3">
+    <a href="{{route('showRequestedSong', $major)}}" class="text-decoration-none">
+      <div class="card activity-stat-card" style="cursor: pointer; transition: transform 0.2s ease;">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <div class="activity-stat-label">Requested Songs</div>
+              <div class="activity-stat-value">{{number_format($total_requested)}}</div>
+              <div class="activity-stat-subtext">{{ucwords($major)}} language</div>
+            </div>
+            <div class="activity-stat-icon active-users">
+              <i class="fas fa-hand-paper"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </a>
   </div>
 </div>
 
@@ -231,6 +250,36 @@
 
 @push('styles')
 <style>
+.col-xl-2-4 {
+  flex: 0 0 auto;
+  width: 20%;
+}
+
+@media (max-width: 1399px) {
+  .col-xl-2-4 {
+    width: 25%;
+  }
+}
+
+@media (max-width: 1199px) {
+  .col-xl-2-4 {
+    width: 33.333333%;
+  }
+}
+
+.activity-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+a .activity-stat-card {
+  text-decoration: none;
+}
+
+a:hover .activity-stat-card {
+  text-decoration: none;
+}
+
 .song-image-wrapper {
   display: flex;
   align-items: center;
