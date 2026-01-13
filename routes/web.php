@@ -56,6 +56,7 @@ Route::post('/users/pushnotification/send',[UserController::class,'pushNotificat
 Route::get('/users/vip/{phone}/{language}',[UserController::class,'showLanguageVipManagement'])->name('languageVipManagement');
 Route::post('/users/vip/{phone}/{language}',[UserController::class,'updateLanguageVip'])->name('updateLanguageVip');
 Route::get('/users/performance/{phone}/{language}',[UserController::class,'showUserPerformance'])->name('userPerformance');
+Route::post('/users/add-to-language/{language}',[UserController::class,'addUserToLanguage'])->name('addUserToLanguage')->where('language', 'korean|english|chinese|japanese|russian');
 
 //word of the days routes
 

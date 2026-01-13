@@ -371,6 +371,7 @@ class UserController extends Controller
             'counts'=>$counts,
             'vip_counts'=>$vip_counts,
             'languageConfig'=>$languageConfig,
+            'languageCode' => strtolower($language),
             'search'=>$search,
             'active_users_today'=>$active_users_today,
             'active_users_7d'=>$active_users_7d,
@@ -1062,6 +1063,118 @@ class UserController extends Controller
         
         return redirect()->route('languageVipManagement', ['phone' => $phone, 'language' => $language])
             ->with('success', 'VIP access updated successfully for ' . $lang['name']);
+    }
+    
+    public function addUserToLanguage(Request $req, $language){
+        $req->validate([
+            'phone' => 'required|numeric',
+        ]);
+        
+        // Map language to configuration
+        $languageMap = [
+            'english' => [
+                'table' => 'ee_user_datas',
+                'model' => EasyEnglishUserData::class,
+                'name' => 'English',
+                'primaryColor' => '#2196F3',
+                'secondaryColor' => '#1976D2'
+            ],
+            'korean' => [
+                'table' => 'ko_user_datas',
+                'model' => EasyKoreanUserData::class,
+                'name' => 'Korean',
+                'primaryColor' => '#FF9800',
+                'secondaryColor' => '#F57C00'
+            ],
+            'chinese' => [
+                'table' => 'cn_user_datas',
+                'model' => EasyChineseUserData::class,
+                'name' => 'Chinese',
+                'primaryColor' => '#F44336',
+                'secondaryColor' => '#D32F2F'
+            ],
+            'japanese' => [
+                'table' => 'jp_user_datas',
+                'model' => EasyJapaneseUserData::class,
+                'name' => 'Japanese',
+                'primaryColor' => '#9C27B0',
+                'secondaryColor' => '#7B1FA2'
+            ],
+            'russian' => [
+                'table' => 'ru_user_datas',
+                'model' => EasyRussianUserData::class,
+                'name' => 'Russian',
+                'primaryColor' => '#4CAF50',
+                'secondaryColor' => '#388E3C'
+            ],
+        ];
+        
+        $lang = $languageMap[strtolower($language)] ?? null;
+        
+        if (!$lang) {
+            return back()->with('addUserError', 'Invalid language specified.');
+        }
+        
+        $phone = $req->phone;
+        
+        // Check if user exists in learners table
+        $learner = learner::where('learner_phone', $phone)->first();
+        
+        if (!$learner) {
+            return back()->with('addUserError', 'User with phone number ' . $phone . ' not found in learners table.');
+        }
+        
+        // Check if user already exists in the target language table
+        $existingUser = $lang['model']::where('phone', $phone)->first();
+        
+        if ($existingUser) {
+            return back()->with('addUserError', 'User with phone number ' . $phone . ' already exists in ' . $lang['name'] . ' user data table.');
+        }
+        
+        // Create default values based on language table structure
+        $defaultData = [
+            'phone' => $phone,
+            'is_vip' => 0,
+            'study_time' => null,
+            'game_score' => 0,
+            'basic_exam' => 0,
+            'token' => '',
+            'login_time' => 0,
+            'first_join' => now(),
+            'last_active' => null,
+            'song' => 0,
+            'discuss_count' => 0,
+            'learn_count' => 0,
+            'auth_token' => '',
+        ];
+        
+        // Language-specific fields
+        if (in_array(strtolower($language), ['english', 'korean'])) {
+            $defaultData['gold_plan'] = 0;
+        }
+        
+        if (strtolower($language) == 'english') {
+            $defaultData['level_test'] = 0;
+            $defaultData['speaking_level'] = 1;
+            $defaultData['General'] = 0;
+        }
+        
+        if (in_array(strtolower($language), ['korean', 'russian'])) {
+            $defaultData['levelone_exam'] = 0;
+        }
+        
+        if (in_array(strtolower($language), ['japanese', 'russian'])) {
+            $defaultData['gold_plan'] = 0;
+        }
+        
+        // Insert the user into the target language table
+        try {
+            $lang['model']::create($defaultData);
+            
+            return back()->with('addUserSuccess', 'User ' . $learner->learner_name . ' (Phone: ' . $phone . ') has been successfully added to ' . $lang['name'] . ' user data table.');
+        } catch (\Exception $e) {
+            return back()->with('addUserError', 'Error adding user: ' . $e->getMessage());
+        }
     }
     
 }

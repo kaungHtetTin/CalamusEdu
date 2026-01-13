@@ -6,6 +6,15 @@
   $languageName = $languageConfig['name'] ?? 'Language';
   $primaryColor = $languageConfig['primaryColor'] ?? '#2196F3';
   $secondaryColor = $languageConfig['secondaryColor'] ?? '#1976D2';
+  // Extract language code from URL if not provided
+  if (!isset($languageCode)) {
+    $path = request()->path();
+    if (preg_match('/easy(korean|english|chinese|japanese|russian)/', $path, $matches)) {
+      $languageCode = strtolower($matches[1]);
+    } else {
+      $languageCode = 'english'; // default fallback
+    }
+  }
 @endphp
 
 <div class="row mb-3">
@@ -150,6 +159,50 @@
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+{{-- Add User to Language Form --}}
+<div class="card modern-table-card mb-4">
+  <div class="card-header modern-table-header">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+      <h5 class="mb-0">
+        <i class="fas fa-user-plus me-2"></i>Add User to Easy {{ $languageName }}
+      </h5>
+      <p class="mb-0 text-muted small">Add existing learners who are not yet registered for this language</p>
+    </div>
+  </div>
+  <div class="card-body">
+    <form action="{{ route('addUserToLanguage', ['language' => $languageCode ?? 'english']) }}" method="POST" id="addUserForm" class="d-flex align-items-center gap-3 flex-wrap">
+      @csrf
+      <div class="search-input-wrapper flex-grow-1" style="min-width: 250px;">
+        <input type="text" 
+               class="form-control modern-search-input @error('phone') is-invalid @enderror" 
+               id="phone" 
+               name="phone" 
+               placeholder="Enter learner phone number..."
+               value="{{ old('phone') }}"
+               autocomplete="off"
+               required>
+        @error('phone')
+          <div class="invalid-feedback d-block">{{ $message }}</div>
+        @enderror
+      </div>
+      <button type="submit" class="btn-primary btn-sm" title="Add User">
+        <i class="fas fa-plus me-1"></i>
+        <span>Add User</span>
+      </button>
+    </form>
+    @if(session('addUserSuccess'))
+      <div class="alert alert-success mt-3 mb-0 border-0 rounded-0" style="background: linear-gradient(90deg, rgba(50, 205, 50, 0.1) 0%, transparent 100%); border-left: 4px solid #32cd32 !important;">
+        <i class="fas fa-check-circle me-2"></i>{{ session('addUserSuccess') }}
+      </div>
+    @endif
+    @if(session('addUserError'))
+      <div class="alert alert-danger mt-3 mb-0 border-0 rounded-0" style="background: linear-gradient(90deg, rgba(248, 81, 73, 0.1) 0%, transparent 100%); border-left: 4px solid #f85149 !important;">
+        <i class="fas fa-exclamation-circle me-2"></i>{{ session('addUserError') }}
+      </div>
+    @endif
   </div>
 </div>
 

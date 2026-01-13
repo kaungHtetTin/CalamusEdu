@@ -1,9 +1,8 @@
-Video uploaded successfully. But the structure now is.
-root/Russian
-root/Basic Course
-root/Preview/video_file
+I want to add a feature for /calamin/users/{language-specific} page.
+For example, some user register for korean
+so their data is now on learners table and ko-user-data table 
+but not in ee-user-table.
+So I want  the admin can add that user for ee-user-table from console.
+So you need to check the user is already register in learners table but not in ee-user-table.
 
-It should be 
-root/Russian/Basic Course/Reivew/video_file
-
-Check the api documentation and fix the issue.
+place the html form above user table below statistic section
