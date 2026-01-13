@@ -35,14 +35,51 @@ class SongController extends Controller
         ]);
     }
 
-    public function showSongs($major){
-        $songs=song::where('type',$major)
-                ->orderBy('id','desc')->simplepaginate(10);
+    public function showSongs($major, Request $req){
+        $search = $req->get('search', '');
+        $filter_artist = $req->get('artist', '');
 
+        // Build query
+        $query = song::where('type', $major);
+
+        // Apply search filter
+        if (!empty($search)) {
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'LIKE', '%' . $search . '%')
+                  ->orWhere('artist', 'LIKE', '%' . $search . '%')
+                  ->orWhere('drama', 'LIKE', '%' . $search . '%');
+            });
+        }
+
+        // Apply artist filter
+        if (!empty($filter_artist)) {
+            $query->where('artist', $filter_artist);
+        }
+
+        // Default sorting by id desc
+        $songs = $query->orderBy('id', 'desc')->simplepaginate(10)->withQueryString();
+
+        // Calculate statistics for this specific language (unfiltered)
+        $total_songs = song::where('type',$major)->count();
+        $total_likes = song::where('type',$major)->sum('like_count');
+        $total_downloads = song::where('type',$major)->sum('download_count');
+        $total_comments = song::where('type',$major)->sum('comment_count');
+        $total_artists = artist::where('nation',$major)->count();
+
+        // Get artists for filter dropdown
+        $artists = artist::where('nation', $major)->orderBy('name', 'asc')->get();
 
         return view('songs.songs',[
             'songs'=>$songs,
-            'major'=>$major
+            'major'=>$major,
+            'total_songs'=>$total_songs,
+            'total_likes'=>$total_likes,
+            'total_downloads'=>$total_downloads,
+            'total_comments'=>$total_comments,
+            'total_artists'=>$total_artists,
+            'artists'=>$artists,
+            'search'=>$search,
+            'filter_artist'=>$filter_artist
         ]);
         
     }
@@ -192,6 +229,31 @@ class SongController extends Controller
         ]);
     }
    
+    public function showSongDetail($id, Request $req){
+        $major = $req->get('major', '');
+        $song = song::find($id);
+        
+        if (!$song) {
+            return redirect()->route('showSongMain')->with('error', 'Song not found');
+        }
+        
+        // Placeholder - return to songs list for now
+        // TODO: Create song detail view
+        return redirect()->route('showSongs', $major)->with('info', 'Song detail view coming soon');
+    }
+
+    public function editSong($id, Request $req){
+        $major = $req->get('major', '');
+        $song = song::find($id);
+        
+        if (!$song) {
+            return redirect()->route('showSongMain')->with('error', 'Song not found');
+        }
+        
+        // Placeholder - return to songs list for now
+        // TODO: Create song edit view
+        return redirect()->route('showSongs', $major)->with('info', 'Song edit view coming soon');
+    }
    
    
 }

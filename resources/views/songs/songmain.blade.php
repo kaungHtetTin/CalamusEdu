@@ -79,42 +79,55 @@
       </div>
       <div class="card-body">
         <div class="row g-3">
-          @php
-            $languages = [
-              ['code' => 'english', 'name' => 'Easy English', 'img' => 'easyenglish.png', 'count' => $english_songs],
-              ['code' => 'korea', 'name' => 'Easy Korean', 'img' => 'easykorean.png', 'count' => $korean_songs],
-              ['code' => 'chinese', 'name' => 'Easy Chinese', 'img' => 'easychinese.png', 'count' => $chinese_songs],
-              ['code' => 'japanese', 'name' => 'Easy Japanese', 'img' => 'easyjapanese.png', 'count' => $japanese_songs],
-              ['code' => 'russian', 'name' => 'Easy Russian', 'img' => 'easyrussian.png', 'count' => $russian_songs]
-            ];
-          @endphp
-          
-          @foreach($languages as $lang)
           <div class="col-xl-2 col-md-4 col-sm-6">
-            <div class="card h-100">
-              <div class="card-body">
-                <div class="" style="text-align: center;">
-                  <img src="{{asset('public/img/'.$lang['img'])}}" style="width: 50px;height:50px"/>
-                  <h5>{{ $lang['name'] }}</h5>
-                  <div style="display: flex; margin-top:10px">
-                    <a href="{{route('showArtist',$lang['code'])}}" style="flex:1 ;margin:10px;">
-                      <div class="btn-primary rounded">Artists</div>
-                    </a>
-                    <a href="{{route('showRequestedSong',$lang['code'])}}" style="flex:1; margin:10px;">
-                      <div class="btn-primary rounded">Requested</div>
-                    </a>
-                  </div>
-                  <div style="display: flex; margin-top:10px">
-                    <a href="{{route('showSongs',$lang['code'])}}" style="flex:1 ;margin:10px;">
-                      <div class="btn-primary rounded">Songs</div>
-                    </a>
-                  </div>
-                  <div class="text-muted small mt-2">{{number_format($lang['count'])}} songs</div>
-                </div>
+            <a href="{{route('showSongs','english')}}" class="quick-access-card quick-access-english">
+              <div class="quick-access-icon">
+                <img src="{{asset('public/img/easyenglish.png')}}" alt="Easy English"/>
               </div>
-            </div>
+              <div class="quick-access-title">Easy English</div>
+              <div class="quick-access-count">{{number_format($english_songs)}} songs</div>
+            </a>
           </div>
-          @endforeach
+
+          <div class="col-xl-2 col-md-4 col-sm-6">
+            <a href="{{route('showSongs','korea')}}" class="quick-access-card quick-access-korean">
+              <div class="quick-access-icon">
+                <img src="{{asset('public/img/easykorean.png')}}" alt="Easy Korean"/>
+              </div>
+              <div class="quick-access-title">Easy Korean</div>
+              <div class="quick-access-count">{{number_format($korean_songs)}} songs</div>
+            </a>
+          </div>
+
+          <div class="col-xl-2 col-md-4 col-sm-6">
+            <a href="{{route('showSongs','chinese')}}" class="quick-access-card quick-access-chinese">
+              <div class="quick-access-icon">
+                <img src="{{asset('public/img/easychinese.png')}}" alt="Easy Chinese"/>
+              </div>
+              <div class="quick-access-title">Easy Chinese</div>
+              <div class="quick-access-count">{{number_format($chinese_songs)}} songs</div>
+            </a>
+          </div>
+
+          <div class="col-xl-2 col-md-4 col-sm-6">
+            <a href="{{route('showSongs','japanese')}}" class="quick-access-card quick-access-japanese">
+              <div class="quick-access-icon">
+                <img src="{{asset('public/img/easyjapanese.png')}}" alt="Easy Japanese"/>
+              </div>
+              <div class="quick-access-title">Easy Japanese</div>
+              <div class="quick-access-count">{{number_format($japanese_songs)}} songs</div>
+            </a>
+          </div>
+
+          <div class="col-xl-2 col-md-4 col-sm-6">
+            <a href="{{route('showSongs','russian')}}" class="quick-access-card quick-access-russian">
+              <div class="quick-access-icon">
+                <img src="{{asset('public/img/easyrussian.png')}}" alt="Easy Russian"/>
+              </div>
+              <div class="quick-access-title">Easy Russian</div>
+              <div class="quick-access-count">{{number_format($russian_songs)}} songs</div>
+            </a>
+          </div>
         </div>
       </div>
     </div>
