@@ -34,8 +34,8 @@ class GameWordController extends Controller
     public function showGameWord($major){
         
         if($major=="korea"){
-            $word=GameWordKorea::orderBy('id','desc')->simplepaginate(10);
-            $count=GameWordKorea::get()->count();
+            $word=GameWordKorea::orderBy('id','desc')->paginate(10);
+            $count=GameWordKorea::count();
             return view('gamewords.gameword',[
                 'words'=>$word,
                 'major'=>$major,
@@ -45,8 +45,8 @@ class GameWordController extends Controller
         
         if($major=="chinese"){
             
-            $word=GameWordChinese::orderBy('id','desc')->simplepaginate(10);
-            $count=GameWordChinese::get()->count();
+            $word=GameWordChinese::orderBy('id','desc')->paginate(10);
+            $count=GameWordChinese::count();
             return view('gamewords.gameword',[
                 'words'=>$word,
                 'major'=>$major,
@@ -55,8 +55,8 @@ class GameWordController extends Controller
         }
 
         if($major=="english"){
-            $word=GameWordEnglish::orderBy('id','desc')->simplepaginate(10);
-            $count=GameWordEnglish::get()->count();
+            $word=GameWordEnglish::orderBy('id','desc')->paginate(10);
+            $count=GameWordEnglish::count();
             return view('gamewords.gameword',[
                 'words'=>$word,
                 'major'=>$major,
@@ -65,8 +65,8 @@ class GameWordController extends Controller
         }
         
         if($major=="japanese"){
-            $word=GameWordJapanese::orderBy('id','desc')->simplepaginate(10);
-            $count=GameWordJapanese::get()->count();
+            $word=GameWordJapanese::orderBy('id','desc')->paginate(10);
+            $count=GameWordJapanese::count();
             return view('gamewords.gameword',[
                 'words'=>$word,
                 'major'=>$major,
@@ -75,8 +75,8 @@ class GameWordController extends Controller
         }
         
         if($major=="russian"){
-            $word=GameWordRussian::orderBy('id','desc')->simplepaginate(10);
-            $count=GameWordRussian::get()->count();
+            $word=GameWordRussian::orderBy('id','desc')->paginate(10);
+            $count=GameWordRussian::count();
             return view('gamewords.gameword',[
                 'words'=>$word,
                 'major'=>$major,

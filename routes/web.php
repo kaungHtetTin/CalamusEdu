@@ -66,6 +66,7 @@ Route::get('/wordsofday/edit/{id}',[WordOfTheDayController::class,'showDetailWor
 Route::post('/wordsofday/update',[WordOfTheDayController::class,'updateWordDay'])->name('updateWordDay');
 Route::get('/wordsofday/add/{major}',[WordOfTheDayController::class,'showWordDayAdding'])->name('showWordDayAdding');
 Route::post('/wordsofday/add/{major}',[WordOfTheDayController::class,'addWordDay'])->name('addWordDay');
+Route::post('/wordsofday/delete',[WordOfTheDayController::class,'deleteWordDay'])->name('deleteWordDay');
 
 //lessons controlling routes
 Route::get('/lessons/main',[LessonController::class,'showLessonMain'])->name('lessons.main');
@@ -123,8 +124,13 @@ Route::post('/song/artists/delete',[SongController::class,'deleteArtist'])->name
 
 //courses controlling routes
 Route::get('/courses',[CourseController::class,'showCoursesMain'])->name('showCoursesMain');
+Route::get('/courses/{courseId}',[CourseController::class,'show'])->name('courses.show')->where('courseId', '[0-9]+');
 Route::get('/courses/{courseId}/edit',[CourseController::class,'edit'])->name('courses.edit')->where('courseId', '[0-9]+');
 Route::post('/courses/{courseId}/update',[CourseController::class,'update'])->name('courses.update')->where('courseId', '[0-9]+');
+Route::get('/courses/{courseId}/study-plan',[CourseController::class,'manageStudyPlan'])->name('courses.studyplan.manage')->where('courseId', '[0-9]+');
+Route::post('/courses/{courseId}/study-plan/add',[CourseController::class,'addLessonToStudyPlan'])->name('courses.studyplan.add')->where('courseId', '[0-9]+');
+Route::post('/courses/{courseId}/study-plan/remove',[CourseController::class,'removeLessonFromStudyPlan'])->name('courses.studyplan.remove')->where('courseId', '[0-9]+');
+Route::post('/courses/{courseId}/study-plan/update-day',[CourseController::class,'updateStudyPlanDay'])->name('courses.studyplan.updateDay')->where('courseId', '[0-9]+');
 Route::get('/courses/{language}',[CourseController::class,'showCoursesByLanguage'])->name('courses.byLanguage');
 
 //posts controlling routes

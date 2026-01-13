@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\course;
 use App\Models\VipUser;
+use App\Models\Studyplan;
+use App\Models\lesson;
 use App\Services\LanguageService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -249,6 +251,300 @@ class CourseController extends Controller
         } catch (\Exception $e) {
             return back()->with('error', 'Failed to update course: ' . $e->getMessage())->withInput();
         }
+    }
+
+    public function show($courseId){
+        $course = course::where('course_id', $courseId)->first();
+        
+        if (!$course) {
+            abort(404, 'Course not found');
+        }
+
+        // Get teacher information
+        $teacher = DB::table('teachers')->where('id', $course->teacher_id)->first();
+
+        // Get language display name
+        $languageName = LanguageService::getDisplayName($course->major);
+
+        // Get enrollment count
+        $enrollment_count = VipUser::where('course_id', $courseId)
+            ->where('major', $course->major)
+            ->where('deleted_account', 0)
+            ->count();
+
+        // Get categories for this course
+        $categories = DB::table('lessons_categories')
+            ->where('course_id', $courseId)
+            ->orderBy('sort_order')
+            ->get();
+
+        // Get all lessons for this course (through categories)
+        $categoryIds = $categories->pluck('id')->toArray();
+        $lessons = lesson::whereIn('category_id', $categoryIds)
+            ->orderBy('date', 'desc')
+            ->get();
+
+        // Get daily plan (study plan) - lessons grouped by day from study_plan table
+        $studyPlans = DB::table('study_plan')
+            ->select(
+                'study_plan.day',
+                'study_plan.lesson_id',
+                'lessons.id as lesson_id',
+                'lessons.title',
+                'lessons.title_mini',
+                'lessons.isVideo',
+                'lessons.isVip',
+                'lessons.link',
+                'lessons.thumbnail',
+                'lessons.duration',
+                'lessons.category_id',
+                'lessons_categories.id as category_id',
+                'lessons_categories.category_title',
+                'lessons_categories.image_url as category_image'
+            )
+            ->join('lessons', 'study_plan.lesson_id', '=', 'lessons.id')
+            ->join('lessons_categories', 'lessons.category_id', '=', 'lessons_categories.id')
+            ->where('study_plan.course_id', $courseId)
+            ->orderBy('study_plan.day', 'asc')
+            ->orderBy('lessons.date', 'asc')
+            ->get();
+
+        // Organize daily plan: group lessons by day
+        $dailyPlan = [];
+        foreach ($studyPlans as $plan) {
+            $day = $plan->day;
+            if (!isset($dailyPlan[$day])) {
+                $dailyPlan[$day] = [];
+            }
+            
+            // Create lesson object structure
+            $lesson = (object)[
+                'id' => $plan->lesson_id,
+                'title' => $plan->title,
+                'title_mini' => $plan->title_mini,
+                'isVideo' => $plan->isVideo,
+                'isVip' => $plan->isVip,
+                'link' => $plan->link,
+                'thumbnail' => $plan->thumbnail,
+                'duration' => $plan->duration,
+                'category_id' => $plan->category_id,
+            ];
+            
+            // Create category object structure
+            $category = (object)[
+                'id' => $plan->category_id,
+                'category_title' => $plan->category_title,
+                'image_url' => $plan->category_image,
+            ];
+            
+            $dailyPlan[$day][] = [
+                'lesson' => $lesson,
+                'category' => $category,
+            ];
+        }
+
+        // Sort daily plan by day (already sorted by query, but ensure it's sorted)
+        ksort($dailyPlan);
+
+        // Get statistics
+        $total_lessons = count($lessons);
+        $video_lessons = $lessons->where('isVideo', 1)->count();
+        $document_lessons = $lessons->where('isVideo', 0)->count();
+        $vip_lessons = $lessons->where('isVip', 1)->count();
+
+        return view('courses.show', [
+            'course' => $course,
+            'teacher' => $teacher,
+            'language' => $course->major,
+            'languageName' => $languageName,
+            'enrollment_count' => $enrollment_count,
+            'categories' => $categories,
+            'lessons' => $lessons,
+            'dailyPlan' => $dailyPlan,
+            'total_lessons' => $total_lessons,
+            'video_lessons' => $video_lessons,
+            'document_lessons' => $document_lessons,
+            'vip_lessons' => $vip_lessons,
+        ]);
+    }
+
+    public function manageStudyPlan($courseId){
+        $course = course::where('course_id', $courseId)->first();
+        
+        if (!$course) {
+            abort(404, 'Course not found');
+        }
+
+        // Get language display name
+        $languageName = LanguageService::getDisplayName($course->major);
+
+        // Get current study plan organized by day
+        $studyPlans = DB::table('study_plan')
+            ->select(
+                'study_plan.id as plan_id',
+                'study_plan.day',
+                'study_plan.lesson_id',
+                'lessons.id as lesson_id',
+                'lessons.title',
+                'lessons.isVideo',
+                'lessons.isVip',
+                'lessons.duration',
+                'lessons.category_id',
+                'lessons_categories.category_title'
+            )
+            ->join('lessons', 'study_plan.lesson_id', '=', 'lessons.id')
+            ->join('lessons_categories', 'lessons.category_id', '=', 'lessons_categories.id')
+            ->where('study_plan.course_id', $courseId)
+            ->orderBy('study_plan.day', 'asc')
+            ->orderBy('lessons.date', 'asc')
+            ->get();
+
+        // Organize by day
+        $dailyPlan = [];
+        foreach ($studyPlans as $plan) {
+            $day = $plan->day;
+            if (!isset($dailyPlan[$day])) {
+                $dailyPlan[$day] = [];
+            }
+            $dailyPlan[$day][] = $plan;
+        }
+        ksort($dailyPlan);
+
+        // Get all lessons for this course (not yet in study plan)
+        $categoryIds = DB::table('lessons_categories')
+            ->where('course_id', $courseId)
+            ->pluck('id')
+            ->toArray();
+
+        $allLessons = lesson::whereIn('category_id', $categoryIds)
+            ->orderBy('date', 'desc')
+            ->get();
+
+        // Get lessons already in study plan
+        $lessonIdsInPlan = $studyPlans->pluck('lesson_id')->toArray();
+
+        // Filter out lessons already in plan
+        $availableLessons = $allLessons->filter(function($lesson) use ($lessonIdsInPlan) {
+            return !in_array($lesson->id, $lessonIdsInPlan);
+        });
+
+        // Get categories for grouping
+        $categories = DB::table('lessons_categories')
+            ->where('course_id', $courseId)
+            ->orderBy('sort_order')
+            ->get();
+
+        return view('courses.managestudyplan', [
+            'course' => $course,
+            'language' => $course->major,
+            'languageName' => $languageName,
+            'dailyPlan' => $dailyPlan,
+            'availableLessons' => $availableLessons,
+            'categories' => $categories,
+        ]);
+    }
+
+    public function addLessonToStudyPlan(Request $req, $courseId){
+        $course = course::where('course_id', $courseId)->first();
+        
+        if (!$course) {
+            abort(404, 'Course not found');
+        }
+
+        $req->validate([
+            'lesson_id' => 'required|integer|exists:lessons,id',
+            'day' => 'required|integer|min:1',
+        ]);
+
+        // Verify lesson belongs to this course
+        $lesson = lesson::where('id', $req->lesson_id)->first();
+        if (!$lesson) {
+            return back()->with('error', 'Lesson not found');
+        }
+
+        $category = DB::table('lessons_categories')->where('id', $lesson->category_id)->first();
+        if (!$category || $category->course_id != $courseId) {
+            return back()->with('error', 'Lesson does not belong to this course');
+        }
+
+        // Check if lesson is already in study plan for this course
+        $existing = DB::table('study_plan')
+            ->where('course_id', $courseId)
+            ->where('lesson_id', $req->lesson_id)
+            ->first();
+
+        if ($existing) {
+            // Update existing entry to new day
+            DB::table('study_plan')
+                ->where('id', $existing->id)
+                ->update(['day' => $req->day]);
+            
+            return back()->with('success', 'Lesson moved to Day ' . $req->day);
+        }
+
+        // Add new entry
+        DB::table('study_plan')->insert([
+            'course_id' => $courseId,
+            'lesson_id' => $req->lesson_id,
+            'day' => $req->day,
+        ]);
+
+        return back()->with('success', 'Lesson added to Day ' . $req->day);
+    }
+
+    public function removeLessonFromStudyPlan(Request $req, $courseId){
+        $course = course::where('course_id', $courseId)->first();
+        
+        if (!$course) {
+            abort(404, 'Course not found');
+        }
+
+        $req->validate([
+            'plan_id' => 'required|integer|exists:study_plan,id',
+        ]);
+
+        // Verify plan belongs to this course
+        $plan = DB::table('study_plan')
+            ->where('id', $req->plan_id)
+            ->where('course_id', $courseId)
+            ->first();
+
+        if (!$plan) {
+            return back()->with('error', 'Study plan entry not found');
+        }
+
+        DB::table('study_plan')->where('id', $req->plan_id)->delete();
+
+        return back()->with('success', 'Lesson removed from study plan');
+    }
+
+    public function updateStudyPlanDay(Request $req, $courseId){
+        $course = course::where('course_id', $courseId)->first();
+        
+        if (!$course) {
+            abort(404, 'Course not found');
+        }
+
+        $req->validate([
+            'plan_id' => 'required|integer|exists:study_plan,id',
+            'day' => 'required|integer|min:1',
+        ]);
+
+        // Verify plan belongs to this course
+        $plan = DB::table('study_plan')
+            ->where('id', $req->plan_id)
+            ->where('course_id', $courseId)
+            ->first();
+
+        if (!$plan) {
+            return back()->with('error', 'Study plan entry not found');
+        }
+
+        DB::table('study_plan')
+            ->where('id', $req->plan_id)
+            ->update(['day' => $req->day]);
+
+        return back()->with('success', 'Lesson moved to Day ' . $req->day);
     }
 
 }

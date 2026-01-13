@@ -34,7 +34,7 @@ class WordOfTheDayController extends Controller
 
     public function showWordOfTheDay($major){
         if($major=="korea"){
-            $words=WordOfTheDayKorea::orderBy('id','desc')->simplepaginate(10);
+            $words=WordOfTheDayKorea::orderBy('id','desc')->paginate(10);
             return view('wordoftheday.word',[
                 'major'=>$major,
                 'words'=>$words
@@ -42,7 +42,7 @@ class WordOfTheDayController extends Controller
         }
 
         if($major=="english"){
-            $words=WordOfTheDayEnglish::orderBy('id','desc')->simplepaginate(10);
+            $words=WordOfTheDayEnglish::orderBy('id','desc')->paginate(10);
             return view('wordoftheday.word',[
                 'major'=>$major,
                 'words'=>$words
@@ -50,7 +50,7 @@ class WordOfTheDayController extends Controller
         }
         
         if($major=="chinese"){
-            $words=WordOfTheDayChinese::orderBy('id','desc')->simplepaginate(10);
+            $words=WordOfTheDayChinese::orderBy('id','desc')->paginate(10);
             return view('wordoftheday.word',[
                 'major'=>$major,
                 'words'=>$words
@@ -58,7 +58,7 @@ class WordOfTheDayController extends Controller
         }
         
         if($major=="japanese"){
-            $words=WordOfTheDayJapanese::orderBy('id','desc')->simplepaginate(10);
+            $words=WordOfTheDayJapanese::orderBy('id','desc')->paginate(10);
             return view('wordoftheday.word',[
                 'major'=>$major,
                 'words'=>$words
@@ -66,7 +66,7 @@ class WordOfTheDayController extends Controller
         }
         
         if($major=="russian"){
-            $words=WordOfTheDayRussian::orderBy('id','desc')->simplepaginate(10);
+            $words=WordOfTheDayRussian::orderBy('id','desc')->paginate(10);
             return view('wordoftheday.word',[
                 'major'=>$major,
                 'words'=>$words
@@ -184,5 +184,33 @@ class WordOfTheDayController extends Controller
         $word->save();
         return back()->with('msg','successfully added');
         
+    }
+
+    public function deleteWordDay(Request $req){
+        $major = $req->major;
+        
+        if($major=="english"){$myclass=new WordOfTheDayEnglish;}
+        if($major=="korea"){$myclass=new WordOfTheDayKorea;}
+        if($major=="chinese"){$myclass=new WordOfTheDayChinese;}
+        if($major=="japanese"){$myclass=new WordOfTheDayJapanese;}
+        if($major=="russian"){$myclass=new WordOfTheDayRussian;}
+
+        $word = $myclass::find($req->id);
+        
+        if($word){
+            // Delete the image file
+            if($word->thumb){
+                $image = basename($word->thumb);
+                $file = $_SERVER['DOCUMENT_ROOT'].'/uploads/images/'.$image; 
+                if(file_exists($file)){
+                    unlink($file);
+                }
+            }
+            
+            // Delete the word record
+            $word->delete();
+        }
+        
+        return back()->with('msg','successfully deleted');
     }
 }

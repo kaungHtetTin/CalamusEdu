@@ -108,13 +108,14 @@
         <div class="row">
           @foreach($courses as $course)
           <div class="col-xl-4 col-md-6 mb-4">
-            <div class="course-item-card" style="position: relative; border-radius: 12px; overflow: hidden; border: 1px solid rgba(0, 0, 0, 0.1); transition: all 0.3s ease; height: 100%;">
+            <div class="course-item-card" style="position: relative; border-radius: 12px; overflow: hidden; border: 1px solid rgba(0, 0, 0, 0.1); transition: all 0.3s ease; height: 100%; cursor: pointer;">
               {{-- Circular Edit Button --}}
-              <a href="{{route('courses.edit', $course->course_id)}}" class="course-edit-btn" title="Edit Course">
+              <a href="{{route('courses.edit', $course->course_id)}}" class="course-edit-btn" title="Edit Course" onclick="event.stopPropagation();">
                 <i class="fas fa-edit"></i>
               </a>
               
-              <div class="card-body p-4">
+              <a href="{{route('courses.show', $course->course_id)}}" style="text-decoration: none; color: inherit; display: block;">
+              <div class="card-body p-4" style="cursor: pointer;">
                 <div class="d-flex align-items-start mb-3">
                   @if($course->cover_url)
                   <img src="{{$course->cover_url}}" alt="{{$course->title}}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; margin-right: 16px;">
@@ -157,6 +158,7 @@
                   </div>
                 </div>
               </div>
+              </a>
             </div>
           </div>
           @endforeach
@@ -202,6 +204,15 @@ body.dark-theme .stats-card:hover {
 .course-item-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.course-item-card a[href*="courses.show"] {
+  display: block;
+  height: 100%;
+}
+
+.course-item-card a[href*="courses.show"]:hover {
+  text-decoration: none;
 }
 
 body.dark-theme .course-item-card {
