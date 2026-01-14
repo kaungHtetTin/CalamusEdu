@@ -71,6 +71,20 @@ return [
             'root'   => env('UPLOADS_PATH', '../uploads'),
         ],
 
+        /*
+         * Calamus Financial Storage (Payment Screenshots)
+         * 
+         * Environment Variables:
+         * - FINANCIAL_PATH: Physical path for financial uploads directory (default: '../financial')
+         * 
+         * Example for production:
+         * FINANCIAL_PATH=/var/www/financial
+         */
+        'calamusFinancial' => [
+            'driver' => 'local',
+            'root'   => env('FINANCIAL_PATH', '../financial'),
+        ],
+
     ],
     
     

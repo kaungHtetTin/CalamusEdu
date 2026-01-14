@@ -8,6 +8,9 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\SaveReplyController;
+use App\Http\Controllers\Api\ApiPaymentController;
+use App\Http\Controllers\Api\ApiUserController;
+use App\Http\Controllers\Api\ApiSaveReplyController;
 
 
 /*
@@ -28,17 +31,28 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::post('/lessons/updatevideoduration',[LessonController::class,'updateVideoDuration']);
 Route::get('/notifications/{major}',[NotificationController::class,'fetchNotification']);
 
-//User controlling
-Route::get('/users/vip/{id}',[UserController::class,'showVipsetting']);
-Route::post('/users/passwordreset',[UserController::class,'resetPassword']);
-Route::post('/users/vipadding/{id}',[UserController::class,'addVip']);
-Route::post('/users/transfer-vip-access',[UserController::class,'transferVipAccess']);
+// ==================== ANDROID APP API ROUTES ====================
+// These routes are specifically for the Android Customer Service app
 
-Route::get('/users/enroll',[UserController::class,'getEnroll']);
-Route::get('/payments/pending',[PaymentController::class,'getPendingPayment']);
+// Payments API
+Route::get('/payments/pending', [ApiPaymentController::class, 'getPendingPayment']);
 
-//Save Reply
-Route::apiResource('/save-replies',SaveReplyController::class);
+// Users API
+Route::get('/users/vip/{id}', [ApiUserController::class, 'showVipsetting']);
+Route::post('/users/passwordreset', [ApiUserController::class, 'resetPassword']);
+Route::post('/users/vipadding/{id}', [ApiUserController::class, 'addVip']);
+Route::post('/users/transfer-vip-access', [ApiUserController::class, 'transferVipAccess']);
+
+// Save Replies API
+Route::get('/save-replies', [ApiSaveReplyController::class, 'index']);
+Route::post('/save-replies', [ApiSaveReplyController::class, 'store']);
+Route::get('/save-replies/{id}', [ApiSaveReplyController::class, 'show']);
+Route::put('/save-replies/{id}', [ApiSaveReplyController::class, 'update']);
+Route::delete('/save-replies/{id}', [ApiSaveReplyController::class, 'destroy']);
+
+// ==================== OTHER API ROUTES ====================
+// Keep existing routes for backward compatibility
+Route::get('/users/enroll', [UserController::class, 'getEnroll']);
 
 // ==================== POST API ROUTES ====================
 Route::post('/posts', [PostController::class, 'createPost']);
