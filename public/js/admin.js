@@ -64,8 +64,6 @@ document.addEventListener('DOMContentLoaded', function() {
   const themeToggle = document.getElementById('themeToggle');
   const body = document.body;
   
-  if (!body) return;
-  
   // Get saved theme or default to dark
   const savedTheme = localStorage.getItem('theme') || 'dark';
   
@@ -152,15 +150,14 @@ function initUserDropdown() {
   const userAvatarContainer = document.querySelector('.user-avatar-dropdown');
   const userAvatar = document.getElementById('userAvatarDropdown');
   const dropdownMenu = document.getElementById('userDropdownMenu');
+  let hoverTimeout = null;
+  let isOpen = false;
   
   if (!userAvatarContainer || !dropdownMenu) {
     // Retry after a short delay if elements not found
     setTimeout(initUserDropdown, 100);
     return;
   }
-  
-  let hoverTimeout = null;
-  let isOpen = false;
   
   function showDropdown() {
     clearTimeout(hoverTimeout);
@@ -173,7 +170,7 @@ function initUserDropdown() {
     hoverTimeout = setTimeout(function() {
       dropdownMenu.classList.remove('show');
       isOpen = false;
-    }, 150);
+    }, 200);
   }
   
   // Show dropdown on hover over container
@@ -181,11 +178,11 @@ function initUserDropdown() {
     showDropdown();
   });
   
-  // Hide dropdown when mouse leaves container
+  // Hide dropdown when mouse leaves container (with small delay)
   userAvatarContainer.addEventListener('mouseleave', function(e) {
     // Check if mouse is moving to dropdown
     const relatedTarget = e.relatedTarget;
-    if (relatedTarget && dropdownMenu.contains(relatedTarget)) {
+    if (relatedTarget && (dropdownMenu.contains(relatedTarget) || relatedTarget.closest('.user-dropdown-menu'))) {
       return; // Don't hide if moving to dropdown
     }
     hideDropdown();
