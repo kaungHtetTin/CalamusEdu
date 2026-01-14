@@ -46,10 +46,21 @@
       </div>
 
       <div class="topbar-right d-flex align-items-center gap-2">
-        <button type="button" class="topbar-icon-btn" id="notificationBtn" title="Notifications">
+        <a href="{{ route('showAdminNotifications') }}" class="topbar-icon-btn" id="notificationBtn" title="Notifications" style="text-decoration: none; position: relative; color: inherit;">
           <i class="fas fa-bell"></i>
-          <span class="notification-badge">0</span>
-        </button>
+          @php
+            $unreadNotificationsCount = \Illuminate\Support\Facades\DB::table('notification')
+                ->where('owner_id', 10000)
+                ->where('seen', 0)
+                ->where('action', '<', 5)
+                ->count();
+          @endphp
+          @if($unreadNotificationsCount > 0)
+            <span class="notification-badge">{{ $unreadNotificationsCount > 99 ? '99+' : $unreadNotificationsCount }}</span>
+          @else
+            <span class="notification-badge" style="display: none;">0</span>
+          @endif
+        </a>
         <button type="button" class="topbar-icon-btn theme-toggle-btn" id="themeToggle" title="Switch to light mode">
           <i class="fas fa-sun"></i>
         </button>
@@ -82,9 +93,9 @@
               <i class="fas fa-home"></i>
               <span>Dashboard</span>
             </a>
-            <a href="{{ route('getUser') }}" class="dropdown-item">
-              <i class="fas fa-user"></i>
-              <span>Profile</span>
+            <a href="{{ route('admin.profile') }}" class="dropdown-item">
+              <i class="fas fa-user-cog"></i>
+              <span>Profile Settings</span>
             </a>
             <div class="dropdown-divider"></div>
             <form action="{{ route('admin.logout') }}" method="POST" style="margin: 0;">

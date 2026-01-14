@@ -15,6 +15,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\LanguageController;
+use App\Http\Controllers\AdminProfileController;
 use Illuminate\Http\Request;
 /*
 |--------------------------------------------------------------------------
@@ -161,6 +162,11 @@ Route::post('/adddialogue',[SpeakingTrainerController::class,'addDialogue'])->na
 
 //Project Overview
 Route::get('/projectoverview',[ProjectOverviewController::class,'index'])->name('overviewIndex');
+
+//Admin Profile Settings
+Route::get('/admin/profile',[AdminProfileController::class,'index'])->name('admin.profile');
+Route::post('/admin/profile',[AdminProfileController::class,'updateProfile'])->name('admin.profile.update');
+Route::post('/admin/profile/password',[AdminProfileController::class,'updatePassword'])->name('admin.profile.password');
 
 //payment
 Route::get('/payments/{major}',[PaymentController::class,'index']);
