@@ -1,7 +1,23 @@
 # API Documentation for Calamin API
-## Base URL: `https://hostname/calamin/api/`
+## Base URL: `https://www.calamuseducation/calamin/api/`
 
 This document outlines all API endpoints required by the Customer Service Android application.
+
+## Language Support
+
+All user-related endpoints support multiple languages dynamically. The following languages are supported:
+- **korea** - Korean language courses
+- **english** - English language courses
+- **chinese** - Chinese language courses
+- **japanese** - Japanese language courses
+- **russian** - Russian language courses
+
+The `major` parameter is used throughout the API to specify which language to operate on. If not specified, the API defaults to `korea` for backward compatibility.
+
+**Response Format:** All language-specific endpoints return consistent field names:
+- `languageData` - Contains language-specific user data (VIP status, gold plan, token, etc.)
+- `courses` - Array of course IDs the user has VIP access to
+- `major` - The language code that was queried
 
 ---
 
@@ -57,14 +73,22 @@ GET /payments/pending?major=korea
 ## 2. Users API
 
 ### 2.1 Get User VIP Information
-**Endpoint:** `GET /users/vip/12`
+**Endpoint:** `GET /users/vip/{id}`
+
+**Path Parameters:**
+- `id` (integer): Route identifier (can be any number, typically language ID)
 
 **Query Parameters:**
 - `phone` (string, required): User's phone number
+- `major` (string, optional): Language/major code. Valid values: `korea`, `english`, `chinese`, `japanese`, `russian`. Defaults to `korea` if not provided.
 
-**Request Example:**
+**Request Examples:**
 ```
-GET /users/vip/12?phone=09123456789
+GET /users/vip/12?phone=09123456789&major=korea
+GET /users/vip/12?phone=09123456789&major=english
+GET /users/vip/12?phone=09123456789&major=chinese
+GET /users/vip/12?phone=09123456789&major=japanese
+GET /users/vip/12?phone=09123456789&major=russian
 ```
 
 **Response Format:**
@@ -76,7 +100,7 @@ GET /users/vip/12?phone=09123456789
     "learner_phone": "09123456789",
     "learner_image": "https://example.com/profile.jpg"
   },
-  "koreaData": {
+  "languageData": {
     "id": "456",
     "token": "firebase_fcm_token_here",
     "is_vip": 1,
@@ -94,7 +118,8 @@ GET /users/vip/12?phone=09123456789
       "major": "korea"
     }
   ],
-  "coursesKorea": [1, 2, 3]
+  "courses": [1, 2, 3],
+  "major": "korea"
 }
 ```
 
@@ -104,19 +129,28 @@ GET /users/vip/12?phone=09123456789
   - `learner_name` (string): Learner's full name
   - `learner_phone` (string): Learner's phone number
   - `learner_image` (string): URL to profile image
-- `koreaData` (object): Korea-specific user data
-  - `id` (string): Korea data ID
+- `languageData` (object): Language-specific user data (dynamic based on `major` parameter)
+  - `id` (string): Language data ID
   - `token` (string): Firebase FCM token for push notifications
   - `is_vip` (integer): VIP status (1 = VIP, 0 = not VIP)
   - `gold_plan` (integer): Gold plan status (1 = active, 0 = inactive)
-- `mainCourses` (array): List of all available courses
+- `mainCourses` (array): List of all available courses for the specified major
   - `course_id` (string): Course ID
   - `title` (string): Course title
   - `major` (string): Course major/language code
-- `coursesKorea` (array): Array of course IDs that the user has VIP access to
+- `courses` (array): Array of course IDs that the user has VIP access to for the specified major
+- `major` (string): The language/major code that was queried
+
+**Supported Languages:**
+- `korea` - Korean language courses
+- `english` - English language courses
+- `chinese` - Chinese language courses
+- `japanese` - Japanese language courses
+- `russian` - Russian language courses
 
 **Error Handling:**
-- Returns JSON with empty `koreaData` object if user not found
+- HTTP 400 if `phone` parameter is missing
+- HTTP 400 if `major` parameter is invalid
 - HTTP 404 if user doesn't exist
 - HTTP 500 for server errors
 
@@ -158,16 +192,24 @@ Success message string (e.g., "Password reset successfully")
 - `learner_id` (string, required): The learner ID
 
 **Request Body (Multipart Form Data):**
-- `major` (string, required): Major/language code (e.g., "korea")
+- `major` (string, required): Major/language code. Valid values: `korea`, `english`, `chinese`, `japanese`, `russian`
 - `amount` (string, required): Payment amount
 - `gold_plan` (string, required): "on" or "off"
-- `vip_korea` (string, required): "on" or "off"
+- `vip_{major}` (string, required): VIP status field. Use the appropriate field based on major:
+  - `vip_korea` for korea
+  - `vip_english` for english
+  - `vip_chinese` for chinese
+  - `vip_japanese` for japanese
+  - `vip_russian` for russian
+  - Value: "on" or "off"
 - `myfile` (file, required): Payment screenshot image file
 - `api` (string, required): API identifier (value: "api")
 - `partner_code` (string, optional): Partner referral code
 - `{course_id}` (string, optional): Multiple fields, one per course. Value: "on" or "off" to grant/revoke VIP access to that course
 
-**Request Example:**
+**Request Examples:**
+
+For Korea:
 ```
 POST /users/vipadding/123
 Content-Type: multipart/form-data
@@ -183,6 +225,35 @@ api=api
 myfile=[binary image data]
 ```
 
+For English:
+```
+POST /users/vipadding/123
+Content-Type: multipart/form-data
+
+major=english
+amount=50000
+gold_plan=on
+vip_english=on
+api=api
+1=on
+2=on
+myfile=[binary image data]
+```
+
+For Chinese:
+```
+POST /users/vipadding/123
+Content-Type: multipart/form-data
+
+major=chinese
+amount=50000
+gold_plan=on
+vip_chinese=on
+api=api
+1=on
+myfile=[binary image data]
+```
+
 **Response Format:**
 ```
 Success message string (e.g., "VIP access activated successfully")
@@ -190,17 +261,18 @@ Success message string (e.g., "VIP access activated successfully")
 
 **Error Handling:**
 - Returns error message string on failure
-- HTTP 400 for invalid input
+- HTTP 400 for invalid input or invalid major
 - HTTP 404 if learner not found
 - HTTP 500 for server errors
 
 **Notes:**
-- The endpoint should:
-  1. Update user's VIP status based on `vip_korea` field
-  2. Update gold plan status based on `gold_plan` field
-  3. Grant/revoke VIP access to courses based on course_id fields
-  4. Save the payment screenshot
-  5. Record the payment amount
+- The endpoint:
+  1. Updates user's VIP status based on `vip_{major}` field (e.g., `vip_korea`, `vip_english`, etc.)
+  2. Updates gold plan status based on `gold_plan` field (supported for all languages)
+  3. Grants/revokes VIP access to courses based on course_id fields
+  4. Saves the payment screenshot
+  5. Records the payment amount
+  6. Supports all languages dynamically: korea, english, chinese, japanese, russian
 
 ---
 
@@ -441,9 +513,19 @@ Consider implementing rate limiting to prevent abuse.
 curl "https://www.calamuseducation.com/calamin/api/payments/pending?major=korea"
 ```
 
-**Get User VIP Info:**
+**Get User VIP Info (Korea):**
 ```bash
-curl "https://www.calamuseducation.com/calamin/api/users/vip/12?phone=09123456789"
+curl "https://www.calamuseducation.com/calamin/api/users/vip/12?phone=09123456789&major=korea"
+```
+
+**Get User VIP Info (English):**
+```bash
+curl "https://www.calamuseducation.com/calamin/api/users/vip/12?phone=09123456789&major=english"
+```
+
+**Get User VIP Info (Chinese):**
+```bash
+curl "https://www.calamuseducation.com/calamin/api/users/vip/12?phone=09123456789&major=chinese"
 ```
 
 **Reset Password:**
@@ -479,12 +561,14 @@ curl -X POST "https://www.calamuseducation.com/calamin/api/save-replies" \
 - Returns array of payment records with user info, amount, screenshot URL, and date
 - Used in FragmentTwo to display pending payment list
 
-### GET /users/vip/12
+### GET /users/vip/{id}
 **What it does:**
-- Fetches complete user profile by phone number
+- Fetches complete user profile by phone number and language major
 - Returns learner info, VIP status, gold plan status, available courses, and user's course access
+- Supports all languages dynamically: korea, english, chinese, japanese, russian
 - Used in: FragmentTwo (search), PaymentDetailActivity, ChattingActivity, OldChattingActivity
-- Response must include: `learner` object, `koreaData` object, `mainCourses` array, `coursesKorea` array
+- Response includes: `learner` object, `languageData` object, `mainCourses` array, `courses` array, `major` string
+- Query parameter `major` determines which language data to retrieve (defaults to `korea`)
 
 ### POST /users/passwordreset
 **What it does:**
@@ -495,13 +579,15 @@ curl -X POST "https://www.calamuseducation.com/calamin/api/save-replies" \
 
 ### POST /users/vipadding/{learner_id}
 **What it does:**
-- Activates VIP access for a user
+- Activates VIP access for a user for any supported language
 - Handles multipart file upload for payment screenshot
-- Updates VIP status, gold plan status
+- Updates VIP status, gold plan status (supports all languages)
 - Grants/revokes access to individual courses based on dynamic course_id fields
 - Records payment amount
 - Sends notification to user (handled by app, but API should be ready)
 - Used in UserDetailActivity
+- Supports all languages dynamically: korea, english, chinese, japanese, russian
+- VIP field name must match the major: `vip_korea`, `vip_english`, `vip_chinese`, `vip_japanese`, `vip_russian`
 
 ### POST /users/transfer-vip-access
 **What it does:**
@@ -563,7 +649,7 @@ curl -X POST "https://www.calamuseducation.com/calamin/api/save-replies" \
 
 1. **Phone Number Format:** The app uses phone numbers without country codes (e.g., "09123456789"). Ensure your API handles this format consistently.
 
-2. **Major Parameter:** The `major` parameter is currently set to "korea" in the app. Your API should support filtering by major.
+2. **Major Parameter:** The `major` parameter supports all languages: `korea`, `english`, `chinese`, `japanese`, `russian`. The API dynamically handles all languages. Default is `korea` for backward compatibility, but all endpoints support all languages.
 
 3. **File Uploads:** The payment screenshot upload uses multipart/form-data. Ensure proper file handling, validation, and storage.
 

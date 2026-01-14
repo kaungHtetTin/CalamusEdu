@@ -22,8 +22,27 @@ use Hash;
 class ApiUserController extends Controller
 {
     /**
+     * Get language-specific user data model based on major
+     * 
+     * @param string $major
+     * @return string|null Model class name
+     */
+    private function getLanguageModel($major)
+    {
+        $languageMap = [
+            'korea' => EasyKoreanUserData::class,
+            'english' => EasyEnglishUserData::class,
+            'chinese' => EasyChineseUserData::class,
+            'japanese' => EasyJapaneseUserData::class,
+            'russian' => EasyRussianUserData::class,
+        ];
+        
+        return $languageMap[strtolower($major)] ?? null;
+    }
+    
+    /**
      * Get User VIP Information
-     * GET /users/vip/{id}?phone=09123456789
+     * GET /users/vip/{id}?phone=09123456789&major=korea
      * 
      * @param Request $request
      * @param int $id
@@ -33,11 +52,21 @@ class ApiUserController extends Controller
     {
         try {
             $phone = $request->get('phone');
+            $major = $request->get('major', 'korea'); // Default to korea for backward compatibility
             
             if (!$phone) {
                 return response()->json([
                     'status' => 'error',
                     'error' => 'Phone parameter is required'
+                ], 400);
+            }
+            
+            // Validate major
+            $validMajors = ['korea', 'english', 'chinese', 'japanese', 'russian'];
+            if (!in_array(strtolower($major), $validMajors)) {
+                return response()->json([
+                    'status' => 'error',
+                    'error' => 'Invalid major. Must be one of: ' . implode(', ', $validMajors)
                 ], 400);
             }
             
@@ -51,13 +80,19 @@ class ApiUserController extends Controller
                 ], 404);
             }
             
-            // Determine major from route or default to korea
-            // The route uses /vip/12 where 12 might be a language ID, but based on docs it's for korea
-            // We'll use the phone to get the korea data
-            $koreaData = EasyKoreanUserData::where('phone', $phone)->first();
+            // Get language-specific user data
+            $languageModel = $this->getLanguageModel($major);
+            if (!$languageModel) {
+                return response()->json([
+                    'status' => 'error',
+                    'error' => 'Invalid language major'
+                ], 400);
+            }
             
-            // Get all main courses
-            $mainCourses = course::where('major', 'korea')
+            $languageData = $languageModel::where('phone', $phone)->first();
+            
+            // Get all main courses for the specified major
+            $mainCourses = course::where('major', $major)
                 ->select('course_id', 'title', 'major')
                 ->get()
                 ->map(function ($course) {
@@ -68,21 +103,21 @@ class ApiUserController extends Controller
                     ];
                 });
             
-            // Get user's VIP course access for korea
-            $coursesKorea = VipUser::where('phone', $phone)
-                ->where('major', 'korea')
+            // Get user's VIP course access for the specified major
+            $courses = VipUser::where('phone', $phone)
+                ->where('major', $major)
                 ->pluck('course_id')
                 ->map(function ($id) {
                     return (int) $id;
                 })
                 ->toArray();
             
-            // Format koreaData response
-            $koreaDataResponse = [
-                'id' => $koreaData ? (string) $koreaData->id : '',
-                'token' => $koreaData ? $koreaData->token : '',
-                'is_vip' => $koreaData ? (int) $koreaData->is_vip : 0,
-                'gold_plan' => $koreaData ? (int) $koreaData->gold_plan : 0
+            // Format languageData response
+            $languageDataResponse = [
+                'id' => $languageData ? (string) $languageData->id : '',
+                'token' => $languageData ? $languageData->token : '',
+                'is_vip' => $languageData ? (int) $languageData->is_vip : 0,
+                'gold_plan' => $languageData ? (int) $languageData->gold_plan : 0
             ];
             
             // Format learner response
@@ -93,17 +128,21 @@ class ApiUserController extends Controller
                 'learner_image' => $learner->learner_image ?? ''
             ];
             
-            return response()->json([
+            // Build dynamic response - consistent for all languages
+            $response = [
                 'learner' => $learnerResponse,
-                'koreaData' => $koreaDataResponse,
+                'languageData' => $languageDataResponse,
                 'mainCourses' => $mainCourses,
-                'coursesKorea' => $coursesKorea
-            ]);
+                'courses' => $courses,
+                'major' => $major
+            ];
+            
+            return response()->json($response);
             
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'error' => 'Server error occurred'
+                'error' => 'Server error occurred: ' . $e->getMessage()
             ], 500);
         }
     }
@@ -236,48 +275,45 @@ class ApiUserController extends Controller
             // Update VIP status based on major
             $major = $request->major;
             
-            if ($major == "korea") {
-                if ($request->has('vip_korea') && $request->vip_korea == "on") {
-                    EasyKoreanUserData::where('phone', $phone)->update(['is_vip' => 1]);
-                } else {
-                    EasyKoreanUserData::where('phone', $phone)->update(['is_vip' => 0]);
-                }
-                
-                if ($request->has('gold_plan') && $request->gold_plan == "on") {
-                    EasyKoreanUserData::where('phone', $phone)->update(['gold_plan' => 1]);
-                } else {
-                    EasyKoreanUserData::where('phone', $phone)->update(['gold_plan' => 0]);
-                }
-            } elseif ($major == "english") {
-                if ($request->has('vip_english') && $request->vip_english == "on") {
-                    EasyEnglishUserData::where('phone', $phone)->update(['is_vip' => 1]);
-                } else {
-                    EasyEnglishUserData::where('phone', $phone)->update(['is_vip' => 0]);
-                }
-                
-                if ($request->has('gold_plan') && $request->gold_plan == "on") {
-                    EasyEnglishUserData::where('phone', $phone)->update(['gold_plan' => 1]);
-                } else {
-                    EasyEnglishUserData::where('phone', $phone)->update(['gold_plan' => 0]);
-                }
-            } elseif ($major == "chinese") {
-                if ($request->has('vip_chinese') && $request->vip_chinese == "on") {
-                    EasyChineseUserData::where('phone', $phone)->update(['is_vip' => 1]);
-                } else {
-                    EasyChineseUserData::where('phone', $phone)->update(['is_vip' => 0]);
-                }
-            } elseif ($major == "japanese") {
-                if ($request->has('vip_japanese') && $request->vip_japanese == "on") {
-                    EasyJapaneseUserData::where('phone', $phone)->update(['is_vip' => 1]);
-                } else {
-                    EasyJapaneseUserData::where('phone', $phone)->update(['is_vip' => 0]);
-                }
-            } elseif ($major == "russian") {
-                if ($request->has('vip_russian') && $request->vip_russian == "on") {
-                    EasyRussianUserData::where('phone', $phone)->update(['is_vip' => 1]);
-                } else {
-                    EasyRussianUserData::where('phone', $phone)->update(['is_vip' => 0]);
-                }
+            // Validate major
+            $validMajors = ['korea', 'english', 'chinese', 'japanese', 'russian'];
+            if (!in_array(strtolower($major), $validMajors)) {
+                return response()->json([
+                    'status' => 'error',
+                    'error' => 'Invalid major. Must be one of: ' . implode(', ', $validMajors)
+                ], 400);
+            }
+            
+            // Get the appropriate model for the major
+            $languageModel = $this->getLanguageModel($major);
+            if (!$languageModel) {
+                return response()->json([
+                    'status' => 'error',
+                    'error' => 'Invalid language major'
+                ], 400);
+            }
+            
+            // Map major to VIP field name
+            $vipFieldMap = [
+                'korea' => 'vip_korea',
+                'english' => 'vip_english',
+                'chinese' => 'vip_chinese',
+                'japanese' => 'vip_japanese',
+                'russian' => 'vip_russian',
+            ];
+            
+            $vipField = $vipFieldMap[strtolower($major)] ?? null;
+            
+            // Update VIP status
+            if ($vipField && $request->has($vipField)) {
+                $isVip = ($request->$vipField == "on") ? 1 : 0;
+                $languageModel::where('phone', $phone)->update(['is_vip' => $isVip]);
+            }
+            
+            // Update gold plan status (supported for all languages)
+            if ($request->has('gold_plan')) {
+                $goldPlan = ($request->gold_plan == "on") ? 1 : 0;
+                $languageModel::where('phone', $phone)->update(['gold_plan' => $goldPlan]);
             }
             
             // Handle course access grants/revocations
