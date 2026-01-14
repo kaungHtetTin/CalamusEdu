@@ -64,6 +64,8 @@ document.addEventListener('DOMContentLoaded', function() {
   const themeToggle = document.getElementById('themeToggle');
   const body = document.body;
   
+  if (!body) return;
+  
   // Get saved theme or default to dark
   const savedTheme = localStorage.getItem('theme') || 'dark';
   
@@ -74,14 +76,14 @@ document.addEventListener('DOMContentLoaded', function() {
       body.classList.remove('dark-theme');
       if (themeToggle) {
         themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-        themeToggle.title = 'Switch to dark mode';
+        themeToggle.setAttribute('title', 'Switch to dark mode');
       }
     } else {
       body.classList.add('dark-theme');
       body.classList.remove('light-theme');
       if (themeToggle) {
         themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-        themeToggle.title = 'Switch to light mode';
+        themeToggle.setAttribute('title', 'Switch to light mode');
       }
     }
     localStorage.setItem('theme', theme);
@@ -92,7 +94,9 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Toggle theme on button click
   if (themeToggle) {
-    themeToggle.addEventListener('click', function() {
+    themeToggle.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
       const currentTheme = body.classList.contains('light-theme') ? 'light' : 'dark';
       const newTheme = currentTheme === 'light' ? 'dark' : 'light';
       applyTheme(newTheme);
@@ -145,85 +149,110 @@ if (ctx) {
 
 // User Avatar Dropdown Toggle
 function initUserDropdown() {
-    const userAvatarContainer = document.querySelector('.user-avatar-dropdown');
-    const userAvatar = document.getElementById('userAvatarDropdown');
-    const dropdownMenu = document.getElementById('userDropdownMenu');
-    let hoverTimeout = null;
-    
-    if (!userAvatarContainer || !dropdownMenu) {
-        // Retry after a short delay if elements not found
-        setTimeout(initUserDropdown, 100);
-        return;
+  const userAvatarContainer = document.querySelector('.user-avatar-dropdown');
+  const userAvatar = document.getElementById('userAvatarDropdown');
+  const dropdownMenu = document.getElementById('userDropdownMenu');
+  
+  if (!userAvatarContainer || !dropdownMenu) {
+    // Retry after a short delay if elements not found
+    setTimeout(initUserDropdown, 100);
+    return;
+  }
+  
+  let hoverTimeout = null;
+  let isOpen = false;
+  
+  function showDropdown() {
+    clearTimeout(hoverTimeout);
+    dropdownMenu.classList.add('show');
+    isOpen = true;
+  }
+  
+  function hideDropdown() {
+    clearTimeout(hoverTimeout);
+    hoverTimeout = setTimeout(function() {
+      dropdownMenu.classList.remove('show');
+      isOpen = false;
+    }, 150);
+  }
+  
+  // Show dropdown on hover over container
+  userAvatarContainer.addEventListener('mouseenter', function() {
+    showDropdown();
+  });
+  
+  // Hide dropdown when mouse leaves container
+  userAvatarContainer.addEventListener('mouseleave', function(e) {
+    // Check if mouse is moving to dropdown
+    const relatedTarget = e.relatedTarget;
+    if (relatedTarget && dropdownMenu.contains(relatedTarget)) {
+      return; // Don't hide if moving to dropdown
     }
-    
-    // Show dropdown on hover over container
-    userAvatarContainer.addEventListener('mouseenter', function() {
-        clearTimeout(hoverTimeout);
+    hideDropdown();
+  });
+  
+  // Keep dropdown open when hovering over it
+  dropdownMenu.addEventListener('mouseenter', function() {
+    showDropdown();
+  });
+  
+  // Hide dropdown when mouse leaves dropdown
+  dropdownMenu.addEventListener('mouseleave', function() {
+    hideDropdown();
+  });
+  
+  // Toggle dropdown on avatar click
+  if (userAvatar) {
+    userAvatar.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (isOpen) {
+        dropdownMenu.classList.remove('show');
+        isOpen = false;
+      } else {
         dropdownMenu.classList.add('show');
+        isOpen = true;
+      }
     });
-    
-    // Hide dropdown when mouse leaves container (with small delay)
-    userAvatarContainer.addEventListener('mouseleave', function(e) {
-        // Check if mouse is moving to dropdown
-        const relatedTarget = e.relatedTarget;
-        if (relatedTarget && (dropdownMenu.contains(relatedTarget) || relatedTarget.closest('.user-dropdown-menu'))) {
-            return; // Don't hide if moving to dropdown
-        }
-        
-        hoverTimeout = setTimeout(function() {
-            dropdownMenu.classList.remove('show');
-        }, 200);
-    });
-    
-    // Keep dropdown open when hovering over it
-    dropdownMenu.addEventListener('mouseenter', function() {
-        clearTimeout(hoverTimeout);
+  }
+  
+  // Also allow clicking on container (avatar area)
+  userAvatarContainer.addEventListener('click', function(e) {
+    // Only toggle if clicking on the avatar itself, not the dropdown
+    if (e.target.closest('.user-avatar-top') || e.target.closest('#userAvatarDropdown')) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (isOpen) {
+        dropdownMenu.classList.remove('show');
+        isOpen = false;
+      } else {
         dropdownMenu.classList.add('show');
-    });
-    
-    // Hide dropdown when mouse leaves dropdown
-    dropdownMenu.addEventListener('mouseleave', function() {
-        hoverTimeout = setTimeout(function() {
-            dropdownMenu.classList.remove('show');
-        }, 200);
-    });
-    
-    // Toggle dropdown on avatar click
-    if (userAvatar) {
-        userAvatar.addEventListener('click', function(e) {
-            e.stopPropagation();
-            dropdownMenu.classList.toggle('show');
-        });
+        isOpen = true;
+      }
     }
-    
-    // Also allow clicking on container (avatar area)
-    userAvatarContainer.addEventListener('click', function(e) {
-        // Only toggle if clicking on the avatar itself, not the dropdown
-        if (e.target.closest('.user-avatar-top') || e.target.closest('#userAvatarDropdown')) {
-            e.stopPropagation();
-            dropdownMenu.classList.toggle('show');
-        }
-    });
-    
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function(e) {
-        if (!userAvatarContainer.contains(e.target) && !dropdownMenu.contains(e.target)) {
-            dropdownMenu.classList.remove('show');
-        }
-    });
-    
-    // Close dropdown on escape key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && dropdownMenu.classList.contains('show')) {
-            dropdownMenu.classList.remove('show');
-        }
-    });
+  });
+  
+  // Close dropdown when clicking outside
+  document.addEventListener('click', function(e) {
+    if (isOpen && !userAvatarContainer.contains(e.target) && !dropdownMenu.contains(e.target)) {
+      dropdownMenu.classList.remove('show');
+      isOpen = false;
+    }
+  });
+  
+  // Close dropdown on escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && isOpen) {
+      dropdownMenu.classList.remove('show');
+      isOpen = false;
+    }
+  });
 }
 
 // Initialize on DOM ready
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initUserDropdown);
+  document.addEventListener('DOMContentLoaded', initUserDropdown);
 } else {
-    // DOM already loaded
-    initUserDropdown();
+  // DOM already loaded
+  initUserDropdown();
 }
