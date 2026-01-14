@@ -163,6 +163,7 @@ class PostController extends Controller
         	    posts.has_video
                 ")
         ->where('posts.major',$major)
+        ->where('posts.share',0)
         ->join('learners','learners.learner_phone','=','posts.learner_id')
         ->join($dataStore,"$dataStore.phone",'=','posts.learner_id')
         ->orderBy('posts.id','desc')
@@ -291,6 +292,7 @@ class PostController extends Controller
         $comment = Comment::where('post_id', $postId)->delete();
         $report=Report::where('post_id',$postId)->delete();
         $post=post::where('post_id',$postId)->delete();
+        $share=post::where('share',$postId)->delete();
        
         return back()->with('msg','Successfully deleted');
     }
@@ -514,6 +516,148 @@ class PostController extends Controller
             'success' => true,
             'message' => 'Notification marked as read'
         ], 200);
+    }
+
+    /**
+     * Show post detail page for admin with comments and reply functionality
+     */
+    public function showPostDetail($postId)
+    {
+        // Get the post
+        $post = DB::table('posts')
+            ->selectRaw("
+                posts.post_id,
+                posts.learner_id,
+                posts.body,
+                posts.image,
+                posts.video_url,
+                posts.vimeo,
+                posts.has_video,
+                posts.post_like,
+                posts.comments,
+                posts.major,
+                posts.view_count,
+                posts.share_count,
+                learners.learner_name as userName,
+                learners.learner_image as userImage
+            ")
+            ->where('posts.post_id', $postId)
+            ->leftJoin('learners', 'learners.learner_phone', '=', 'posts.learner_id')
+            ->first();
+
+        if (!$post) {
+            return redirect()->route('showMainPostControllerView')->with('error', 'Post not found.');
+        }
+
+        // Get all comments with replies
+        $comments = DB::table('comment')
+            ->selectRaw("
+                comment.id,
+                comment.post_id,
+                comment.writer_id,
+                comment.body,
+                comment.image as commentImage,
+                comment.time,
+                comment.parent,
+                comment.likes,
+                learners.learner_name as userName,
+                learners.learner_image as userImage
+            ")
+            ->where('comment.post_id', $postId)
+            ->where('comment.parent', 0) // Only top-level comments
+            ->join('learners', 'learners.learner_phone', '=', 'comment.writer_id')
+            ->orderBy('comment.time', 'asc')
+            ->get();
+
+        // Get replies for each comment
+        foreach ($comments as $comment) {
+            $replies = DB::table('comment')
+                ->selectRaw("
+                    comment.id,
+                    comment.post_id,
+                    comment.writer_id,
+                    comment.body,
+                    comment.image as commentImage,
+                    comment.time,
+                    comment.parent,
+                    comment.likes,
+                    learners.learner_name as userName,
+                    learners.learner_image as userImage
+                ")
+                ->where('comment.post_id', $postId)
+                ->where('comment.parent', $comment->time) // Replies have parent = parent comment's time
+                ->join('learners', 'learners.learner_phone', '=', 'comment.writer_id')
+                ->orderBy('comment.time', 'asc')
+                ->get();
+            
+            $comment->replies = $replies;
+        }
+
+        // Mark notification as read if accessed from notification
+        if (request()->has('notification_id')) {
+            $notificationId = request()->notification_id;
+            Notification::where('id', $notificationId)
+                ->where('owner_id', 10000)
+                ->update(['seen' => 1]);
+        }
+
+        return view('posts.detail', [
+            'post' => $post,
+            'comments' => $comments
+        ]);
+    }
+
+    /**
+     * Admin reply to a comment
+     */
+    public function adminReplyToComment(Request $request)
+    {
+        $request->validate([
+            'post_id' => 'required|integer',
+            'comment_id' => 'required|integer', // This is the parent comment's time
+            'body' => 'required|string|max:1000',
+        ]);
+
+        $adminId = 10000; // Admin user ID
+
+        // Verify parent comment exists
+        $parentComment = Comment::where('time', $request->comment_id)->first();
+        if (!$parentComment) {
+            return back()->withErrors(['comment_id' => 'Parent comment not found.'])->withInput();
+        }
+
+        // Create reply
+        $reply = new Comment();
+        $reply->post_id = $request->post_id;
+        $reply->writer_id = $adminId;
+        $reply->body = $request->body;
+        $reply->time = round(microtime(true) * 1000);
+        $reply->parent = $request->comment_id; // Parent comment's time
+        $reply->likes = 0;
+        $reply->image = '';
+        $reply->save();
+
+        // Update post comment count
+        $post = post::where('post_id', $request->post_id)->first();
+        if ($post) {
+            $post->comments = $post->comments + 1;
+            $post->save();
+        }
+
+        // Create notification for the parent comment owner (if not admin)
+        if ($parentComment->writer_id != $adminId) {
+            $notification = new Notification();
+            $notification->post_id = $request->post_id;
+            $notification->comment_id = $reply->time;
+            $notification->owner_id = $parentComment->writer_id;
+            $notification->writer_id = $adminId;
+            $notification->action = 2; // Reply
+            $notification->time = round(microtime(true) * 1000);
+            $notification->seen = 0;
+            $notification->save();
+        }
+
+        return redirect()->route('posts.detail', $request->post_id)->with('success', 'Reply posted successfully!');
     }
 
 

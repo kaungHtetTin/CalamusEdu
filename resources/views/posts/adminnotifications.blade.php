@@ -145,7 +145,7 @@ body.dark-theme .notification-avatar {
                                         @endif
                                         
                                         <div class="d-flex align-items-center gap-2">
-                                            <a href="{{ route('showTimeline', $notification->major ?? 'english') }}?mCode={{ $mCode }}&page=1#post-{{ $notification->post_id }}" 
+                                            <a href="{{ route('posts.detail', $notification->post_id) }}?notification_id={{ $notification->id }}" 
                                                class="btn btn-sm btn-primary" 
                                                onclick="markAsRead({{ $notification->id }})">
                                                 <i class="fas fa-eye"></i> View Post

@@ -138,6 +138,8 @@ Route::get('/courses/{language}',[CourseController::class,'showCoursesByLanguage
 Route::get('/posts',[PostController::class,'showMainPostControllerView'])->name('showMainPostControllerView');
 Route::get('/posts/reported',[PostController::class,'showReportedPostsTimeline'])->name('showReportedPostsTimeline');
 Route::get('/posts/notifications',[PostController::class,'showAdminNotifications'])->name('showAdminNotifications');
+Route::get('/posts/detail/{postId}',[PostController::class,'showPostDetail'])->name('posts.detail');
+Route::post('/posts/reply',[PostController::class,'adminReplyToComment'])->name('posts.reply');
 Route::get('/posts/{major}',[PostController::class,'showTimeline'])->name('showTimeline');
 Route::get('/posts/create/{major}',[PostController::class,'showCreatePost'])->name('showCreatePost');
 Route::post('/posts/create/{major}',[PostController::class,'addPost'])->name('addPost');
