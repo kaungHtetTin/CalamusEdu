@@ -464,8 +464,7 @@ class UserController extends Controller
     }
     
     public function addVip(Request $req, $id){
-       
-
+        
         $learner=learner::find($id);
         $phone=$learner->learner_phone;
         $mainCourses=course::get();

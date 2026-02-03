@@ -219,38 +219,22 @@ class ApiUserController extends Controller
             
             $phone = $learner->learner_phone;
             $mainCourses = course::get();
-            
+            $paymentAccepted = false;
+
             // Handle payment
             if ($request->has('amount') && ($request->amount != null && $request->amount != 0)) {
                 
-                // Handle partner code if provided
+                // Validate partner code if provided (do not create PartnerEarning until payment is accepted)
                 if ($request->has('partner_code') && $request->partner_code) {
-                    $partner_code = $request->partner_code;
-                    $partner = Partner::where('private_code', $partner_code)->first();
-                    
-                    if ($partner) {
-                        $PartnerEarning = new PartnerEarning();
-                        $PartnerEarning->partner_id = $partner->id;
-                        $PartnerEarning->target_course_id = null;
-                        $PartnerEarning->target_package_id = null;
-                        $PartnerEarning->learner_phone = $phone;
-                        $PartnerEarning->price = $request->amount;
-                        $PartnerEarning->commission_rate = $partner->commission_rate;
-                        
-                        $original_price = $request->amount / 0.9;  // 10% discount to user
-                        $amount_received = ($original_price * $partner->commission_rate) / 100;
-                        
-                        $PartnerEarning->amount_received = $amount_received;
-                        $PartnerEarning->status = 'pending';
-                        $PartnerEarning->save();
-                    } else {
+                    $partner = Partner::where('private_code', $request->partner_code)->first();
+                    if (!$partner) {
                         return response()->json([
                             'status' => 'error',
                             'error' => 'Wrong promotion code! Activation failed'
                         ], 400);
                     }
                 }
-                
+
                 // Handle screenshot upload for API requests
                 $screenshot = "";
                 $approve = 0;
@@ -262,6 +246,17 @@ class ApiUserController extends Controller
                     $screenshot = $myPath . $result;
                 }
                 
+                // Validate transaction_id if provided (optional)
+                if ($request->filled('transaction_id')) {
+                    $exists = Payment::where('transaction_id', $request->transaction_id)->exists();
+                    if ($exists) {
+                        return response()->json([
+                            'status' => 'error',
+                            'error' => 'This transaction has already been recorded. Duplicate transaction is not allowed.'
+                        ], 400);
+                    }
+                }
+                
                 // Create payment record
                 $payment = new Payment();
                 $payment->user_id = $phone;
@@ -269,9 +264,41 @@ class ApiUserController extends Controller
                 $payment->amount = $request->amount;
                 $payment->screenshot = $screenshot;
                 $payment->approve = $approve;
+                if ($request->filled('transaction_id')) {
+                    $payment->transaction_id = $request->transaction_id;
+                } else {
+                    $payment->transaction_id = 0;
+                }
                 $payment->save();
+                $paymentAccepted = true;
+
+                // Create PartnerEarning only after payment is successfully accepted
+                if ($paymentAccepted && $request->has('partner_code') && $request->partner_code) {
+                    $partner = Partner::where('private_code', $request->partner_code)->first();
+                    if ($partner) {
+                        $PartnerEarning = new PartnerEarning();
+                        $PartnerEarning->partner_id = $partner->id;
+                        $PartnerEarning->target_course_id = null;
+                        $PartnerEarning->target_package_id = null;
+                        $PartnerEarning->learner_phone = $phone;
+                        $PartnerEarning->price = $request->amount;
+                        $PartnerEarning->commission_rate = $partner->commission_rate;
+                        $original_price = $request->amount / 0.9;  // 10% discount to user
+                        $PartnerEarning->amount_received = ($original_price * $partner->commission_rate) / 100;
+                        $PartnerEarning->status = 'pending';
+                        $PartnerEarning->save();
+                    }
+                }
             }
             
+            // Update VIP status and course access only when payment was successfully accepted
+            if (!$paymentAccepted) {
+                return response()->json([
+                    'status' => 'error',
+                    'error' => 'Payment is required to activate VIP access.'
+                ], 400);
+            }
+
             // Update VIP status based on major
             $major = $request->major;
             
