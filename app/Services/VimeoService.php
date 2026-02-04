@@ -208,8 +208,6 @@ class VimeoService
     protected function buildPlayerUrl(string $videoUri): string
     {
         $videoId = basename($videoUri);
-
-        return "https://player.vimeo.com/video/{$videoId}"
-            . "?title=0&byline=0&portrait=0&badge=0&autopause=0";
+        return "https://player.vimeo.com/video/{$videoId}?h=73c9a3c891&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479";
     }
 }
