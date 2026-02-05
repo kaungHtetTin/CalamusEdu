@@ -63,7 +63,7 @@
                   @endif
                   @if($lesson->duration > 0)
                     <span class="lesson-duration">
-                      <i class="fas fa-clock me-1"></i>{{$lesson->duration}} min
+                      <i class="fas fa-clock me-1"></i>{{\App\Services\VimeoService::formatDuration($lesson->duration)}}
                     </span>
                   @endif
                 </div>

@@ -226,7 +226,7 @@
                         @endif
                         @if($lesson->duration > 0)
                         <small class="text-muted" style="font-size: 10px;">
-                          <i class="fas fa-clock"></i> {{$lesson->duration}}m
+                          <i class="fas fa-clock"></i> {{\App\Services\VimeoService::formatDuration($lesson->duration)}}
                         </small>
                         @endif
                       </div>

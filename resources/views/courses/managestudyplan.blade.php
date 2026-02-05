@@ -83,7 +83,7 @@
                         @endif
                         @if($plan->duration > 0)
                         <small class="text-muted" style="font-size: 10px;">
-                          <i class="fas fa-clock"></i> {{$plan->duration}}m
+                          <i class="fas fa-clock"></i> {{\App\Services\VimeoService::formatDuration($plan->duration)}}
                         </small>
                         @endif
                       </div>

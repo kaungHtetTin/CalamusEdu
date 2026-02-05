@@ -94,7 +94,7 @@
                 @if($lesson->duration > 0)
                 <div class="info-item">
                   <span class="info-label">Duration:</span>
-                  <span class="info-value">{{$lesson->duration}} minutes</span>
+                  <span class="info-value">{{\App\Services\VimeoService::formatDuration($lesson->duration)}}</span>
                 </div>
                 @endif
                 @if($lesson->isVip==1)

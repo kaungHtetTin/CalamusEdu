@@ -167,6 +167,41 @@ class VimeoService
        ========================================================= */
 
     /**
+     * Format video duration from seconds to human-readable format
+     * 
+     * @param int|float $seconds Duration in seconds
+     * @return string Formatted duration (e.g., "1hr 20min 2sec", "3min", "2min 30sec")
+     */
+    public static function formatDuration($seconds): string
+    {
+        $seconds = (int) abs($seconds);
+        
+        if ($seconds === 0) {
+            return '0sec';
+        }
+        
+        $hours = floor($seconds / 3600);
+        $minutes = floor(($seconds % 3600) / 60);
+        $secs = $seconds % 60;
+        
+        $parts = [];
+        
+        if ($hours > 0) {
+            $parts[] = $hours . 'hr';
+        }
+        
+        if ($minutes > 0) {
+            $parts[] = $minutes . 'min';
+        }
+        
+        if ($secs > 0) {
+            $parts[] = $secs . 'sec';
+        }
+        
+        return implode(' ', $parts);
+    }
+
+    /**
      * Extract video ID from various URL formats
      * 
      * @param string $input Player URL, video ID, or video URI
@@ -205,9 +240,128 @@ class VimeoService
        Player URL
        ========================================================= */
 
+    /**
+     * Build player URL by fetching video details from Vimeo API
+     * For unlisted videos, this retrieves the required hash parameter
+     *
+     * @param string $videoUri The video URI (e.g., "/videos/123456")
+     * @return string The player embed URL with hash parameter
+     * @throws \Exception
+     */
     protected function buildPlayerUrl(string $videoUri): string
     {
         $videoId = basename($videoUri);
-        return "https://player.vimeo.com/video/{$videoId}?h=73c9a3c891&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479";
+        
+        // Fetch video details from Vimeo API to get the privacy hash
+        $hash = $this->fetchVideoHash($videoUri);
+        
+        // Build player URL with hash parameter
+        $playerUrl = "https://player.vimeo.com/video/{$videoId}";
+        
+        if ($hash) {
+            $playerUrl .= "?h={$hash}";
+        }
+        
+        // Add additional player parameters
+        $playerUrl .= ($hash ? '&' : '?') . 'badge=0&autopause=0&player_id=0&app_id=58479';
+        
+        return $playerUrl;
+    }
+
+    /**
+     * Fetch the privacy hash for a video from Vimeo API
+     * The hash is required for unlisted videos to be playable
+     *
+     * @param string $videoUri The video URI (e.g., "/videos/123456")
+     * @return string|null The hash parameter or null if not found/needed
+     */
+    protected function fetchVideoHash(string $videoUri): ?string
+    {
+        try {
+            // Request video details from Vimeo API
+            // The 'link' field contains the full URL with hash for unlisted videos
+            $response = $this->vimeo->request($videoUri, [], 'GET');
+            
+            if (!isset($response['body'])) {
+                Log::warning('Vimeo API response missing body', [
+                    'video_uri' => $videoUri,
+                    'response' => $response
+                ]);
+                return null;
+            }
+            
+            $body = $response['body'];
+            
+            // Method 1: Extract hash from the 'link' field
+            // Unlisted video links have format: https://vimeo.com/{video_id}/{hash}
+            if (!empty($body['link'])) {
+                $hash = $this->extractHashFromLink($body['link']);
+                if ($hash) {
+                    return $hash;
+                }
+            }
+            
+            // Method 2: Check privacy.embed field if available
+            // Some responses include embed.html with the hash
+            if (!empty($body['embed']['html'])) {
+                $hash = $this->extractHashFromEmbed($body['embed']['html']);
+                if ($hash) {
+                    return $hash;
+                }
+            }
+            
+            // Method 3: Check if video URI contains hash (format: /videos/{id}:{hash})
+            if (strpos($videoUri, ':') !== false) {
+                $parts = explode(':', basename($videoUri));
+                if (count($parts) === 2) {
+                    return $parts[1];
+                }
+            }
+            
+            // No hash found - video might be public
+            return null;
+            
+        } catch (\Exception $e) {
+            Log::warning('Failed to fetch video hash from Vimeo', [
+                'video_uri' => $videoUri,
+                'error' => $e->getMessage()
+            ]);
+            return null;
+        }
+    }
+
+    /**
+     * Extract hash from Vimeo video link
+     * Unlisted links have format: https://vimeo.com/{video_id}/{hash}
+     *
+     * @param string $link The video link
+     * @return string|null The extracted hash or null
+     */
+    protected function extractHashFromLink(string $link): ?string
+    {
+        // Match pattern: vimeo.com/{video_id}/{hash}
+        // The hash is typically 10 alphanumeric characters
+        if (preg_match('/vimeo\.com\/\d+\/([a-zA-Z0-9]+)/', $link, $matches)) {
+            return $matches[1];
+        }
+        
+        return null;
+    }
+
+    /**
+     * Extract hash from embed HTML
+     * Embed iframe src contains: player.vimeo.com/video/{id}?h={hash}
+     *
+     * @param string $embedHtml The embed HTML code
+     * @return string|null The extracted hash or null
+     */
+    protected function extractHashFromEmbed(string $embedHtml): ?string
+    {
+        // Match pattern: h={hash} in the embed URL
+        if (preg_match('/[?&]h=([a-zA-Z0-9]+)/', $embedHtml, $matches)) {
+            return $matches[1];
+        }
+        
+        return null;
     }
 }
