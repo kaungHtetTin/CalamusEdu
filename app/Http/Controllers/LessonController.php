@@ -716,7 +716,7 @@ class LessonController extends Controller
         
         // Video file validation (optional for editing - only if uploading new video)
         if ($isVideo) {
-            $validationRules['video_file'] = 'nullable|file|mimes:mp4,mov,avi,mkv,wmv,flv,webm|max:51200'; // Max 50GB
+            $validationRules['video_file'] = 'nullable|file|mimes:mp4,mov,avi,mkv,wmv,flv,webm|max:102400'; // Max 100MB
         }
         
         // HTML file validation for document lessons (non-video)
@@ -934,7 +934,7 @@ class LessonController extends Controller
         
         // Video file is required for video lessons
         if ($isVideo) {
-            $validationRules['video_file'] = 'required|file|mimes:mp4,mov,avi,mkv,wmv,flv,webm|max:51200'; // Max 50GB
+            $validationRules['video_file'] = 'required|file|mimes:mp4,mov,avi,mkv,wmv,flv,webm|max:102400'; // Max 100MB
         }
         
         // For document lessons: HTML file is required

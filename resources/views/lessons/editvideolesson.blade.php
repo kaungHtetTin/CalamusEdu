@@ -111,7 +111,7 @@
               <div class="col-md-12 mb-4">
                 <label for="video_file" class="form-label">Replace Video File</label>
                 <input type="file" class="form-control modern-input" id="video_file" name="video_file" accept="video/*">
-                <small class="form-text text-muted">Leave empty to keep current video. Upload new video file (MP4, MOV, AVI, etc.) to replace the existing one.</small>
+                <small class="form-text text-muted">Leave empty to keep current video. Upload new video file (MP4, MOV, AVI, MKV, WMV, FLV, WEBM) - Max 100MB</small>
                 @if($post && $post->video_url)
                   <div class="mt-2">
                     <small class="text-muted">

@@ -90,7 +90,7 @@
               <div class="col-md-12 mb-4">
                 <label for="video_file" class="form-label">Video File <span class="text-danger">*</span></label>
                 <input type="file" class="form-control modern-input" id="video_file" name="video_file" accept="video/*" required>
-                <small class="form-text text-muted">Upload video file (MP4, MOV, AVI, etc.)</small>
+                <small class="form-text text-muted">Upload video file (MP4, MOV, AVI, MKV, WMV, FLV, WEBM) - Max 100MB</small>
               </div>
             </div>
           </div>
