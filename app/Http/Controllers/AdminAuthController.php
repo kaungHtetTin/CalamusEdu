@@ -5,10 +5,16 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Crypt;
 
 class AdminAuthController extends Controller
 {
+    /** Remember me cookie name */
+    public const REMEMBER_COOKIE = 'admin_remember';
+
+    /** Remember me duration in days */
+    public const REMEMBER_DAYS = 30;
+
     /**
      * Show the admin login form.
      */
@@ -18,7 +24,7 @@ class AdminAuthController extends Controller
         if (session('admin_phone') == 10000) {
             return redirect()->route('overviewIndex');
         }
-        
+
         return view('admin.login');
     }
 
@@ -31,33 +37,46 @@ class AdminAuthController extends Controller
             'id_number' => 'required|string',
             'password' => 'required|string',
         ]);
-        
-        // Verify ID number is 10000 (admin only)
+
         $idNumber = $request->input('id_number');
         if ($idNumber != '10000') {
             return back()->withErrors(['id_number' => 'Invalid admin ID.'])->withInput();
         }
 
-        // Get admin user from database (learner_phone 10000)
         $admin = DB::table('learners')
             ->where('learner_phone', 10000)
             ->first();
-            
+
         if (!$admin) {
             return back()->withErrors(['password' => 'Admin user not found in database.'])->withInput();
         }
-        
-        // Use password hash from database
-        $hashedPassword = $admin->password;
-        
-        // Verify password
-        if (Hash::check($request->password, $hashedPassword)) {
-            // Set admin session
+
+        if (Hash::check($request->password, $admin->password)) {
             session(['admin_phone' => 10000]);
             session(['admin_name' => $admin->learner_name ?? 'Admin']);
             session(['admin_image' => $admin->learner_image ?? '']);
-            
-            return redirect()->intended(route('overviewIndex'))->with('success', 'Welcome back, Admin!');
+
+            $response = redirect()->intended(route('overviewIndex'))->with('success', 'Welcome back, Admin!');
+
+            if ($request->boolean('remember_me')) {
+                $payload = Crypt::encryptString(json_encode([
+                    'id_number' => $idNumber,
+                    'password' => $request->password,
+                ]));
+                $response->cookie(
+                    self::REMEMBER_COOKIE,
+                    $payload,
+                    self::REMEMBER_DAYS * 24 * 60,
+                    '/',
+                    null,
+                    $request->secure(),
+                    true,
+                    false,
+                    'lax'
+                );
+            }
+
+            return $response;
         }
 
         return back()->withErrors(['password' => 'Invalid password.'])->withInput();
@@ -68,11 +87,12 @@ class AdminAuthController extends Controller
      */
     public function logout(Request $request)
     {
-        session()->forget('admin_phone');
-        session()->forget('admin_name');
-        session()->forget('admin_image');
-        
-        return redirect()->route('admin.login')->with('success', 'You have been logged out successfully.');
+        session()->forget(['admin_phone', 'admin_name', 'admin_image']);
+
+        $response = redirect()->route('admin.login')->with('success', 'You have been logged out successfully.');
+        $response->cookie(self::REMEMBER_COOKIE, '', -1, '/');
+
+        return $response;
     }
 }
 

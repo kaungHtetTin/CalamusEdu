@@ -310,6 +310,13 @@
                     @enderror
                 </div>
 
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label class="remember-me-label" style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: normal; color: #555;">
+                        <input type="checkbox" name="remember_me" id="remember_me" value="1" {{ old('remember_me') ? 'checked' : '' }} style="width: 18px; height: 18px; accent-color: #1967d2;">
+                        <span>Remember me</span>
+                    </label>
+                </div>
+
                 <button type="submit" class="btn-login">
                     Login
                 </button>
